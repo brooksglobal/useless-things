@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta property="og:title" content="대답 상자">
+<meta property="og:description" content="1급 기밀 답변이 도착했습니다. 탭해서 개봉하십시오.">
+<title>대답 상자</title>
+<style>
+:root{--ink:#0b0b0d;--paper:#f6f1e4;--gold:#f5c542;--gold2:#ffe79a;--lime:#d9ff3d;--red:#e63b2e;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;background:#000;color:#fff;font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all;overflow-wrap:break-word;overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+canvas#gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hide{display:none!important}
+/* 만들기 */
+#make{position:fixed;inset:0;overflow:auto;background:radial-gradient(120% 70% at 50% 0%,#1b1b1f,#000 70%);padding:max(24px,env(safe-area-inset-top)) 20px 40px}
+.wrap{max-width:440px;margin:0 auto}
+.kicker{font-size:12px;letter-spacing:.3em;color:#9a9a90;text-transform:uppercase}
+h1{font-size:40px;font-weight:900;letter-spacing:-.02em;margin:8px 0 6px}
+.sub{color:#b8b8b0;font-size:15px;line-height:1.5;margin-bottom:26px}
+label.f{display:block;margin:16px 0 6px;font-size:13px;color:#9a9a90;letter-spacing:.08em}
+input[type=text]{width:100%;background:#141418;border:1px solid #2a2a30;border-radius:12px;padding:14px 14px;font-size:18px;outline:none}
+input[type=text]:focus{border-color:var(--gold)}
+.themes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.theme{position:relative}.theme input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0}
+.theme span{display:block;border:1px solid #2a2a30;border-radius:14px;padding:14px;background:#141418;line-height:1.3}
+.theme span b{display:block;font-size:17px}.theme span small{color:#9a9a90;font-size:12px}
+.theme input:checked+span{border-color:var(--gold);background:#1e1a0e}
+.btn{display:block;width:100%;margin-top:22px;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:800;background:var(--gold);color:#111;cursor:pointer}
+.btn.ghost{background:transparent;border:1px solid #2a2a30;color:#fff;font-weight:600}
+.link{margin-top:14px;background:#141418;border:1px dashed #3a3a40;border-radius:12px;padding:12px;font-family:Menlo,monospace;font-size:12px;color:#b8b8b0;word-break:break-all;user-select:all}
+.foot{margin-top:30px;text-align:center;font-size:11px;color:#6a6a62;letter-spacing:.06em}
+/* 개봉 전 */
+#seal{position:fixed;inset:0;display:grid;place-items:center;background:#000;text-align:center;padding:24px}
+#seal .box{border:2px solid #3a3a40;border-radius:20px;padding:34px 26px;max-width:380px;width:100%;background:linear-gradient(180deg,#121216,#09090b)}
+#seal .cls{display:inline-block;border:2px solid var(--red);color:var(--red);font-weight:900;letter-spacing:.3em;padding:6px 12px;font-size:12px;transform:rotate(-6deg);margin-bottom:18px}
+#seal h2{font-size:26px;font-weight:900;line-height:1.25}
+#seal p{color:#9a9a90;font-size:14px;margin:12px 0 26px;line-height:1.5}
+#seal .btn{background:#fff}
+/* 쇼 오버레이 */
+#ov{position:fixed;inset:0;pointer-events:none;display:grid;place-items:center;text-align:center;padding:24px}
+#ov .t{font-weight:900;font-size:34px;line-height:1.2;text-shadow:0 2px 20px rgba(0,0,0,.8);opacity:0;transform:translateY(16px);transition:opacity .35s,transform .35s}
+#ov .t.on{opacity:1;transform:none}
+#ov .t small{display:block;font-size:14px;font-weight:600;letter-spacing:.3em;color:#cfcfc6;margin-bottom:10px}
+#ov .num{font-size:160px;font-weight:900;line-height:1;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+#ans{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center;padding:24px}
+#ans .a{opacity:0;transform:scale(.3) rotate(-8deg);transition:transform .7s cubic-bezier(.2,1.6,.4,1),opacity .4s}
+#ans .a.on{opacity:1;transform:scale(1) rotate(0)}
+#ans .lab{font-size:14px;letter-spacing:.4em;color:#fff;opacity:.85;margin-bottom:14px;text-shadow:0 2px 12px #000}
+#ans .big{font-size:min(22vw,118px);font-weight:900;line-height:1.05;letter-spacing:-.03em;background:linear-gradient(180deg,#fff7d6 0%,var(--gold) 45%,#b8860b 60%,#fff2b0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 0 #5a3d00) drop-shadow(0 14px 30px rgba(0,0,0,.7))}
+#ans .who{margin-top:18px;font-size:18px;color:#fff;text-shadow:0 2px 12px #000}
+#end{position:fixed;left:0;right:0;bottom:max(16px,env(safe-area-inset-bottom));padding:0 20px;display:flex;gap:10px;justify-content:center;opacity:0;transition:opacity .6s}
+#end.on{opacity:1}
+#end .btn{width:auto;margin:0;padding:12px 18px;font-size:14px}
+#brand{position:fixed;top:max(12px,env(safe-area-inset-top));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.55);pointer-events:none}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none}
+@keyframes shake{0%,100%{transform:translate(0,0)}20%{transform:translate(-6px,3px)}40%{transform:translate(6px,-3px)}60%{transform:translate(-4px,-4px)}80%{transform:translate(4px,4px)}}
+body.shake #gl{animation:shake .25s linear infinite}
+</style>
+</head>
+<body>
+<canvas id="gl" class="hide"></canvas>
+<div id="brand" class="hide">오늘 만든 쓸데없는 것 #2 · ax.king.brooks</div>
+<div id="flash"></div>
+
+<!-- 만들기 -->
+<section id="make">
+  <div class="wrap">
+    <div class="kicker">useless thing #2</div>
+    <h1>대답 상자</h1>
+    <p class="sub">「뭐 먹을래」에 답하기 귀찮을 때. 답을 적으면 링크가 생기고, 친구가 열면 쓸데없이 거창하게 발표됩니다.</p>
+    <label class="f">받는 사람</label>
+    <input type="text" id="f_name" placeholder="친구 이름" maxlength="10" value="영집">
+    <label class="f">내 대답</label>
+    <input type="text" id="f_ans" placeholder="예: ㅇㅇ / 몰라 / 니가 정해 / 짬뽕" maxlength="20">
+    <label class="f">발표 방식</label>
+    <div class="themes">
+      <label class="theme"><input type="radio" name="theme" value="award" checked><span><b>시상식</b><small>드럼롤, 봉투 개봉, 색종이</small></span></label>
+      <label class="theme"><input type="radio" name="theme" value="rocket"><span><b>로켓 발사</b><small>카운트다운, 발사, 불꽃놀이</small></span></label>
+    </div>
+    <button class="btn" id="mk" type="button">링크 만들기</button>
+    <div id="linkbox" class="hide">
+      <div class="link" id="link"></div>
+      <button class="btn" id="copy" type="button">링크 복사</button>
+      <button class="btn ghost" id="preview" type="button">내가 먼저 보기</button>
+    </div>
+    <div class="foot">오늘 만든 쓸데없는 것 #2 · ax.king.brooks</div>
+  </div>
+</section>
+
+<!-- 개봉 전 -->
+<section id="seal" class="hide">
+  <div class="box">
+    <div class="cls">TOP SECRET</div>
+    <h2 id="seal_t">영집님께<br>답변이 도착했습니다</h2>
+    <p>본 답변은 1급 기밀로 분류되어 있습니다.<br>소리를 켜고 개봉하십시오.</p>
+    <button class="btn" id="open" type="button">탭해서 개봉</button>
+  </div>
+</section>
+
+<div id="ov" class="hide"><div class="t" id="ovt"></div></div>
+<div id="ans" class="hide"><div class="a" id="ansa"><div class="lab" id="anslab">공식 답변</div><div class="big" id="ansbig"></div><div class="who" id="answho"></div></div></div>
+<div id="end" class="hide"><button class="btn" id="again" type="button">나도 보내기</button><button class="btn ghost" id="replay" type="button">다시 보기</button></div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
+const ease = t => 1-Math.pow(1-t,3);
+
+// ---------- 링크 ----------
+function enc(d){ const s=JSON.stringify([d.n,d.a,d.t]); const b=btoa(unescape(encodeURIComponent(s))); return 'q'+b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function dec(h){ try{ if(!h||h[0]!=='q') return null; let b=h.slice(1).replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; const a=JSON.parse(decodeURIComponent(escape(atob(b)))); return {n:String(a[0]||'친구').slice(0,10), a:String(a[1]||'ㅇㅇ').slice(0,20), t:(a[2]==='rocket'?'rocket':'award')}; }catch(e){ return null; } }
+function read(){ return {n:($('#f_name').value||'영집').trim(), a:($('#f_ans').value||'').trim()||'ㅇㅇ', t:document.querySelector('input[name=theme]:checked').value}; }
+let cur=null;
+$('#mk').addEventListener('click',()=>{ cur=read(); const link=location.href.split('#')[0]+'#'+enc(cur); $('#link').textContent=link; $('#linkbox').classList.remove('hide'); });
+$('#copy').addEventListener('click',()=>{ const t=$('#link').textContent; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('#copy').textContent='복사됨. 카톡에 붙여넣기',()=>{ const r=document.createRange(); r.selectNodeContents($('#link')); getSelection().removeAllRanges(); getSelection().addRange(r); $('#copy').textContent='길게 눌러 복사'; }); });
+$('#preview').addEventListener('click',()=>{ location.hash=enc(cur); showSeal(cur); });
+$('#again').addEventListener('click',()=>{ history.replaceState(null,'',location.pathname); location.reload(); });
+$('#replay').addEventListener('click',()=>location.reload());
+
+// ---------- 소리(합성, 파일 없음) ----------
+let AC=null, master=null;
+function audio(){ if(AC) return AC; AC=new (window.AudioContext||window.webkitAudioContext)(); master=AC.createGain(); master.gain.value=0.9; master.connect(AC.destination); return AC; }
+function noise(dur){ const ac=audio(); const b=ac.createBuffer(1, ac.sampleRate*dur, ac.sampleRate); const d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=ac.createBufferSource(); s.buffer=b; return s; }
+function env(node, t0, a, d, s, r, peak=1){ const g=audio().createGain(); g.gain.setValueAtTime(0,t0); g.gain.linearRampToValueAtTime(peak,t0+a); g.gain.linearRampToValueAtTime(peak*s,t0+a+d); g.gain.setValueAtTime(peak*s,t0+a+d); return g; }
+function snare(t, vol=0.6){ const ac=audio(); const n=noise(0.25); const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.value=1800; f.Q.value=0.7; const g=ac.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18); n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+0.25); }
+function drumroll(t0, dur){ let t=t0, gap=0.11; while(t<t0+dur){ snare(t, 0.25+0.5*((t-t0)/dur)); gap=Math.max(0.035, gap*0.965); t+=gap; } }
+function tone(t, f, dur, type='sawtooth', vol=0.18){ const ac=audio(); const o=ac.createOscillator(); o.type=type; o.frequency.setValueAtTime(f,t); const g=ac.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+0.02); g.gain.setValueAtTime(vol,t+dur*0.7); g.gain.exponentialRampToValueAtTime(0.001,t+dur); o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+0.05); }
+function chord(t, fs, dur, vol=0.14){ fs.forEach((f,i)=>{ tone(t,f,dur,'sawtooth',vol); tone(t,f*2,dur,'square',vol*0.25); }); }
+function fanfare(t){ const C=261.6, E=329.6, G=392, c2=523.3, e2=659.3, g2=784; tone(t,G,0.18); tone(t+0.2,G,0.18); tone(t+0.4,G,0.18); chord(t+0.62,[C,E,G,c2],0.9,0.16); chord(t+1.6,[E,G,c2,e2],0.5,0.14); chord(t+2.15,[G,c2,e2,g2],1.8,0.2); cheer(t+0.6, 3.5); applause(t+0.8, 4); }
+function cheer(t, dur){ const ac=audio(); const n=noise(dur); const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.setValueAtTime(900,t); f.frequency.linearRampToValueAtTime(1400,t+dur); f.Q.value=0.6; const g=ac.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.35,t+0.4); g.gain.setValueAtTime(0.35,t+dur*0.6); g.gain.exponentialRampToValueAtTime(0.001,t+dur); n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+dur); }
+function applause(t, dur){ const ac=audio(); for(let i=0;i<dur*38;i++){ const tt=t+Math.random()*dur; const n=noise(0.03); const f=ac.createBiquadFilter(); f.type='highpass'; f.frequency.value=2500; const g=ac.createGain(); const v=0.12*(1-Math.abs((tt-t)/dur-0.5)*1.4); g.gain.setValueAtTime(Math.max(0.01,v),tt); g.gain.exponentialRampToValueAtTime(0.001,tt+0.03); n.connect(f); f.connect(g); g.connect(master); n.start(tt); n.stop(tt+0.03); } }
+function beep(t, f=880, dur=0.12){ tone(t,f,dur,'square',0.12); }
+function boom(t, vol=0.9){ const ac=audio(); const n=noise(1.6); const f=ac.createBiquadFilter(); f.type='lowpass'; f.frequency.setValueAtTime(400,t); f.frequency.exponentialRampToValueAtTime(60,t+1.4); const g=ac.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+1.5); n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+1.6); const o=ac.createOscillator(); o.frequency.setValueAtTime(90,t); o.frequency.exponentialRampToValueAtTime(30,t+0.8); const g2=ac.createGain(); g2.gain.setValueAtTime(0.5,t); g2.gain.exponentialRampToValueAtTime(0.001,t+0.9); o.connect(g2); g2.connect(master); o.start(t); o.stop(t+1); }
+function rumble(t, dur){ const ac=audio(); const n=noise(dur); const f=ac.createBiquadFilter(); f.type='lowpass'; f.frequency.value=220; const g=ac.createGain(); g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.7,t+0.6); g.gain.setValueAtTime(0.7,t+dur-0.8); g.gain.linearRampToValueAtTime(0,t+dur); n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+dur); }
+function whoosh(t){ const ac=audio(); const n=noise(0.7); const f=ac.createBiquadFilter(); f.type='bandpass'; f.frequency.setValueAtTime(300,t); f.frequency.exponentialRampToValueAtTime(4000,t+0.6); f.Q.value=1.2; const g=ac.createGain(); g.gain.setValueAtTime(0.01,t); g.gain.linearRampToValueAtTime(0.5,t+0.3); g.gain.exponentialRampToValueAtTime(0.001,t+0.7); n.connect(f); f.connect(g); g.connect(master); n.start(t); n.stop(t+0.7); }
+function firework(t){ boom(t,0.5); for(let i=0;i<6;i++) tone(t+0.05+i*0.03, 1200+Math.random()*2000, 0.25, 'sine', 0.05); }
+
+// ---------- 3D ----------
+let R, scene, cam, composer, bloom, clock, objs={}, running=false, particles=null, flames=null, sparks=[];
+function initGL(){
+  const c=$('#gl'); c.classList.remove('hide');
+  R=new THREE.WebGLRenderer({canvas:c, antialias:false, powerPreference:'high-performance'});
+  R.setPixelRatio(Math.min(window.devicePixelRatio,1.5)); R.setSize(innerWidth,innerHeight); R.toneMapping=THREE.ACESFilmicToneMapping; R.toneMappingExposure=1.1;
+  scene=new THREE.Scene(); scene.fog=new THREE.FogExp2(0x000000,0.012);
+  cam=new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 400);
+  composer=new EffectComposer(R); composer.addPass(new RenderPass(scene,cam));
+  bloom=new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight), 1.1, 0.6, 0.2); composer.addPass(bloom);
+  clock=new THREE.Clock();
+  // 별
+  const sg=new THREE.BufferGeometry(); const n=1800, p=new Float32Array(n*3); for(let i=0;i<n;i++){ const r=60+Math.random()*120, th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1); p[i*3]=r*Math.sin(ph)*Math.cos(th); p[i*3+1]=r*Math.cos(ph); p[i*3+2]=r*Math.sin(ph)*Math.sin(th);} sg.setAttribute('position',new THREE.BufferAttribute(p,3));
+  objs.stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:0.6,sizeAttenuation:true,transparent:true,opacity:0.9})); scene.add(objs.stars);
+  scene.add(new THREE.AmbientLight(0x404050,0.6));
+  addEventListener('resize',()=>{ R.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); composer.setSize(innerWidth,innerHeight); });
+}
+function floor(){ const g=new THREE.CircleGeometry(60,64); const m=new THREE.MeshStandardMaterial({color:0x0a0a10,roughness:0.25,metalness:0.8}); const f=new THREE.Mesh(g,m); f.rotation.x=-Math.PI/2; f.position.y=-0.01; scene.add(f); return f; }
+function spot(color, x,z){ const s=new THREE.SpotLight(color, 80, 90, 0.35, 0.5, 1.2); s.position.set(x,24,z); s.target.position.set(0,0,0); scene.add(s); scene.add(s.target); const beam=new THREE.Mesh(new THREE.ConeGeometry(4.5,26,24,1,true), new THREE.MeshBasicMaterial({color,transparent:true,opacity:0.07,side:THREE.DoubleSide,depthWrite:false})); beam.position.set(x,11,z); scene.add(beam); return {s,beam}; }
+function giftBox(){ const g=new THREE.Group(); const red=new THREE.MeshStandardMaterial({color:0xd8202a,roughness:0.35,metalness:0.1}); const gold=new THREE.MeshStandardMaterial({color:0xf5c542,roughness:0.2,metalness:0.9,emissive:0x332200});
+  const base=new THREE.Mesh(new THREE.BoxGeometry(4,3,4),red); base.position.y=1.5; g.add(base);
+  const lid=new THREE.Group(); lid.add(new THREE.Mesh(new THREE.BoxGeometry(4.3,0.7,4.3),red)); const r1=new THREE.Mesh(new THREE.BoxGeometry(4.4,0.75,0.6),gold); const r2=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.75,4.4),gold); lid.add(r1,r2); const bow=new THREE.Mesh(new THREE.TorusKnotGeometry(0.55,0.18,64,8),gold); bow.position.y=0.9; lid.add(bow); lid.position.y=3.35; g.add(lid);
+  const b1=new THREE.Mesh(new THREE.BoxGeometry(4.05,3.05,0.6),gold); b1.position.y=1.5; const b2=new THREE.Mesh(new THREE.BoxGeometry(0.6,3.05,4.05),gold); b2.position.y=1.5; g.add(b1,b2);
+  g.userData.lid=lid; scene.add(g); return g; }
+function pedestal(){ const m=new THREE.Mesh(new THREE.CylinderGeometry(4.2,5,1.2,48), new THREE.MeshStandardMaterial({color:0x1a1a22,roughness:0.3,metalness:0.7})); m.position.y=-0.6; scene.add(m); return m; }
+function confetti(count){ const geo=new THREE.PlaneGeometry(0.5,0.7); const mat=new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide}); geo.computeBoundingSphere(); geo.boundingSphere.radius=80; const im=new THREE.InstancedMesh(geo,mat,count); const cols=[0xf5c542,0xe63b2e,0xd9ff3d,0x3da9ff,0xff6ad5,0xffffff]; const c=new THREE.Color(); const d=[]; const M=new THREE.Matrix4(); for(let i=0;i<count;i++){ c.setHex(cols[i%cols.length]); im.setColorAt(i,c); const a=Math.random()*Math.PI*2, sp=6+Math.random()*16, up=10+Math.random()*16; d.push({p:new THREE.Vector3(0,2.5,0), v:new THREE.Vector3(Math.cos(a)*sp,up,Math.sin(a)*sp), r:new THREE.Euler(Math.random()*6,Math.random()*6,Math.random()*6), w:new THREE.Vector3(Math.random()*8-4,Math.random()*8-4,Math.random()*8-4), gold:i%6===0}); M.makeTranslation(0,-100,0); im.setMatrixAt(i,M);} im.instanceColor.needsUpdate=true; im.userData.d=d; im.userData.on=false; scene.add(im); return im; }
+function stepConfetti(im, dt){ if(!im.userData.on) return; const M=new THREE.Matrix4(), Q=new THREE.Quaternion(), S=new THREE.Vector3(1,1,1); im.userData.d.forEach((o,i)=>{ o.v.y-=22*dt; o.v.multiplyScalar(1-0.9*dt); o.p.addScaledVector(o.v,dt); if(o.p.y<0.05){ o.p.y=0.05; o.v.set(0,0,0);} o.r.x+=o.w.x*dt; o.r.y+=o.w.y*dt; o.r.z+=o.w.z*dt; Q.setFromEuler(o.r); M.compose(o.p,Q,S); im.setMatrixAt(i,M); }); im.instanceMatrix.needsUpdate=true; }
+function rocket(){ const g=new THREE.Group(); const white=new THREE.MeshStandardMaterial({color:0xf2f2f2,roughness:0.35,metalness:0.2}); const red=new THREE.MeshStandardMaterial({color:0xe63b2e,roughness:0.4}); const body=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.2,7,32),white); body.position.y=3.5; g.add(body); const nose=new THREE.Mesh(new THREE.ConeGeometry(1.1,2.4,32),red); nose.position.y=8.2; g.add(nose); for(let i=0;i<3;i++){ const fin=new THREE.Mesh(new THREE.BoxGeometry(0.15,2.2,1.6),red); const a=i*Math.PI*2/3; fin.position.set(Math.cos(a)*1.5,1.1,Math.sin(a)*1.5); fin.rotation.y=-a; g.add(fin);} const win=new THREE.Mesh(new THREE.CircleGeometry(0.45,24), new THREE.MeshStandardMaterial({color:0x3da9ff,emissive:0x1b4f80})); win.position.set(0,5.2,1.21); g.add(win); const band=new THREE.Mesh(new THREE.CylinderGeometry(1.15,1.15,0.5,32),red); band.position.y=2; g.add(band); scene.add(g); return g; }
+function tower(){ const m=new THREE.MeshStandardMaterial({color:0x33333a,roughness:0.7,metalness:0.5}); const g=new THREE.Group(); for(let i=0;i<4;i++){ const a=i*Math.PI/2+Math.PI/4; const leg=new THREE.Mesh(new THREE.BoxGeometry(0.3,12,0.3),m); leg.position.set(Math.cos(a)*3.2,6,Math.sin(a)*3.2); g.add(leg);} for(let y=2;y<12;y+=2.5){ const ring=new THREE.Mesh(new THREE.TorusGeometry(3.2,0.08,8,32),m); ring.rotation.x=Math.PI/2; ring.position.y=y; g.add(ring);} scene.add(g); return g; }
+function flame(){ const n=700; const geo=new THREE.BufferGeometry(); const p=new Float32Array(n*3); geo.setAttribute('position',new THREE.BufferAttribute(p,3)); const mat=new THREE.PointsMaterial({color:0xffa030,size:0.8,transparent:true,opacity:0.9,blending:THREE.AdditiveBlending,depthWrite:false}); const pts=new THREE.Points(geo,mat); pts.userData={life:new Float32Array(n), on:false}; scene.add(pts); return pts; }
+function stepFlame(pts, dt, origin){ const p=pts.geometry.attributes.position.array, L=pts.userData.life; const n=L.length; for(let i=0;i<n;i++){ if(L[i]<=0){ if(!pts.userData.on) continue; L[i]=0.3+Math.random()*0.5; p[i*3]=origin.x+(Math.random()-0.5)*1.2; p[i*3+1]=origin.y; p[i*3+2]=origin.z+(Math.random()-0.5)*1.2; } else { L[i]-=dt; p[i*3+1]-=18*dt; p[i*3]+=(Math.random()-0.5)*2*dt; p[i*3+2]+=(Math.random()-0.5)*2*dt; if(L[i]<=0) p[i*3+1]=-999; } } pts.geometry.attributes.position.needsUpdate=true; }
+function burst(center, color, count=420){ const geo=new THREE.BufferGeometry(); const p=new Float32Array(count*3); const v=[]; for(let i=0;i<count;i++){ p[i*3]=center.x; p[i*3+1]=center.y; p[i*3+2]=center.z; const th=Math.random()*Math.PI*2, ph=Math.acos(2*Math.random()-1), s=9+Math.random()*10; v.push(new THREE.Vector3(Math.sin(ph)*Math.cos(th)*s, Math.cos(ph)*s, Math.sin(ph)*Math.sin(th)*s)); } geo.setAttribute('position',new THREE.BufferAttribute(p,3)); const mat=new THREE.PointsMaterial({color,size:1.6,transparent:true,opacity:1,blending:THREE.AdditiveBlending,depthWrite:false}); const pts=new THREE.Points(geo,mat); pts.userData={v,age:0}; scene.add(pts); sparks.push(pts); }
+function stepSparks(dt){ sparks=sparks.filter(pts=>{ const p=pts.geometry.attributes.position.array; const v=pts.userData.v; pts.userData.age+=dt; v.forEach((vv,i)=>{ vv.y-=9*dt; vv.multiplyScalar(1-1.2*dt); p[i*3]+=vv.x*dt; p[i*3+1]+=vv.y*dt; p[i*3+2]+=vv.z*dt; }); pts.geometry.attributes.position.needsUpdate=true; pts.material.opacity=Math.max(0,1-pts.userData.age/2.2); if(pts.userData.age>2.3){ scene.remove(pts); return false;} return true; }); }
+
+// ---------- 오버레이 ----------
+async function say(html, ms){ const t=$('#ovt'); t.classList.remove('on'); await sleep(60); t.innerHTML=html; t.classList.add('on'); if(ms){ await sleep(ms); t.classList.remove('on'); } }
+function flash(ms=220){ const f=$('#flash'); f.style.transition='none'; f.style.opacity=1; requestAnimationFrame(()=>{ f.style.transition='opacity '+ms+'ms'; f.style.opacity=0; }); }
+function showAnswer(d, label){ $('#anslab').textContent=label; $('#ansbig').textContent=d.a; $('#answho').textContent=d.n+'님께 드리는 공식 답변입니다'; $('#ans').classList.remove('hide'); requestAnimationFrame(()=>$('#ansa').classList.add('on')); setTimeout(()=>{ $('#end').classList.remove('hide'); requestAnimationFrame(()=>$('#end').classList.add('on')); }, 2200); }
+
+// ---------- 시상식 ----------
+async function award(d){
+  initGL(); floor(); pedestal(); const box=giftBox(); const im=confetti(2600);
+  const lights=[spot(0xff3b3b,-14,10), spot(0x3da9ff,14,10), spot(0xf5c542,0,-16), spot(0xd9ff3d,-10,-10), spot(0xff6ad5,10,-10)];
+  const key=new THREE.PointLight(0xfff2cc,60,60); key.position.set(0,12,8); scene.add(key);
+  cam.position.set(0,40,120); cam.lookAt(0,2,0);
+  let t=0, phase='fly', lidV=null, lid=box.userData.lid; const ac=audio(); const T0=ac.currentTime;
+  running=true;
+  (function loop(){ if(!running) return; const dt=Math.min(clock.getDelta(),0.05); t+=dt;
+    objs.stars.rotation.y+=dt*0.02;
+    lights.forEach((l,i)=>{ const a=t*0.9+i*1.3; l.s.position.x=Math.cos(a)*16; l.s.position.z=Math.sin(a)*16; l.beam.position.x=l.s.position.x; l.beam.position.z=l.s.position.z; l.beam.lookAt(0,-40,0); l.beam.rotateX(Math.PI/2); });
+    if(phase==='fly'){ const k=ease(clamp(t/4,0,1)); cam.position.set(Math.sin(t*0.4)*6*(1-k), 40-30*k, 120-104*k); cam.lookAt(0,2,0); }
+    else if(phase==='shake'){ box.position.x=(Math.random()-0.5)*0.35*Math.min(1,(t-8)/3); box.rotation.z=(Math.random()-0.5)*0.08; cam.position.set(Math.sin(t*0.5)*3, 9+Math.sin(t)*0.5, 16-Math.min(4,(t-8))); cam.lookAt(0,2,0); }
+    else if(phase==='open'){ if(lidV){ lid.position.addScaledVector(lidV,dt); lidV.y-=25*dt; lid.rotation.x+=4*dt; lid.rotation.z+=2*dt; } stepConfetti(im,dt); cam.position.set(Math.sin(t*0.3)*4, 7+Math.sin(t*0.7), 15); cam.lookAt(0,3,0); bloom.strength=0.8+Math.sin(t*6)*0.15; }
+    composer.render(); requestAnimationFrame(loop); })();
+  $('#brand').classList.remove('hide'); $('#ov').classList.remove('hide');
+  await say('<small>LIVE · 공식 발표</small>'+d.n+'님의 질문에 대한<br>답변 발표를 시작합니다', 2600);
+  await sleep(1500);
+  await say('<small>심사위원단</small>답변이 봉인된 상자가<br>무대에 올라왔습니다', 2400);
+  phase='shake'; t=8; drumroll(ac.currentTime, 5.2); rumble(ac.currentTime, 5.4); document.body.classList.add('shake');
+  await say('<small>발표까지</small><span class="num">3</span>', 0); beep(ac.currentTime,660,0.15); await sleep(1000);
+  await say('<small>발표까지</small><span class="num">2</span>', 0); beep(ac.currentTime,660,0.15); await sleep(1000);
+  await say('<small>시스템 점검 중</small>잠시만 기다려 주십시오', 0); await sleep(1700);
+  await say('<small>발표까지</small><span class="num">1</span>', 0); beep(ac.currentTime,660,0.15); await sleep(900);
+  $('#ovt').classList.remove('on'); document.body.classList.remove('shake');
+  phase='open'; lidV=new THREE.Vector3(2,22,3); im.userData.on=true; flash(300); boom(ac.currentTime,0.7); fanfare(ac.currentTime+0.15); bloom.strength=1.0;
+  await sleep(700);
+  showAnswer(d, '공식 답변');
+}
+
+// ---------- 로켓 발사 ----------
+async function rocketShow(d){
+  initGL(); floor(); const rk=rocket(); tower(); const fl=flame(); scene.fog.density=0.006;
+  const key=new THREE.PointLight(0xfff2cc,50,80); key.position.set(10,14,12); scene.add(key);
+  const pad=new THREE.PointLight(0xffa030,0,30); pad.position.set(0,0.5,0); scene.add(pad);
+  const red=new THREE.PointLight(0xff2020,30,40); red.position.set(-6,10,-6); scene.add(red);
+  cam.position.set(30,12,30); cam.lookAt(0,5,0);
+  let t=0, phase='pad', vy=0, h=0; const ac=audio();
+  running=true;
+  (function loop(){ if(!running) return; const dt=Math.min(clock.getDelta(),0.05); t+=dt;
+    objs.stars.rotation.y+=dt*0.01; red.intensity=15+15*Math.sin(t*8);
+    if(phase==='pad'){ cam.position.set(Math.cos(t*0.25)*30, 10+Math.sin(t*0.3)*2, Math.sin(t*0.25)*30); cam.lookAt(0,5,0); }
+    if(phase==='ignite'){ fl.userData.on=true; pad.intensity=40+Math.random()*30; rk.position.x=(Math.random()-0.5)*0.15; cam.position.set(22,6,22); cam.lookAt(0,4,0); }
+    if(phase==='launch'){ vy+=28*dt; h+=vy*dt; rk.position.y=h; rk.position.x=(Math.random()-0.5)*0.1; pad.position.y=h+0.5; cam.position.set(22+Math.sin(t)*2, h*0.9+8, 22); cam.lookAt(0,h+4,0); if(h>120){ phase='space'; rk.visible=false; fl.userData.on=false; for(let i=0;i<7;i++) setTimeout(()=>{ const c=[0xf5c542,0xd9ff3d,0xff6ad5,0x3da9ff,0xffffff][i%5]; burst(new THREE.Vector3((Math.random()-0.5)*40, h+(Math.random()-0.5)*30, (Math.random()-0.5)*40), c); firework(ac.currentTime); }, i*380); } }
+    if(phase==='space'){ cam.position.set(Math.sin(t*0.2)*6, h+6, 36); cam.lookAt(0,h+6,0); bloom.strength=1.4; }
+    stepFlame(fl, dt, new THREE.Vector3(rk.position.x, rk.position.y, rk.position.z)); stepSparks(dt);
+    composer.render(); requestAnimationFrame(loop); })();
+  $('#brand').classList.remove('hide'); $('#ov').classList.remove('hide');
+  await say('<small>MISSION · '+d.n.toUpperCase()+'</small>답변 운반용 로켓이<br>발사대에 올라왔습니다', 2600);
+  await sleep(1300);
+  await say('<small>관제탑</small>모든 시스템 정상.<br>카운트다운 시작', 2000);
+  for(let i=5;i>=1;i--){ if(i===2){ await say('<small>시스템 점검 중</small>잠시만 기다려 주십시오', 0); await sleep(1600); } await say('<small>T-MINUS</small><span class="num">'+i+'</span>', 0); beep(ac.currentTime, i===1?990:660, 0.15); await sleep(900); }
+  $('#ovt').classList.remove('on');
+  phase='ignite'; rumble(ac.currentTime, 6); document.body.classList.add('shake'); await sleep(1800);
+  phase='launch'; whoosh(ac.currentTime); await say('<small>LIFT OFF</small>발사', 1400);
+  await sleep(2400); document.body.classList.remove('shake');
+  await sleep(1400);
+  fanfare(ac.currentTime); flash(260);
+  await sleep(500);
+  showAnswer(d, '우주에서 도착한 답변');
+}
+
+// ---------- 흐름 ----------
+function showSeal(d){ $('#make').classList.add('hide'); $('#seal').classList.remove('hide'); $('#seal_t').innerHTML=d.n+'님께<br>답변이 도착했습니다'; $('#open').onclick=async()=>{ audio(); if(AC.state==='suspended') await AC.resume(); $('#seal').classList.add('hide'); try{ (d.t==='rocket'?rocketShow:award)(d); }catch(e){ document.body.innerHTML='<p style="padding:40px">'+d.n+'님, 답은 「'+d.a+'」 입니다. (이 기기에서는 3D 가 안 됩니다)</p>'; } }; }
+const init=dec(location.hash.slice(1));
+if(init) showSeal(init);
+</script>
+</body>
+</html>

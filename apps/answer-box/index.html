@@ -38,7 +38,6 @@ input[type=text]:focus{border-color:var(--gold)}
 .foot{margin-top:30px;display:flex;justify-content:center}
 #igfix{position:fixed;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none;z-index:5}
 #igfix .ig{pointer-events:auto;background:rgba(0,0,0,.45);backdrop-filter:blur(6px)}
-#end{bottom:calc(max(14px,env(safe-area-inset-bottom)) + 58px)}
 /* 개봉 전 */
 #seal{position:fixed;inset:0;display:grid;place-items:center;background:#000;text-align:center;padding:24px}
 #seal .box{border:2px solid #3a3a40;border-radius:20px;padding:34px 26px;max-width:380px;width:100%;background:linear-gradient(180deg,#121216,#09090b)}
@@ -58,7 +57,7 @@ input[type=text]:focus{border-color:var(--gold)}
 #ans .lab{font-size:14px;letter-spacing:.4em;color:#fff;opacity:.85;margin-bottom:14px;text-shadow:0 2px 12px #000}
 #ans .big{font-size:min(22vw,118px);font-weight:900;line-height:1.05;letter-spacing:-.03em;background:linear-gradient(180deg,#fff7d6 0%,var(--gold) 45%,#b8860b 60%,#fff2b0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 6px 0 #5a3d00) drop-shadow(0 14px 30px rgba(0,0,0,.7))}
 #ans .who{margin-top:18px;font-size:18px;color:#fff;text-shadow:0 2px 12px #000}
-#end{position:fixed;left:0;right:0;bottom:max(16px,env(safe-area-inset-bottom));padding:0 20px;display:flex;gap:10px;justify-content:center;opacity:0;transition:opacity .6s}
+#end{position:fixed;left:0;right:0;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 64px);padding:0 20px;display:flex;gap:10px;justify-content:center;opacity:0;transition:opacity .6s;z-index:6}
 #end.on{opacity:1}
 #end .btn{width:auto;margin:0;padding:12px 18px;font-size:14px}
 #brand{position:fixed;top:max(12px,env(safe-area-inset-top));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.55);pointer-events:none}

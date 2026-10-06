@@ -134,7 +134,7 @@ function dec(h){ try{ if(!h||h[0]!=='q') return null; let b=h.slice(1).replace(/
 function read(){ return {f:($('#f_from').value||'').trim(), n:($('#f_name').value||'영집').trim(), a:($('#f_ans').value||'').trim()||'ㅇㅇ', t:document.querySelector('input[name=theme]:checked').value}; }
 let cur=null;
 try{ $('#f_from').value=localStorage.getItem('ab_from')||''; }catch(e){}
-const PREVIEW='https://tlubzfyhfvwdssjdovkb.supabase.co/functions/v1/box?q=';   // 카톡 미리보기용(OG) 서버 → 앱으로 넘겨줌
+const PREVIEW='https://box.brooksglobal.deno.net/?q=';   // 카톡 미리보기용(OG) 서버 → 앱으로 넘겨줌
 $('#mk').addEventListener('click',()=>{ cur=read(); try{ localStorage.setItem('ab_from',cur.f); }catch(e){} const link=PREVIEW+enc(cur); $('#link').textContent=link; $('#linkbox').classList.remove('hide'); });
 $('#copy').addEventListener('click',()=>{ const t=$('#link').textContent; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('#copy').textContent='복사됨. 카톡에 붙여넣기',()=>{ const r=document.createRange(); r.selectNodeContents($('#link')); getSelection().removeAllRanges(); getSelection().addRange(r); $('#copy').textContent='길게 눌러 복사'; }); });
 $('#preview').addEventListener('click',()=>{ location.hash=enc(cur); showSeal(cur); });

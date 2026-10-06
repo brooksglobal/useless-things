@@ -215,7 +215,7 @@ async function award(d){
     else if(phase==='shake'){ box.position.x=(Math.random()-0.5)*0.35*Math.min(1,(t-8)/3); box.rotation.z=(Math.random()-0.5)*0.08; cam.position.set(Math.sin(t*0.5)*3, 9+Math.sin(t)*0.5, 16-Math.min(4,(t-8))); cam.lookAt(0,2,0); }
     else if(phase==='open'){ if(lidV){ lid.position.addScaledVector(lidV,dt); lidV.y-=25*dt; lid.rotation.x+=4*dt; lid.rotation.z+=2*dt; } stepConfetti(im,dt); cam.position.set(Math.sin(t*0.3)*4, 7+Math.sin(t*0.7), 15); cam.lookAt(0,3,0); bloom.strength=0.8+Math.sin(t*6)*0.15; }
     composer.render(); requestAnimationFrame(loop); })();
-  $('#brand').classList.remove('hide'); $('#igfix').classList.remove('hide'); $('#ov').classList.remove('hide');
+  $('#igfix').classList.remove('hide'); $('#ov').classList.remove('hide');
   await say('<small>LIVE · 공식 발표</small>'+d.n+'님의 질문에 대한<br>답변 발표를 시작합니다', 2600);
   await sleep(1500);
   await say('<small>심사위원단</small>답변이 봉인된 상자가<br>무대에 올라왔습니다', 2400);
@@ -247,7 +247,7 @@ async function rocketShow(d){
     if(phase==='space'){ cam.position.set(Math.sin(t*0.2)*6, h+6, 36); cam.lookAt(0,h+6,0); bloom.strength=1.4; }
     stepFlame(fl, dt, new THREE.Vector3(rk.position.x, rk.position.y, rk.position.z)); stepSparks(dt);
     composer.render(); requestAnimationFrame(loop); })();
-  $('#brand').classList.remove('hide'); $('#igfix').classList.remove('hide'); $('#ov').classList.remove('hide');
+  $('#igfix').classList.remove('hide'); $('#ov').classList.remove('hide');
   await say('<small>MISSION · '+d.n.toUpperCase()+'</small>답변 운반용 로켓이<br>발사대에 올라왔습니다', 2600);
   await sleep(1300);
   await say('<small>관제탑</small>모든 시스템 정상.<br>카운트다운 시작', 2000);

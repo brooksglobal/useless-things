@@ -266,6 +266,7 @@ async function rocketShow(d){
 function showSeal(d){ preload(); $('#make').classList.add('hide'); $('#seal').classList.remove('hide'); $('#seal_t').innerHTML=d.n+'님께<br>답변이 도착했습니다'; $('#open').onclick=async()=>{ audio(); if(AC.state==='suspended') await AC.resume(); $('#seal').classList.add('hide'); try{ (d.t==='rocket'?rocketShow:award)(d); }catch(e){ document.body.innerHTML='<p style="padding:40px">'+d.n+'님, 답은 「'+d.a+'」 입니다. (이 기기에서는 3D 가 안 됩니다)</p>'; } }; }
 const init=dec(location.hash.slice(1));
 if(init) showSeal(init);
+addEventListener('hashchange',()=>location.reload());   // 같은 탭에서 다른 링크를 열어도 처음부터
 </script>
 </body>
 </html>

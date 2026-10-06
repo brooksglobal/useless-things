@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta property="og:title" content="대답 상자">
 <meta property="og:description" content="1급 기밀 답변이 도착했습니다. 탭해서 개봉하십시오.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/_shared/avatar.png">
 <title>대답 상자</title>
 <style>
 :root{--ink:#0b0b0d;--paper:#f6f1e4;--gold:#f5c542;--gold2:#ffe79a;--lime:#d9ff3d;--red:#e63b2e;color-scheme:dark}
@@ -80,6 +81,8 @@ body.shake #gl{animation:shake .25s linear infinite}
     <div class="kicker">useless thing #1</div>
     <h1>대답 상자</h1>
     <p class="sub">거창한 대답이 필요할 때 사용합니다.<br>답을 적으면 링크가 생기고, 친구가 열면 거창하게 발표됩니다.</p>
+    <label class="f">보내는 사람(내 이름)</label>
+    <input type="text" id="f_from" placeholder="내 이름" maxlength="10">
     <label class="f">받는 사람</label>
     <input type="text" id="f_name" placeholder="친구 이름" maxlength="10" value="영집">
     <label class="f">내 대답</label>
@@ -126,11 +129,12 @@ const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
 const ease = t => 1-Math.pow(1-t,3);
 
 // ---------- 링크 ----------
-function enc(d){ const s=JSON.stringify([d.n,d.a,d.t]); const b=btoa(unescape(encodeURIComponent(s))); return 'q'+b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
-function dec(h){ try{ if(!h||h[0]!=='q') return null; let b=h.slice(1).replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; const a=JSON.parse(decodeURIComponent(escape(atob(b)))); return {n:String(a[0]||'친구').slice(0,10), a:String(a[1]||'ㅇㅇ').slice(0,20), t:(a[2]==='rocket'?'rocket':'award')}; }catch(e){ return null; } }
-function read(){ return {n:($('#f_name').value||'영집').trim(), a:($('#f_ans').value||'').trim()||'ㅇㅇ', t:document.querySelector('input[name=theme]:checked').value}; }
+function enc(d){ const s=JSON.stringify([d.n,d.a,d.t,d.f||'']); const b=btoa(unescape(encodeURIComponent(s))); return 'q'+b.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function dec(h){ try{ if(!h||h[0]!=='q') return null; let b=h.slice(1).replace(/-/g,'+').replace(/_/g,'/'); while(b.length%4) b+='='; const a=JSON.parse(decodeURIComponent(escape(atob(b)))); return {n:String(a[0]||'친구').slice(0,10), a:String(a[1]||'ㅇㅇ').slice(0,20), t:(a[2]==='rocket'?'rocket':'award'), f:String(a[3]||'').slice(0,10)}; }catch(e){ return null; } }
+function read(){ return {f:($('#f_from').value||'').trim(), n:($('#f_name').value||'영집').trim(), a:($('#f_ans').value||'').trim()||'ㅇㅇ', t:document.querySelector('input[name=theme]:checked').value}; }
 let cur=null;
-$('#mk').addEventListener('click',()=>{ cur=read(); const link=location.href.split('#')[0]+'#'+enc(cur); $('#link').textContent=link; $('#linkbox').classList.remove('hide'); });
+try{ $('#f_from').value=localStorage.getItem('ab_from')||''; }catch(e){}
+$('#mk').addEventListener('click',()=>{ cur=read(); try{ localStorage.setItem('ab_from',cur.f); }catch(e){} const link=location.href.split('#')[0]+'#'+enc(cur); $('#link').textContent=link; $('#linkbox').classList.remove('hide'); });
 $('#copy').addEventListener('click',()=>{ const t=$('#link').textContent; (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>$('#copy').textContent='복사됨. 카톡에 붙여넣기',()=>{ const r=document.createRange(); r.selectNodeContents($('#link')); getSelection().removeAllRanges(); getSelection().addRange(r); $('#copy').textContent='길게 눌러 복사'; }); });
 $('#preview').addEventListener('click',()=>{ location.hash=enc(cur); showSeal(cur); });
 $('#again').addEventListener('click',()=>{ history.replaceState(null,'',location.pathname); location.reload(); });
@@ -197,7 +201,7 @@ function preload(){ Object.values(CLIPS).forEach(u=>{ const l=document.createEle
 // ---------- 오버레이 ----------
 async function say(html, ms){ const t=$('#ovt'); t.classList.remove('on'); await sleep(60); t.innerHTML=html; t.classList.add('on'); if(ms){ await sleep(ms); t.classList.remove('on'); } }
 function flash(ms=220){ const f=$('#flash'); f.style.transition='none'; f.style.opacity=1; requestAnimationFrame(()=>{ f.style.transition='opacity '+ms+'ms'; f.style.opacity=0; }); }
-function showAnswer(d, label){ $('#anslab').textContent=label; $('#ansbig').textContent=d.a; $('#answho').textContent=d.n+'님께 드리는 공식 답변입니다'; $('#ans').classList.remove('hide'); requestAnimationFrame(()=>$('#ansa').classList.add('on')); setTimeout(()=>{ $('#end').classList.remove('hide'); requestAnimationFrame(()=>$('#end').classList.add('on')); }, 2200); }
+function showAnswer(d, label){ $('#anslab').textContent=label; $('#ansbig').textContent=d.a; $('#answho').textContent=(d.f?d.f+'님이 ':'')+d.n+'님께 드리는 공식 답변입니다'; $('#ans').classList.remove('hide'); requestAnimationFrame(()=>$('#ansa').classList.add('on')); setTimeout(()=>{ $('#end').classList.remove('hide'); requestAnimationFrame(()=>$('#end').classList.add('on')); }, 2200); }
 
 // ---------- 시상식 ----------
 async function award(d){
@@ -262,7 +266,7 @@ async function rocketShow(d){
 }
 
 // ---------- 흐름 ----------
-function showSeal(d){ preload(); $('#make').classList.add('hide'); $('#seal').classList.remove('hide'); $('#seal_t').innerHTML=d.n+'님께<br>답변이 도착했습니다'; $('#open').onclick=async()=>{ audio(); if(AC.state==='suspended') await AC.resume(); $('#seal').classList.add('hide'); try{ (d.t==='rocket'?rocketShow:award)(d); }catch(e){ document.body.innerHTML='<p style="padding:40px">'+d.n+'님, 답은 「'+d.a+'」 입니다. (이 기기에서는 3D 가 안 됩니다)</p>'; } }; }
+function showSeal(d){ preload(); $('#make').classList.add('hide'); $('#seal').classList.remove('hide'); $('#seal_t').innerHTML=(d.f?d.f+'님의 답변이<br>'+d.n+'님께 도착했습니다':d.n+'님께<br>답변이 도착했습니다'); $('#open').onclick=async()=>{ audio(); if(AC.state==='suspended') await AC.resume(); $('#seal').classList.add('hide'); try{ (d.t==='rocket'?rocketShow:award)(d); }catch(e){ document.body.innerHTML='<p style="padding:40px">'+d.n+'님, 답은 「'+d.a+'」 입니다. (이 기기에서는 3D 가 안 됩니다)</p>'; } }; }
 const init=dec(location.hash.slice(1));
 if(init) showSeal(init);
 addEventListener('hashchange',()=>location.reload());   // 같은 탭에서 다른 링크를 열어도 처음부터

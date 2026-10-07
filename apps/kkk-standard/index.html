@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <title>ㅋ 국가표준원</title>
-<meta name="description" content="친구가 보낸 ㅋ의 개수를 국가표준으로 판정합니다.">
-<meta property="og:title" content="ㅋ 국가표준원 시험성적서 발급 통지">
-<meta property="og:description" content="귀하의 답장이 시료로 접수되어 측정을 마쳤습니다.">
+<meta name="description" content="친구가 보낸 ㅋ, 나라에서 세어 드립니다.">
+<meta property="og:title" content="ㅋ 국가표준원 검사 결과 안내">
+<meta property="og:description" content="보낸 답장 속 ㅋ, 나라에서 세어 봤습니다.">
 <meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/kkk-standard/og.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap">
@@ -117,13 +117,13 @@ body.shake .paper{animation:shk .2s linear}
 <script src="../_shared/kit.js"></script>
 <script>
 const GRADES = [
-  { id:'0', range:'0개', name:'정색', act:'분위기 파악', note:'ㅋ이 검출되지 않았습니다. 국가표준상 정색으로 분류됩니다. 분위기 파악을 권고합니다.' },
-  { id:'1', range:'1개', name:'분노', act:'즉시 사과', note:'국가표준상 분노로 분류됩니다. 사과를 권고합니다.' },
-  { id:'2', range:'2개', name:'예의상', act:'농담 교체', note:'국가표준상 예의상 웃음으로 분류됩니다. 같은 농담의 재사용을 금지합니다.' },
-  { id:'3', range:'3~5개', name:'보통', act:'현행 유지', note:'국가표준상 보통 웃음으로 분류됩니다. 현재 수준의 유머를 유지하십시오.' },
-  { id:'6', range:'6~10개', name:'진심', act:'유머 자산 등록', note:'국가표준상 진심으로 분류됩니다. 해당 농담을 국가 유머 자산으로 등록할 것을 권고합니다.' },
-  { id:'11', range:'11개 이상', name:'바닥 구르는 중', act:'주변 가구 정리', note:'시료 제공자는 현재 바닥을 구르고 있는 것으로 판정됩니다. 주변 가구에 유의하십시오.' },
-  { id:'h', range:'ㅎ 혼입', name:'거리 두기', act:'친밀도 점검', note:'ㅎ이 섞인 웃음은 국가표준상 거리 두기로 분류됩니다. 친밀도 재점검을 권고합니다.' },
+  { id:'0', range:'0개', name:'정색', act:'눈치 챙기기', note:'ㅋ이 한 개도 없습니다. 정색입니다. 눈치 챙기세요.' },
+  { id:'1', range:'1개', name:'화남', act:'당장 사과', note:'ㅋ 하나는 웃은 게 아닙니다. 화난 겁니다. 당장 사과하세요.' },
+  { id:'2', range:'2개', name:'예의상', act:'드립 버리기', note:'예의상 웃어 준 겁니다. 그 드립은 버리세요.' },
+  { id:'3', range:'3~5개', name:'보통', act:'이대로', note:'적당히 웃었습니다. 지금처럼만 하세요.' },
+  { id:'6', range:'6~10개', name:'진짜 웃김', act:'드립 저장', note:'진짜 웃었습니다. 그 드립은 저장해 두세요.' },
+  { id:'11', range:'11개 이상', name:'뒤집어짐', act:'모서리 조심', note:'지금 바닥을 구르고 있습니다. 모서리 조심하세요.' },
+  { id:'h', range:'ㅎ 섞임', name:'선 긋는 중', act:'사이 점검', note:'ㅎ이 섞이면 선 긋는 웃음입니다. 우리 사이부터 점검하세요.' },
 ];
 const KV = 'ㅡㅜㅠㅣ';
 function measure(s){
@@ -143,13 +143,13 @@ function measure(s){
 K.start({
   parse: a => ({ to: K.str(a[0], '친구', 10), rep: K.str(a[1], 'ㅋ', 40), fr: K.str(a[2], '나', 10) }),
   make: () => K.maker({
-    kicker: '웃음계량과', title: 'ㅋ 국가표준원', sub: '친구가 보낸 ㅋ의 개수를 국가표준으로 판정합니다.',
+    kicker: '웃음검사과', title: 'ㅋ 국가표준원', sub: '친구가 보낸 ㅋ, 나라에서 세어 드립니다.',
     fields: [
       { k: 'to', label: '친구 이름', ph: '영집', max: 10, def: '친구' },
       { k: 'rep', label: '친구가 보낸 답장', ph: 'ㅋ', max: 40, def: 'ㅋ', val: 'ㅋ', hint: '예: ㅋ / ㅋㅋㅋ / ㅎㅎ / ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ' },
       { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
     ],
-    btn: '시험성적서 링크 만들기',
+    btn: '검사 결과 링크 만들기',
     toArr: v => [v.to, v.rep, v.fr],
   }),
   show,
@@ -159,16 +159,16 @@ function show(d){
   const M = measure(d.rep), no = 'ㅋ-' + new Date().getFullYear() + '-' + String(1000 + (d.rep.length * 7919 + d.to.length * 104729) % 9000).padStart(4, '0');
   const S = K.josa(d.to, '이', '가');
   document.getElementById('app').innerHTML =
-    '<div id="gate"><div class="note"><div class="nh"><span class="emb">ㅋ</span><div><b>ㅋ 국가표준원</b><small>웃음계량과 · 시험성적서 발급 통지</small></div></div><div class="nb">' +
-    '<h3>시료 측정이 완료되었습니다</h3>' +
-    '<p class="row"><b>접수 번호</b><span>' + no + '</span></p><p class="row"><b>의뢰인</b><span>' + K.esc(d.fr) + '</span></p><p class="row"><b>시료</b><span>' + K.esc(d.to) + '님의 답장 1건</span></p><p class="row"><b>시험 항목</b><span>ㅋ 함량, ㅎ 혼입 여부, 감정 등급</span></p>' +
-    '<p class="t">' + K.esc(d.to) + '님' + '이 보낸 답장의 웃음 함량에 대하여 국가표준에 따른 정밀 측정을 실시하였습니다.</p>' +
-    '<button class="gbtn" id="enter">측정 과정 보기</button></div></div></div>' +
-    '<div id="lab"><div id="top"><span class="emb">ㅋ</span><div><b>ㅋ 국가표준원</b><small>웃음계량과 제1측정실</small></div><span class="rec"><i></i>측정 중</span></div>' +
-    '<div id="dev"><div class="lb"><span>ㅋ 계수기 KC-9000</span><span>POWER<i class="led" id="led"></i></span></div>' +
-    '<div id="bed"><span class="who" id="who">시료: ' + K.esc(d.to) + '님의 답장</span><div id="bub"' + (M.n <= 3 ? ' style="font-size:60px;padding:8px 22px"' : M.n <= 8 ? ' style="font-size:40px"' : '') + '>' + M.cs.map(c => /\s/.test(c) ? ' ' : '<span>' + K.esc(c) + '</span>').join('') + '</div><div id="laser"></div></div>' +
-    '<div id="lcds"><div class="lcd"><small>ㅋ 검출</small><b id="lk">00</b></div><div class="lcd" id="lhw"><small>ㅎ 혼입</small><b id="lh">0</b></div><div class="lcd"><small>ㅋ 순도</small><b id="lp">0.0%</b></div></div></div>' +
-    '<div id="tbl"><h4>웃음 표준 등급표<small>ㅋ표준 제0001호</small></h4><table><tr><th>ㅋ 개수</th><th>등급</th><th>권고 조치</th></tr>' +
+    '<div id="gate"><div class="note"><div class="nh"><span class="emb">ㅋ</span><div><b>ㅋ 국가표준원</b><small>웃음검사과 · 검사 결과 안내</small></div></div><div class="nb">' +
+    '<h3>검사가 끝났습니다</h3>' +
+    '<p class="row"><b>접수 번호</b><span>' + no + '</span></p><p class="row"><b>맡긴 사람</b><span>' + K.esc(d.fr) + '</span></p><p class="row"><b>검사한 답장</b><span>' + K.esc(d.to) + '님 답장 1건</span></p><p class="row"><b>검사 항목</b><span>ㅋ 개수, ㅎ 섞임, 진짜 웃었는지</span></p>' +
+    '<p class="t">' + K.esc(d.fr) + '님이 맡긴 ' + K.esc(d.to) + '님 답장, 진짜 웃은 건지 나라에서 한 글자씩 세어 봤습니다.</p>' +
+    '<button class="gbtn" id="enter">검사 과정 보기</button></div></div></div>' +
+    '<div id="lab"><div id="top"><span class="emb">ㅋ</span><div><b>ㅋ 국가표준원</b><small>웃음검사과 제1검사실</small></div><span class="rec"><i></i>검사 중</span></div>' +
+    '<div id="dev"><div class="lb"><span>ㅋ 세는 기계 KC-9000</span><span>POWER<i class="led" id="led"></i></span></div>' +
+    '<div id="bed"><span class="who" id="who">검사 중: ' + K.esc(d.to) + '님 답장</span><div id="bub"' + (M.n <= 3 ? ' style="font-size:60px;padding:8px 22px"' : M.n <= 8 ? ' style="font-size:40px"' : '') + '>' + M.cs.map(c => /\s/.test(c) ? ' ' : '<span>' + K.esc(c) + '</span>').join('') + '</div><div id="laser"></div></div>' +
+    '<div id="lcds"><div class="lcd"><small>ㅋ 개수</small><b id="lk">00</b></div><div class="lcd" id="lhw"><small>ㅎ 섞임</small><b id="lh">0</b></div><div class="lcd"><small>진심도</small><b id="lp">0.0%</b></div></div></div>' +
+    '<div id="tbl"><h4>웃음 등급표<small>ㅋ표준 제0001호</small></h4><table><tr><th>ㅋ 개수</th><th>등급</th><th>할 일</th></tr>' +
     GRADES.map(g => '<tr data-g="' + g.id + '"><td>' + g.range + '</td><td>' + g.name + '<em>해당</em></td><td>' + g.act + '</td></tr>').join('') + '</table></div></div>' +
     '<div id="cert"></div>';
   K.footer({ dark: false });
@@ -189,7 +189,7 @@ async function run(d, M, no){
   const kinds = M.kinds.filter((x, i) => !/\s/.test(M.cs[i]));
   const passes = spans.length <= 3 ? 3 : 1;
   for (let ps = 0; ps < passes; ps++) {
-  if (ps) { idx = 0; K.$('#who').textContent = '오차 확인을 위한 교차 측정 ' + (ps + 1) + '/' + passes; las.classList.add('on'); K.tone(55, .9, { type: 'sawtooth', vol: .05 }); }
+  if (ps) { idx = 0; K.$('#who').textContent = '혹시 몰라 다시 세는 중 ' + (ps + 1) + '/' + passes; las.classList.add('on'); K.tone(55, .9, { type: 'sawtooth', vol: .05 }); }
   for (const sp of spans) {
     const r = sp.getBoundingClientRect();
     las.style.left = (r.right - br.left + 1) + 'px'; las.style.top = (r.top - br.top - 4) + 'px'; las.style.height = (r.height + 8) + 'px';
@@ -204,7 +204,7 @@ async function run(d, M, no){
   }
   if (passes > 1) { las.classList.remove('on'); spans.forEach(x => x.classList.remove('hit', 'hh')); await S(220); }
   }
-  if (passes > 1) { K.$('#who').textContent = '교차 측정 3회 일치. 측정값 확정'; spans.forEach((x, i) => kinds[i] === 'k' ? x.classList.add('hit') : kinds[i] === 'h' && x.classList.add('hh')); }
+  if (passes > 1) { K.$('#who').textContent = '세 번 세도 똑같습니다. 확정'; spans.forEach((x, i) => kinds[i] === 'k' ? x.classList.add('hit') : kinds[i] === 'h' && x.classList.add('hh')); }
   las.classList.remove('on');
   K.tone(1568, .25, { type: 'square', vol: .1 }); K.tone(1568, .25, { type: 'square', vol: .1, at: .3 });
   await S(800);
@@ -224,11 +224,11 @@ async function run(d, M, no){
   await S(1900);
   // 성적서
   const c = K.$('#cert'), now = new Date(), dt = now.getFullYear() + '. ' + (now.getMonth() + 1) + '. ' + now.getDate() + '.';
-  c.innerHTML = '<div class="paper"><div class="org"><span class="emb">ㅋ</span>ㅋ 국가표준원<span class="no">성적서 번호 ' + no + '</span></div>' +
-    '<h2>시험성적서</h2><dl><dt>의뢰인</dt><dd>' + K.esc(d.fr) + '</dd><dt>시료</dt><dd>' + K.esc(d.to) + '님의 답장 「' + K.esc(d.rep.length > 16 ? d.rep.slice(0, 16) + '…' : d.rep) + '」</dd><dt>시험 방법</dt><dd>ㅋ표준 제0001호 (기계 계수)</dd><dt>시험 일자</dt><dd>' + dt + '</dd></dl>' +
-    '<div class="res"><div><small>ㅋ 함량</small><b>' + M.k + '개</b></div><div><small>ㅎ 혼입</small><b>' + M.h + '개</b></div><div><small>측정 불확도</small><b>±0개</b></div></div>' +
+  c.innerHTML = '<div class="paper"><div class="org"><span class="emb">ㅋ</span>ㅋ 국가표준원<span class="no">결과서 번호 ' + no + '</span></div>' +
+    '<h2>웃음 검사 결과서</h2><dl><dt>맡긴 사람</dt><dd>' + K.esc(d.fr) + '</dd><dt>검사한 답장</dt><dd>' + K.esc(d.to) + '님 답장 「' + K.esc(d.rep.length > 16 ? d.rep.slice(0, 16) + '…' : d.rep) + '」</dd><dt>검사 방법</dt><dd>기계로 한 글자씩 셈</dd><dt>검사 날짜</dt><dd>' + dt + '</dd></dl>' +
+    '<div class="res"><div><small>ㅋ 개수</small><b>' + M.k + '개</b></div><div><small>ㅎ 섞임</small><b>' + M.h + '개</b></div><div><small>오차</small><b>±0개</b></div></div>' +
     '<div class="verdict"><small>판 정</small><b id="vb">' + M.g.name + '</b></div><p class="rmk" id="rmk">' + M.g.note + '</p>' +
-    '<p class="sign"><small>위 시험 결과를 증명합니다.</small>ㅋ 국가표준원장<span id="stamp">ㅋ국가<br>표준원<br>장인</span></p></div>';
+    '<p class="sign"><small>위 결과가 틀림없음을 확인합니다.</small>ㅋ 국가표준원장<span id="stamp">ㅋ국가<br>표준원<br>직인</span></p></div>';
   c.classList.add('on'); K.noise(.3, { hp: 1500, vol: .25 });
   await S(900);
   K.$('#vb').classList.add('on'); K.boom({ vol: .6, f: 140 });
@@ -237,7 +237,7 @@ async function run(d, M, no){
   await S(1300);
   K.$('#stamp').classList.add('on'); setTimeout(() => { K.boom({ vol: .9, f: 90 }); K.vibe(40); document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }, 240);
   await S(1500);
-  K.again({ replayText: '재측정 요청', makeText: '나도 측정 의뢰하기' });
+  K.again({ replayText: '다시 세어 주세요', makeText: '나도 검사 맡기기' });
 }
 </script>
 </body>

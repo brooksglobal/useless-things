@@ -1,0 +1,29 @@
+# 인스타 릴스 예약 게시 — 15분마다 초안 릴리스(ep-*)를 보고, 게시 시각이 16분 안이면 기다렸다가 게시합니다.
+name: scheduled-post
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '게시하지 않고 대기 목록만 보기'
+        type: boolean
+        default: true
+permissions:
+  contents: write
+concurrency:
+  group: scheduled-post
+  cancel-in-progress: false
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: 예약 게시
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: python3 .github/scripts/cloud_post.py

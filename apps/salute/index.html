@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>전역 경례 발송기</title>
+<meta name="description" content="전역 축하를 군악대와 함께 보냅니다.">
+<meta property="og:title" content="전역 축하 전보가 도착했습니다">
+<meta property="og:description" content="군악대 연주와 함께 개봉하십시오.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/salute/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=Black+Han+Sans&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#EFEBDD;--k-fg:#25301A;--k-sub:#6a6a55;--k-card:#fff;--k-line:#d4cdb4;--k-acc:#3F4F2A;--k-acc-fg:#F1D67A;--k-focus:#3F4F2A;
+  --olive:#3F4F2A;--olive2:#56693A;--khaki:#D9CFA8;--gold:#F1D67A;--red:#E0393E;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(120% 70% at 50% 20%,#5d7240 0%,#3F4F2A 50%,#1f2814 100%);color:#fff;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+.bh{font-family:"Black Han Sans","Pretendard",sans-serif;font-weight:400}
+/* 전보 */
+#gate{position:fixed;inset:0;display:grid;place-items:center;padding:24px;z-index:5}
+.tel{background:#F4EEDA;color:#2a2a1a;width:min(100%,340px);border-radius:3px;box-shadow:0 30px 60px rgba(0,0,0,.5);padding:0 0 20px;overflow:hidden}
+.tel .th{background:var(--olive);color:var(--gold);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;font-weight:900;letter-spacing:.3em;font-size:14px}
+.tel .th span{font-family:Menlo,monospace;font-size:11px;letter-spacing:.05em;color:#d9cfa8}
+.tel h1{text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:34px;letter-spacing:.4em;padding-left:.4em;margin:22px 0 6px}
+.tel .rw{display:flex;padding:7px 22px;font-size:14px;border-bottom:1px dashed #cfc6a6}
+.tel .rw b{flex:none;width:56px;color:#7a7458}
+.tel .bd{padding:14px 22px 0;font-family:Menlo,"Pretendard",monospace;font-size:13px;line-height:1.7;color:#4a4632}
+.tel button{display:block;width:calc(100% - 40px);margin:18px 20px 0;border:0;border-radius:4px;padding:15px;font:inherit;font-weight:900;font-size:17px;background:var(--olive);color:var(--gold);cursor:pointer;letter-spacing:.2em}
+/* 무대 */
+#stage{position:fixed;inset:0;display:none;overflow:hidden}
+#stage.on{display:block}
+#spot{position:absolute;left:50%;top:-10%;width:520px;height:900px;margin-left:-260px;background:radial-gradient(50% 60% at 50% 40%,rgba(255,240,180,.28),transparent 70%);pointer-events:none;opacity:0;transition:opacity .6s}
+#spot.on{opacity:1}
+#hd{position:absolute;top:max(16px,env(safe-area-inset-top));left:0;right:0;text-align:center;font-size:12px;font-weight:900;letter-spacing:.3em;color:var(--khaki)}
+#hd b{display:inline-block;background:rgba(0,0,0,.3);border:1px solid rgba(241,214,122,.35);padding:5px 12px;border-radius:3px}
+#cen{position:absolute;left:16px;right:16px;top:calc(max(16px,env(safe-area-inset-top)) + 40px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 176px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#hero{position:relative;width:220px;height:220px;flex:none;filter:drop-shadow(0 16px 20px rgba(0,0,0,.45));transform:scale(0);transition:transform .7s cubic-bezier(.2,1.6,.4,1),filter .4s}
+#hero.on{transform:scale(1)}
+.sal span{position:absolute;line-height:1}
+.sal .f{left:50px;top:56px;font-size:130px}
+.sal .h{left:62px;top:4px;font-size:108px}
+.sal .hd{left:10px;top:30px;font-size:80px;transform:translate(14px,118px) rotate(-6deg);transition:transform .35s cubic-bezier(.2,1.6,.4,1)}
+.sal.up .hd{transform:rotate(60deg)}
+#hero.bob{animation:bob .9s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px) scale(1.03)}}
+#hero.small{transform:scale(.45) translateY(30px);animation:none;filter:grayscale(.6) drop-shadow(0 6px 10px rgba(0,0,0,.4))}
+.who{font-size:20px;font-weight:800;color:var(--khaki);margin-top:10px;opacity:0;transition:opacity .4s}
+.who.on{opacity:1}
+#title{font-size:44px;line-height:1.15;color:var(--gold);margin-top:6px;letter-spacing:.01em;text-shadow:0 4px 0 #2a3518,0 0 30px rgba(241,214,122,.45);min-height:53px}
+#title span{display:inline-block;animation:ch .35s cubic-bezier(.2,1.8,.4,1) both}
+@keyframes ch{0%{transform:translateY(-30px) scale(1.6);opacity:0}100%{transform:none;opacity:1}}
+.thx{font-size:15px;color:#e9e5cf;margin-top:12px;line-height:1.55;font-weight:600;opacity:0;transition:opacity .5s}
+.thx.on{opacity:1}
+.star{position:absolute;color:var(--gold);font-size:22px;pointer-events:none;animation:tw 1.2s ease-in-out infinite alternate}
+@keyframes tw{0%{opacity:.2;transform:scale(.7) rotate(0)}100%{opacity:1;transform:scale(1.2) rotate(40deg)}}
+#band{position:absolute;left:0;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 66px);height:100px;width:100%;overflow:hidden;pointer-events:none}
+#band div{position:absolute;bottom:4px;white-space:nowrap;font-size:42px;letter-spacing:6px;animation:mar 9s linear infinite;left:100%}
+#band{transition:opacity .8s}#band.stop{opacity:0}#band.stop div{animation-play-state:paused}
+@keyframes mar{to{transform:translateX(calc(-100% - 100vw))}}
+#band div span{display:inline-block;animation:step .4s ease-in-out infinite alternate}
+#band div span:nth-child(2n){animation-delay:.2s}
+@keyframes step{to{transform:translateY(-6px)}}
+/* 장부 */
+#led{position:absolute;left:24px;right:24px;top:50%;transform:translateY(-50%);background:#F4EEDA;color:#2a2a1a;border-radius:4px;padding:18px 18px 14px;box-shadow:0 24px 50px rgba(0,0,0,.5);display:none;z-index:3}
+#led.on{display:block;animation:drop .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes drop{0%{transform:translateY(-70%) rotate(-2deg);opacity:0}100%{transform:translateY(-50%);opacity:1}}
+#led h3{font-size:14px;letter-spacing:.3em;color:var(--olive);text-align:center;font-weight:900;border-bottom:2px solid var(--olive);padding-bottom:8px;margin-bottom:6px}
+#led p{display:flex;justify-content:space-between;font-size:16px;padding:8px 2px;border-bottom:1px dashed #cfc6a6;opacity:0;transition:opacity .25s}
+#led p.on{opacity:1}
+#led p span{color:#7a7458;font-weight:700}
+#led p b{font-weight:900;font-variant-numeric:tabular-nums}
+#led p.hl b{color:var(--red)}
+/* 반전 */
+#cnt{position:absolute;left:0;right:0;top:calc(max(16px,env(safe-area-inset-top)) + 120px);text-align:center;display:none;z-index:3}
+#cnt.on{display:block}
+#cnt .k{font-size:15px;font-weight:900;letter-spacing:.3em;color:var(--khaki)}
+#cnt .n{font-size:118px;line-height:1;color:#fff;margin-top:10px;font-variant-numeric:tabular-nums;text-shadow:0 6px 0 rgba(0,0,0,.35)}
+#cnt .n small{font-size:40px;color:var(--khaki)}
+#cnt .n em{font-style:normal;display:block;font-size:44px;color:var(--gold);margin-bottom:-4px}
+#cnt .n.hit{animation:hit .4s cubic-bezier(.2,1.8,.4,1)}
+@keyframes hit{0%{transform:scale(1.35)}100%{transform:none}}
+#cnt .m{font-size:18px;font-weight:800;line-height:1.5;margin:22px 24px 0;opacity:0;transform:translateY(10px);transition:all .45s;color:#fff}
+#cnt .m.on{opacity:1;transform:none}
+#cnt .sm{position:relative;width:220px;height:220px;margin:-30px auto 0;opacity:0;transition:opacity .5s;filter:grayscale(.6);transform:scale(.42)}
+#cnt .m.on+.sm{opacity:.85}
+#cnt .m small{display:block;font-size:13px;color:var(--khaki);font-weight:700;margin-top:6px}
+body.shake #stage{animation:shk .2s linear}
+@keyframes shk{25%{transform:translate(-5px,3px)}50%{transform:translate(5px,-2px)}75%{transform:translate(-3px,-3px)}}
+.cf{position:fixed;top:-20px;width:9px;height:14px;z-index:4;pointer-events:none;animation:cf var(--d) linear forwards}
+@keyframes cf{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--x),110vh) rotate(720deg)}}
+#toast{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);background:#F4EEDA;color:#25301A;font-weight:900;padding:16px 20px;border-radius:8px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;line-height:1.45;display:none;width:max-content;max-width:300px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const SAL = '<span class="f">😐</span><span class="h">🪖</span><span class="hd">🤚</span>';
+const ymd = t => t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+const dot = t => t.getFullYear() + '. ' + (t.getMonth() + 1) + '. ' + t.getDate() + '.';
+const okDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s + 'T00:00:00'));
+const defEnl = () => { const t = new Date(); t.setDate(t.getDate() - 150); return ymd(t); };
+
+K.start({
+  parse: a => ({ name: K.str(a[0], '김일병', 10), enl: okDate(String(a[1] || '')) ? String(a[1]) : defEnl(), mo: [18, 20, 21].includes(+a[2]) ? +a[2] : 18, fr: K.str(a[3], '친구', 10) }),
+  make: () => K.maker({
+    kicker: '전역 축하', title: '전역 경례 발송기', sub: '전역 축하는 미리 보내는 게 예의입니다.',
+    fields: [
+      { k: 'name', label: '군인 이름', ph: '영집', max: 10, def: '김일병' },
+      { k: 'enl', label: '입대일', type: 'date', val: defEnl(), def: defEnl() },
+      { k: 'mo', label: '복무 기간', type: 'select', val: '18', opts: [['18', '18개월'], ['20', '20개월'], ['21', '21개월']] },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '친구' },
+    ],
+    toArr: v => [v.name, okDate(v.enl) ? v.enl : defEnl(), +v.mo || 18, v.fr],
+  }),
+  show,
+});
+
+function calc(d){
+  const enl = new Date(d.enl + 'T00:00:00'), dis = new Date(enl); dis.setMonth(dis.getMonth() + d.mo); dis.setDate(dis.getDate() - 1);
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  return { enl, dis, left: Math.round((dis - today) / 864e5), before: enl > today };
+}
+
+function show(d){
+  const E = K.esc, nm = E(d.name), fr = E(d.fr);
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><div class="tel"><div class="th">전 보<span>No. ' + String(d.mo * 37 + d.name.length * 101).padStart(5, '0') + '</span></div>' +
+    '<h1>축 전역</h1><p class="rw"><b>수신</b>' + nm + ' 님</p><p class="rw"><b>발신</b>' + fr + ' (전역축하사령부)</p>' +
+    '<p class="bd">본 전보는 군악대 연주와 함께 개봉됩니다. 주변 소음에 유의하십시오.</p><button id="enter">개 봉</button></div></div>' +
+    '<div id="stage"><div id="spot"></div><p id="hd"><b>전역축하사령부 군악대</b></p>' +
+    '<div id="cen"><div id="hero" class="sal">' + SAL + '</div><p class="who" id="who">' + nm + ' 님</p><p id="title" class="bh"></p><p class="thx" id="thx">' + d.mo + '개월 동안 나라를 지켜 주셔서<br>감사합니다. — ' + fr + ' 올림</p></div>' +
+    '<div id="band"><div>' + '🎺🥁🎺🎷🥁🎺🎺🥁🎷🎺🥁🎺🎷🥁🎺'.match(/./gu).map(e => '<span>' + e + '</span>').join('') + '</div></div>' +
+    '<div id="led"></div><div id="cnt"></div></div><div id="toast"></div>';
+  K.footer({ dark: true });
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#stage').classList.add('on'); run(d); };
+}
+
+const snare = (n, gap, at = 0, v = .45) => { for (let i = 0; i < n; i++) { K.noise(.05, { bp: 2400, q: .8, vol: v, at: at + i * gap }); } };
+const bass = (at, v = .6) => { K.tone(70, .25, { type: 'sine', vol: v, at, slide: 45 }); K.noise(.08, { lp: 200, vol: v * .7, at }); };
+function march(){ // 가상의 행진곡 (실제 곡 아님)
+  const C = 523, D = 587, E = 659, F = 698, G = 784, A = 880, C6 = 1047, e = .19;
+  const t = K.fanfare([[G / 2, e], [C, e], [E, e], [G, e * 2], [E, e], [G, e * 2], [A, e], [G, e], [F, e], [E, e], [D, e * 2], [G / 2, e], [C, e], [E, e], [G, e], [C6, e * 4]], { vol: .11 });
+  for (let i = 0; i * e * 2 < t; i++) { bass(i * e * 2); snare(2, e / 2, i * e * 2 + e, .3); }
+  return t;
+}
+function confetti(n){ for (let i = 0; i < n; i++) { const c = document.createElement('div'); c.className = 'cf'; c.style.left = K.rand(0, 100) + '%'; c.style.background = K.pick(['#F1D67A', '#fff', '#D9CFA8', '#E0393E']); c.style.setProperty('--x', K.rand(-60, 60) + 'px'); c.style.setProperty('--d', K.rand(2.4, 3.8) + 's'); c.style.animationDelay = K.rand(0, 1.2) + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 5200); } }
+
+async function run(d){
+  const S = K.sleep, E = K.esc, nm = E(d.name), fr = E(d.fr), c = calc(d);
+  // 북 + 경례
+  snare(16, .06, 0, .5); K.$('#spot').classList.add('on');
+  await S(950);
+  K.$('#hero').classList.add('on'); K.boom({ vol: .7, f: 110, d: .5 }); K.noise(.3, { hp: 3000, vol: .25 });
+  await S(450); K.$('#hero').classList.add('up'); K.noise(.08, { bp: 1800, vol: .4 }); K.tone(1400, .05, { type: 'square', vol: .06 });
+  await S(350); K.$('#hero').classList.add('bob'); K.$('#who').classList.add('on');
+  // 군악대
+  const mt = march();
+  const ttl = '전역을 축하합니다', T = K.$('#title');
+  for (const ch of ttl) { T.insertAdjacentHTML('beforeend', ch === ' ' ? ' ' : '<span>' + ch + '</span>'); await S(110); }
+  for (let i = 0; i < 9; i++) { const s = document.createElement('span'); s.className = 'star'; s.textContent = '✦'; s.style.left = K.rand(6, 90) + '%'; s.style.top = K.rand(10, 62) + '%'; s.style.animationDelay = K.rand(0, 1) + 's'; K.$('#stage').appendChild(s); }
+  confetti(36);
+  await S(500); K.$('#thx').classList.add('on');
+  await S(Math.max(0, mt * 1000 - 1900) + 700);
+  // 전역일 확인
+  const led = K.$('#led');
+  led.innerHTML = '<h3>전역일 확인</h3><p><span>입대일</span><b>' + dot(c.enl) + '</b></p><p><span>복무 기간</span><b>' + d.mo + '개월</b></p><p class="hl"><span>전역 예정일</span><b>' + dot(c.dis) + '</b></p>';
+  K.$('#cen').style.transition = 'opacity .3s'; K.$('#cen').style.opacity = '0';
+  led.classList.add('on'); K.tone(880, .08, { type: 'square', vol: .08 });
+  await S(400);
+  for (const p of K.$$('#led p')) { p.classList.add('on'); K.tone(1200, .05, { type: 'square', vol: .07 }); await S(450); }
+  await S(800);
+  // 반전
+  led.classList.remove('on'); led.style.display = 'none';
+  K.$$('.star').forEach(s => s.remove()); K.$('#band').classList.add('stop'); K.$('#spot').classList.remove('on');
+  
+  K.tone(392, .3, { type: 'sawtooth', vol: .12, slide: 370 }); K.tone(370, .3, { type: 'sawtooth', vol: .12, slide: 349, at: .32 }); K.tone(349, 1, { type: 'sawtooth', vol: .12, slide: 260, at: .64 });
+  const cnt = K.$('#cnt'); cnt.classList.add('on');
+  if (c.left > 0) {
+    cnt.innerHTML = '<p class="k">전역까지</p><p class="n bh" id="num"><em>아직</em>0<small>일</small></p>' +
+      '<p class="m" id="msg">전역 축하는 ' + c.left.toLocaleString() + '일 뒤에<br>다시 보내 드립니다.<small>' + (c.before ? '아직 입대 전입니다. ' : '') + '그때까지 ' + nm + ' 님의 건승을 빕니다.</small></p><div class="sm sal up">' + SAL + '</div>';
+    await S(900);
+    const num = K.$('#num'), t0 = performance.now(), DUR = 1500; let lastTick = 0;
+    await new Promise(res => { const f = () => { const p = Math.min(1, (performance.now() - t0) / DUR), v = Math.round(c.left * (1 - Math.pow(1 - p, 3)));
+      num.innerHTML = '<em>아직</em>' + v.toLocaleString() + '<small>일</small>'; if (performance.now() - lastTick > 50) { K.tick({ f: 1400 + p * 900 }); lastTick = performance.now(); }
+      p < 1 ? requestAnimationFrame(f) : res(); }; f(); });
+    num.classList.add('hit'); K.boom({ vol: .9, f: 70 }); K.vibe(50); document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake');
+  } else if (c.left === 0) {
+    cnt.innerHTML = '<p class="k">전역까지</p><p class="n bh" id="num"><em>오늘</em>0<small>일</small></p><p class="m" id="msg">오늘 전역입니다.<br>이건 진짜로 축하합니다.<small>' + fr + ' 올림</small></p>';
+    await S(900); K.boom({ vol: .8 }); confetti(40);
+  } else {
+    cnt.innerHTML = '<p class="k">전역 후</p><p class="n bh" id="num"><em>벌써</em>' + (-c.left).toLocaleString() + '<small>일</small></p>' +
+      '<p class="m" id="msg">이미 전역했습니다.<br>연락이 없었을 뿐입니다.<small>' + nm + ' 님, 잘 지내시죠?</small></p>';
+    await S(900); K.$('#num').classList.add('hit'); K.boom({ vol: .9, f: 70 }); K.vibe(50);
+  }
+  await S(900); K.$('#msg').classList.add('on'); K.tone(523, .5, { type: 'triangle', vol: .15 });
+  await S(1500);
+  K.again({ replayText: '다시 경례', makeText: '나도 경례 보내기', onReplay: () => {
+    const t = K.$('#toast'); t.innerHTML = '경례는 전역일에<br>다시 받아 주십시오'; t.style.display = 'block'; snare(6, .07);
+    setTimeout(() => { t.style.display = 'none'; K.$('.k-again').classList.add('on'); }, 2200); } });
+}
+</script>
+</body>
+</html>

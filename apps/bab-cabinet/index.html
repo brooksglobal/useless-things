@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>「언제 밥 한번」 국무회의</title>
+<meta name="description" content="밥 약속 날짜를 국무회의에서 정합니다.">
+<meta property="og:title" content="「언제 밥 한번」 국무회의 소집 통지">
+<meta property="og:description" content="귀하의 밥 약속이 국무회의 안건으로 상정되었습니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/bab-cabinet/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#F3EEE1;--k-fg:#14213D;--k-sub:#6b6a62;--k-card:#fff;--k-line:#d8cfb8;--k-acc:#14213D;--k-acc-fg:#F3D27A;--k-focus:#14213D;
+  --navy:#0E2142;--navy2:#16305C;--gold:#E9C46A;--paper:#FBF7EC;--red:#C8102E;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(120% 70% at 50% 0%,#1b3a6e 0%,#0E2142 55%,#081428 100%);color:#fff;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+.serif{font-family:"Nanum Myeongjo",serif}
+/* 소집 통지서 */
+#gate{position:fixed;inset:0;display:grid;place-items:center;padding:24px;z-index:5}
+.doc{background:var(--paper);color:#1a1a1a;border-radius:4px;box-shadow:0 30px 60px rgba(0,0,0,.45);padding:30px 24px;width:min(100%,360px);position:relative}
+.doc .dh{text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:24px;letter-spacing:.3em;border-bottom:3px double #1a1a1a;padding-bottom:12px}
+.doc .row{display:flex;font-size:14px;margin-top:12px;line-height:1.5}
+.doc .row b{flex:none;width:64px;color:#555;font-weight:700}
+.doc .body{margin-top:18px;font-family:"Nanum Myeongjo",serif;font-size:17px;line-height:1.7}
+.doc .gbtn{display:block;width:100%;margin-top:24px;border:0;border-radius:6px;padding:15px;font:inherit;font-weight:800;font-size:17px;background:var(--navy);color:var(--gold);cursor:pointer}
+/* 생중계 */
+#live{position:fixed;inset:0;display:none}
+#live.on{display:block}
+#bar{position:absolute;top:max(14px,env(safe-area-inset-top));left:14px;right:14px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.04em}
+#bar .lv{background:var(--red);padding:4px 8px;border-radius:3px;display:flex;align-items:center;gap:6px}
+#bar .lv i{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+#bar .tt{background:rgba(255,255,255,.12);padding:4px 8px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#emb{position:absolute;top:calc(max(14px,env(safe-area-inset-top)) + 44px);left:0;right:0;text-align:center}
+#emb .seal{display:inline-grid;place-items:center;width:64px;height:64px;border-radius:50%;border:2px solid var(--gold);color:var(--gold);font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:13px;line-height:1.15;letter-spacing:.05em}
+#emb h2{margin-top:8px;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:19px;color:#fff;letter-spacing:.02em}
+#emb p{font-size:12px;color:#9fb1d1;margin-top:2px;letter-spacing:.06em}
+#main{position:absolute;left:16px;right:16px;top:calc(max(14px,env(safe-area-inset-top)) + 168px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 70px);display:flex;flex-direction:column;justify-content:flex-start;gap:10px}
+/* 안건 */
+.agenda{background:var(--paper);color:#1a1a1a;border-radius:4px;padding:16px 16px 18px;box-shadow:0 14px 30px rgba(0,0,0,.35);animation:drop .5s cubic-bezier(.2,1.3,.4,1) both}
+.agenda small{display:block;font-size:12px;font-weight:800;color:var(--red);letter-spacing:.2em}
+.agenda h3{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:21px;line-height:1.4;margin-top:6px}
+.agenda p{font-size:13px;color:#555;margin-top:6px}
+@keyframes drop{0%{transform:translateY(-30px) rotate(-3deg);opacity:0}100%{transform:none;opacity:1}}
+/* 발언 */
+.say{display:flex;gap:10px;align-items:flex-start;animation:pop .35s cubic-bezier(.2,1.5,.4,1) both}
+.say .who{flex:none;width:78px;background:var(--gold);color:#14213D;font-weight:900;font-size:12px;text-align:center;padding:6px 4px;border-radius:4px;line-height:1.25}
+.say .txt{background:#fff;color:#14213D;font-weight:700;font-size:15px;line-height:1.45;padding:9px 12px;border-radius:4px 12px 12px 12px;box-shadow:0 6px 14px rgba(0,0,0,.25)}
+@keyframes pop{0%{transform:translateX(-20px) scale(.9);opacity:0}100%{transform:none;opacity:1}}
+.say.old{opacity:.38;transition:opacity .3s}
+/* 표결 */
+.vote{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:16px;animation:drop .4s both}
+.vote h4{font-size:15px;font-weight:900;letter-spacing:.2em;color:var(--gold);text-align:center;margin-bottom:12px}
+.vr{display:flex;align-items:center;gap:10px;margin:9px 0;font-weight:800;font-size:15px}
+.vr span{flex:none;width:58px}
+.vr .tr{flex:1;height:22px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.vr .fl{height:100%;width:0;background:#9fb1d1;transition:width 1.4s cubic-bezier(.3,.1,.2,1)}
+.vr.win .fl{background:var(--gold)}
+.vr b{flex:none;width:34px;text-align:right;font-variant-numeric:tabular-nums}
+/* 달력 */
+#cal{position:fixed;inset:0;display:none;place-items:center;background:rgba(5,12,26,.86);z-index:6}
+#cal.on{display:grid}
+#cal .pg{width:250px;background:#fff;color:#111;border-radius:10px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5);text-align:center}
+#cal .pg .y{background:var(--red);color:#fff;font-weight:900;font-size:22px;padding:10px;font-variant-numeric:tabular-nums}
+#cal .pg .m{font-size:96px;font-weight:900;line-height:1.1;padding:10px 0 4px;font-variant-numeric:tabular-nums;letter-spacing:-.04em}
+#cal .pg .w{font-size:16px;font-weight:800;color:#666;padding-bottom:16px;min-height:38px}
+#cal .lab{position:absolute;top:calc(max(14px,env(safe-area-inset-top)) + 60px);left:0;right:0;text-align:center;font-weight:900;letter-spacing:.3em;color:var(--gold);font-size:14px}
+#cal .pg.flip{animation:flip .09s linear}
+@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(70deg)}100%{transform:rotateX(0)}}
+/* 의결서 */
+#res{position:fixed;inset:0;display:none;place-items:center;padding:20px;z-index:7;background:rgba(5,12,26,.6)}
+#res.on{display:grid}
+#res .doc{animation:drop .5s cubic-bezier(.2,1.3,.4,1) both;padding-bottom:30px}
+#res .doc .dh{letter-spacing:.5em}
+#res .big{margin:18px 0 6px;text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:28px;line-height:1.35}
+#res .big em{font-style:normal;color:var(--red);font-size:20px;display:block;margin-top:2px}
+#res .note{font-size:14px;color:#444;text-align:center;line-height:1.6}
+#res .sign{margin-top:22px;text-align:right;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:16px;line-height:1.5;padding-right:100px;position:relative;min-height:84px}
+#stamp{position:absolute;right:-6px;top:50%;width:84px;height:84px;margin-top:-42px;border:4px solid var(--red);border-radius:8px;color:var(--red);display:grid;place-items:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:15px;line-height:1.15;text-align:center;
+  opacity:0;transform:scale(3) rotate(-14deg);mix-blend-mode:multiply}
+#stamp.on{animation:stamp .28s cubic-bezier(.5,0,.7,1) forwards}
+@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-14deg)}100%{opacity:.9;transform:scale(1) rotate(-8deg)}}
+#gavel{position:fixed;left:50%;top:40%;font-size:84px;transform:translate(-50%,-50%) rotate(-30deg);opacity:0;z-index:8;pointer-events:none;filter:drop-shadow(0 10px 20px rgba(0,0,0,.5))}
+#gavel.hit{animation:gv .3s ease-in}
+@keyframes gv{0%{opacity:1;transform:translate(-50%,-70%) rotate(-50deg)}60%{opacity:1;transform:translate(-50%,-50%) rotate(10deg)}100%{opacity:0;transform:translate(-50%,-50%) rotate(0)}}
+#toast{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);background:#fff;color:#14213D;font-weight:900;padding:16px 20px;border-radius:10px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;line-height:1.4;display:none}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const SINCE = { d: '어제', m: '한 달 전', y: '1년 전', y3: '3년 전' };
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), fr: K.str(a[1], '나', 10), menu: K.str(a[2], '밥', 10), since: SINCE[a[3]] ? a[3] : 'y' }),
+  make: () => K.maker({
+    kicker: '밥 약속 확정', title: '「언제 밥 한번」 국무회의', sub: '날짜는 국무회의에서 정합니다.',
+    fields: [
+      { k: 'to', label: '받는 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+      { k: 'menu', label: '먹기로 한 것', ph: '밥', max: 10, def: '밥' },
+      { k: 'since', label: '「언제 밥 한번 먹자」 한 날', type: 'select', val: 'y', opts: [['d','어제'],['m','한 달 전'],['y','1년 전'],['y3','3년 전']] },
+    ],
+    toArr: v => [v.to, v.fr, v.menu, v.since],
+  }),
+  show,
+});
+
+function knock(n = 3, at = 0){ for (let i = 0; i < n; i++) { K.tone(180, .12, { type: 'triangle', vol: .9, at: at + i * .32, slide: 90 }); K.noise(.06, { bp: 1400, q: 2, vol: .7, at: at + i * .32 }); } }
+
+function show(d){
+  const P = K.josa(d.to, '과', '와');
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><div class="doc"><p class="dh">소집 통지서</p>' +
+    '<p class="row"><b>수신</b>' + K.esc(d.to) + ' 귀하</p><p class="row"><b>발신</b>「언제 밥 한번」 국무회의 (상정자 ' + K.esc(d.fr) + ')</p>' +
+    '<p class="body">' + SINCE[d.since] + ' 귀하가 동의한 「언제 밥 한번 먹자」의 시행 일자를 확정하기 위하여 국무회의를 소집합니다.</p>' +
+    '<button class="gbtn" id="enter">회의 입장</button></div></div>' +
+    '<div id="live"><div id="bar"><span class="lv"><i></i>LIVE</span><span class="tt">「언제 밥 한번」 국무회의 생중계</span></div>' +
+    '<div id="emb"><span class="seal">밥약속<br>처</span><h2>제 384회 국무회의</h2><p>' + K.esc(d.fr) + ' · ' + K.esc(d.to) + ' 밥 약속 특별회의</p></div><div id="main"></div></div>' +
+    '<div id="cal"><p class="lab">시행 일자 산정 중</p><div class="pg"><div class="y" id="cy"></div><div class="m" id="cm"></div><div class="w" id="cw"></div></div></div>' +
+    '<div id="res"></div><div id="gavel">🔨</div><div id="toast"></div>';
+  K.footer({ dark: true });
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#live').classList.add('on'); run(d, P); };
+}
+
+async function run(d, P){
+  const main = K.$('#main'), S = K.sleep;
+  const gavel = () => { const g = K.$('#gavel'); g.classList.remove('hit'); void g.offsetWidth; g.classList.add('hit'); };
+  // 개회
+  await S(400); knock(3); gavel(); setTimeout(gavel, 320); setTimeout(gavel, 640);
+  await S(1100);
+  main.insertAdjacentHTML('beforeend', '<div class="agenda"><small>안건 제1호</small><h3>' + K.esc(d.fr) + '·' + K.esc(d.to) + '의 「' + K.esc(d.menu) + ' 한번」 시행 일자 확정의 건</h3><p>' + SINCE[d.since] + ' 구두 합의 후 후속 조치 없음</p></div>');
+  K.tone(660, .1, { type: 'square', vol: .1 });
+  await S(1500);
+  const SAYS = [
+    ['기획재정부', '이번 달은 카드값 때문에 예산 편성이 어렵습니다.'],
+    ['국토교통부', '두 사람의 중간 지점이 아직 정해지지 않았습니다.'],
+    ['기상청', '그날 비 올 확률 60%, 나가기 싫을 확률 90%입니다.'],
+    ['보건복지부', K.esc(d.to) + '님 장염 재발 가능성을 배제할 수 없습니다.'],
+    ['외교부', '「다음에」는 국제적으로 거절로 해석됩니다.'],
+    ['문화체육관광부', '「' + K.esc(d.menu) + '」 메뉴 선정을 위한 별도 위원회가 필요합니다.'],
+  ];
+  let last = null;
+  for (const [w, t] of SAYS) {
+    if (last) last.classList.add('old');
+    if (main.children.length > 4) main.children[1].remove();
+    main.insertAdjacentHTML('beforeend', '<div class="say"><span class="who">' + w + '</span><span class="txt">' + t + '</span></div>');
+    last = main.lastElementChild; K.tone(880, .05, { type: 'sine', vol: .18 }); K.tone(1320, .08, { type: 'sine', vol: .12, at: .05 });
+    await S(1350);
+  }
+  // 표결
+  main.innerHTML = '<div class="vote"><h4>표 결</h4>' +
+    '<div class="vr"><span>찬성</span><div class="tr"><div class="fl"></div></div><b>0</b></div>' +
+    '<div class="vr"><span>반대</span><div class="tr"><div class="fl"></div></div><b>0</b></div>' +
+    '<div class="vr win"><span>다음에</span><div class="tr"><div class="fl"></div></div><b>0</b></div></div>';
+  for (let i = 0; i < 18; i++) K.noise(.07, { lp: 400, vol: .5 + i * .02, at: i * .07 });   // 북소리
+  await S(500);
+  const V = [1, 0, 17], rows = K.$$('.vr');
+  rows.forEach((r, i) => { r.querySelector('.fl').style.width = (V[i] / 18 * 100) + '%'; });
+  const t0 = performance.now(); await new Promise(res => { const f = () => { const p = Math.min(1, (performance.now() - t0) / 1400); rows.forEach((r, i) => r.querySelector('b').textContent = Math.round(V[i] * p)); p < 1 ? requestAnimationFrame(f) : res(); }; f(); });
+  K.boom({ vol: .6 }); await S(1300);
+  // 달력 넘기기
+  const cal = K.$('#cal'), pg = K.$('#cal .pg'); cal.classList.add('on');
+  const now = new Date(); let y = now.getFullYear(), m = now.getMonth() + 1;
+  const end = 2097 * 12 + 2, startN = y * 12 + (m - 1), total = end - startN;
+  const show = (yy, mm, w) => { K.$('#cy').textContent = yy + '년'; K.$('#cm').textContent = mm; K.$('#cw').textContent = w || ''; pg.classList.remove('flip'); void pg.offsetWidth; pg.classList.add('flip'); };
+  show(y, m); await S(500);
+  // 4.5초 동안: 천천히 → 아주 빠르게 → 천천히 멈춤
+  const DUR = 4500, ease = p => p < .15 ? (p / .15) * .02 : p > .85 ? .98 + .02 * (1 - Math.pow(1 - (p - .85) / .15, 2)) : .02 + .96 * ((p - .15) / .7);
+  await new Promise(res => { const t0 = performance.now(); let lastK = 0, lastTick = 0;
+    const f = () => { const p = Math.min(1, (performance.now() - t0) / DUR), k = Math.round(ease(p) * total);
+      if (k !== lastK) { const n = startN + k; show(Math.floor(n / 12), n % 12 + 1); lastK = k; if (performance.now() - lastTick > 45) { K.tick({ f: 1500 + (k % 5) * 80 }); lastTick = performance.now(); } }
+      p < 1 ? requestAnimationFrame(f) : res(); }; f(); });
+  show(2097, 3, '둘째 주'); K.boom({ vol: .8 }); await S(1200);
+  cal.classList.remove('on');
+  // 의결서
+  const res = K.$('#res'); res.classList.add('on');
+  res.innerHTML = '<div class="doc"><p class="dh">의 결 서</p>' +
+    '<p class="row"><b>안건</b>' + K.esc(d.fr) + '·' + K.esc(d.to) + '의 「' + K.esc(d.menu) + ' 한번」</p>' +
+    '<p class="row"><b>표결</b>찬성 1 · 반대 0 · 다음에 17</p>' +
+    '<p class="big">2097년 3월 둘째 주<em>(잠정)</em></p>' +
+    '<p class="note">세부 일정은 추후 협의한다.<br>장소는 국토교통부에 위임한다.</p>' +
+    '<p class="sign">「언제 밥 한번」<br>국무회의 의장<span id="stamp">밥약속<br>처장<br>인</span></p></div>';
+  K.tone(520, .1, { type: 'square', vol: .08 });
+  await S(1100);
+  K.$('#stamp').classList.add('on'); setTimeout(() => { K.boom({ vol: .9, f: 90 }); K.vibe(40); }, 240);
+  await S(1200); knock(3); gavel(); setTimeout(gavel, 320); setTimeout(gavel, 640);
+  await S(1400);
+  K.again({ replayText: '이의 제기', makeText: '나도 회의 소집하기', onReplay: () => {
+    const t = K.$('#toast'); t.innerHTML = '이의 제기는<br>다음 회의(미정)에서 다룹니다'; t.style.display = 'block'; knock(1);
+    setTimeout(() => { t.style.display = 'none'; K.$('.k-again').classList.add('on'); }, 2200); } });
+}
+</script>
+</body>
+</html>

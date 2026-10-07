@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>친구 별점 리뷰</title>
+<meta name="description" content="친구에게 별점을 남깁니다.">
+<meta property="og:title" content="사장님, 새 리뷰가 등록되었습니다">
+<meta property="og:description" content="고객님이 남긴 리뷰를 확인해 주세요.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/friend-review/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#FFF6EF;--k-fg:#1c1c1e;--k-sub:#86756a;--k-card:#fff;--k-line:#f1d9c8;--k-acc:#FF6A2B;--k-acc-fg:#fff;--k-focus:#FF6A2B;
+  --acc:#FF6A2B;--ink:#1c1c1e;--sub:#8e8e93;--line:#ececef;--star:#FFB400;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:#f4f4f6;color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+/* 알림 */
+#gate{position:fixed;inset:0;z-index:30;background:linear-gradient(160deg,#ff8a50,#ff5a1f 60%,#e8430c);display:flex;flex-direction:column;align-items:center;padding:calc(max(16px,env(safe-area-inset-top)) + 60px) 18px 0}
+#gate .clk{color:#fff;font-size:78px;font-weight:300;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+#gate .dt{color:rgba(255,255,255,.85);font-size:17px;font-weight:600;margin-top:6px}
+.noti{margin-top:44px;width:100%;max-width:360px;background:rgba(255,255,255,.92);border-radius:20px;padding:14px 16px 16px;box-shadow:0 12px 30px rgba(120,30,0,.25);animation:nin .5s cubic-bezier(.2,1.4,.4,1) .3s both}
+@keyframes nin{0%{transform:translateY(-40px);opacity:0}100%{transform:none;opacity:1}}
+.noti .ap{display:flex;align-items:center;gap:8px;font-size:13px;color:#555;font-weight:700}
+.noti .ap i{font-style:normal;width:22px;height:22px;border-radius:6px;background:var(--acc);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:900}
+.noti .ap span{margin-left:auto;font-weight:500;color:#888}
+.noti h3{font-size:16px;font-weight:800;margin-top:8px}
+.noti p{font-size:15px;color:#333;margin-top:3px;line-height:1.45}
+.noti button{margin-top:14px;width:100%;border:0;border-radius:12px;padding:14px;font:inherit;font-size:16px;font-weight:800;background:var(--ink);color:#fff;cursor:pointer}
+/* 가게 페이지 */
+#pg{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;background:#f4f4f6;padding-bottom:calc(150px + env(safe-area-inset-bottom));scrollbar-width:none}
+#pg::-webkit-scrollbar{display:none}
+#nav{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;gap:10px;padding:calc(max(10px,env(safe-area-inset-top))) 14px 10px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);font-weight:800;font-size:17px}
+#nav .sp{flex:1}
+#nav i{font-style:normal;font-size:20px;color:#333}
+.hero{height:200px;background:radial-gradient(circle at 70% 30%,#ffd2a8,#ff9a5c 50%,#ff6a2b);display:grid;place-items:center;font-size:96px;margin-top:0;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.08) 0 14px,transparent 14px 28px)}
+.hero span{position:relative;z-index:1;filter:drop-shadow(0 10px 18px rgba(120,30,0,.35))}
+.sec{background:#fff;padding:18px 18px 20px;margin-bottom:10px}
+.shop{border-radius:22px 22px 0 0;margin-top:-22px;position:relative;text-align:center}
+.shop h1{font-size:25px;font-weight:900;letter-spacing:-.03em}
+.chips{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.chips span{font-size:12px;font-weight:800;padding:4px 9px;border-radius:999px;background:#E8F7EE;color:#1E8E4E}
+.chips span.late{background:#FFECE3;color:#E8430C}
+.avg{margin-top:10px;font-size:16px;font-weight:800}
+.avg b{color:var(--star)}
+.avg small{color:var(--sub);font-weight:600}
+.info{margin-top:14px;border-top:1px solid var(--line);padding-top:12px;text-align:left}
+.info p{display:flex;font-size:14px;line-height:1.9}
+.info p span{flex:none;width:82px;color:var(--sub)}
+.info p b{font-weight:700}
+.info p b.or{color:#E8430C}
+.sec h2{font-size:19px;font-weight:900;letter-spacing:-.02em;margin-bottom:8px}
+.mn{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line)}
+.mn:first-of-type{border-top:0}
+.mn .tx{flex:1;min-width:0}
+.mn .tx b{display:block;font-size:16px;font-weight:800}
+.mn .tx small{display:block;font-size:13px;color:var(--sub);margin-top:2px;line-height:1.4}
+.mn .tx em{display:block;font-style:normal;font-size:15px;font-weight:800;margin-top:4px}
+.mn .ph{flex:none;width:72px;height:72px;border-radius:12px;background:#f6efe9;display:grid;place-items:center;font-size:36px;position:relative;overflow:hidden}
+.mn.so .ph::after{content:"품절";position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;font-size:15px;font-weight:900;display:grid;place-items:center}
+.mn.so .tx b,.mn.so .tx em{color:#b8b8bd}
+.mn .bdg{display:inline-block;font-size:11px;font-weight:800;padding:2px 6px;border-radius:4px;background:#FFECE3;color:#E8430C;margin-left:4px;vertical-align:2px}
+.mn.so .bdg{background:#eee;color:#888}
+/* 별점 그래프 */
+.rv-top{display:flex;gap:18px;align-items:center;padding:4px 0 14px;border-bottom:1px solid var(--line)}
+.rv-top .big{text-align:center;flex:none;width:92px}
+.rv-top .big b{display:block;font-size:42px;font-weight:900;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s}
+.rv-top .big b.fl{color:var(--acc)}
+.rv-top .big .ss{display:block;color:var(--star);font-size:15px;letter-spacing:1px;margin-top:4px}
+.rv-top .big small{display:block;font-size:12px;color:var(--sub);margin-top:2px}
+.bars{flex:1}
+.br{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub);font-weight:700;margin:4px 0}
+.br span{flex:none;width:22px}
+.br .tr{flex:1;height:8px;background:#eee;border-radius:4px;overflow:hidden}
+.br .fl{height:100%;background:var(--star);border-radius:4px;transition:width .6s cubic-bezier(.2,1.4,.4,1)}
+.br b{flex:none;width:22px;text-align:right;font-variant-numeric:tabular-nums}
+.br.up b{color:var(--acc)}
+.br.up .fl{background:var(--acc)}
+/* 리뷰 */
+.rv{padding:16px 0;border-top:1px solid var(--line)}
+.rv:first-child{border-top:0}
+.rv.new{animation:rin .5s cubic-bezier(.2,1.3,.4,1) both;background:linear-gradient(#FFF6EF,#FFF6EF) padding-box;margin:0 -18px;padding:16px 18px;border-top:0}
+@keyframes rin{0%{transform:translateY(-20px);opacity:0}100%{transform:none;opacity:1}}
+.rv .hd{display:flex;align-items:center;gap:10px}
+.rv .av{flex:none;width:38px;height:38px;border-radius:50%;background:#ddd;display:grid;place-items:center;font-weight:900;color:#fff;font-size:15px}
+.rv .nm{font-weight:800;font-size:15px}
+.rv .nm small{display:block;font-weight:600;font-size:12px;color:var(--sub)}
+.rv .nw{margin-left:auto;font-size:11px;font-weight:900;color:#fff;background:var(--acc);border-radius:4px;padding:3px 6px}
+.st{display:flex;gap:2px;margin-top:10px;font-size:22px;line-height:1}
+.st i{font-style:normal;color:#e2e2e6}
+.st i.on{color:var(--star);animation:stamp .3s cubic-bezier(.2,1.8,.4,1)}
+@keyframes stamp{0%{transform:scale(2.4) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}
+.st.sm{font-size:14px;margin-top:8px}
+.rv .bd{margin-top:8px;font-size:15px;line-height:1.55;white-space:pre-wrap;min-height:1.55em}
+.rv .bd .cur{display:inline-block;width:2px;height:1.05em;background:var(--ink);vertical-align:-2px;animation:blink .7s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.rv .od{font-size:12px;color:var(--sub);margin-top:6px}
+.own{margin-top:12px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;animation:rin .4s both}
+.own .oh{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800}
+.own .oh i{font-style:normal;font-size:11px;background:var(--ink);color:#fff;padding:2px 6px;border-radius:4px}
+.own .oh span{margin-left:auto;font-weight:600;color:var(--sub);font-size:12px}
+.own .ob{margin-top:7px;font-size:15px;line-height:1.55;min-height:24px;font-weight:600}
+.dots{display:inline-flex;gap:4px;padding:6px 0}
+.dots b{width:7px;height:7px;border-radius:50%;background:#b0b0b6;animation:dt 1s infinite}
+.dots b:nth-child(2){animation-delay:.15s}.dots b:nth-child(3){animation-delay:.3s}
+@keyframes dt{0%,60%,100%{transform:none;opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+#toast{position:fixed;left:16px;right:16px;top:calc(max(10px,env(safe-area-inset-top)) + 58px);z-index:8;background:var(--ink);color:#fff;border-radius:14px;padding:13px 16px;font-size:14px;font-weight:700;line-height:1.45;box-shadow:0 12px 30px rgba(0,0,0,.25);transform:translateY(-140%);opacity:0;transition:all .45s cubic-bezier(.2,1.3,.4,1)}
+#toast.on{transform:none;opacity:1}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const REPLY = {
+  5: '감사합니다. 다음에도 늦겠습니다.',
+  4: '감사합니다. 빠진 별 하나는 늦은 시간으로 알겠습니다.',
+  3: '소중한 리뷰 감사합니다. 출발은 하고 있었습니다.',
+  2: '불편을 드려 죄송합니다. 지금 거의 다 왔습니다.',
+  1: '소중한 의견 감사합니다. 개선할 생각은 없습니다.',
+};
+function parse(a){ const s = Math.round(+a[1]); return { who: K.str(a[0], '친구', 10), star: s >= 1 && s <= 5 ? s : 1, txt: K.str(a[2], '오늘도 늦었습니다. 맛은 있었습니다.', 80), fr: K.str(a[3], '나', 10) }; }
+function show(d){
+  const E = K.esc, who = E(d.who), fr = E(d.fr), now = new Date(), hh = now.getHours(), mm = String(now.getMinutes()).padStart(2, '0');
+  const base = [12, 18, 40, 31, 27];   // 5점→1점
+  const MENU = [
+    ['⏰', '약속 시간 지키기', '대표 메뉴. 들어온 적이 거의 없습니다.', '시가', 'so', '인기'],
+    ['💬', '카톡 바로 답장', '3시간 숙성 후 제공됩니다.', '준비 중', 'so', ''],
+    ['🏃', '「거의 다 왔어」', '무한 리필. 실제 위치와 무관합니다.', '0원', '', '최다 주문'],
+    ['📞', '먼저 연락하기', '시즌 한정. 이번 시즌은 끝났습니다.', '가격 문의', 'so', ''],
+    ['🍚', '밥 사기', '「다음에 내가 살게」로 대체될 수 있습니다.', '다음에', '', ''],
+  ];
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><p class="clk">' + hh + ':' + mm + '</p><p class="dt">' + (now.getMonth() + 1) + '월 ' + now.getDate() + '일 ' + '일월화수목금토'[now.getDay()] + '요일</p>' +
+    '<div class="noti"><p class="ap"><i>평</i>동네평점 사장님<span>지금</span></p><h3>새 리뷰가 등록되었습니다</h3><p>' + fr + '님이 「' + who + '네」에 리뷰를 남겼습니다. 사장님 확인이 필요합니다.</p><button id="go">리뷰 확인하기</button></div></div>' +
+    '<div id="pg"><div class="hero"><span>🍲</span></div>' +
+    '<div class="sec shop"><h1>' + who + '네</h1><div class="chips"><span>영업 중</span><span class="late">늦음</span></div>' +
+    '<p class="avg"><b>★</b> <span id="avg1"></span> <small>(리뷰 <span id="cnt1"></span>)</small></p>' +
+    '<div class="info"><p><span>도착 시간</span><b class="or">약속 시간 +40분</b></p><p><span>최소 약속</span><b>2주 전 예약</b></p><p><span>변명</span><b>무료 제공</b></p><p><span>사장님</span><b>' + who + ' (방금 일어남)</b></p></div></div>' +
+    '<div class="sec" id="menu"><h2>메뉴</h2>' + MENU.map(([e, t, s, p, so, b]) => '<div class="mn ' + so + '"><div class="tx"><b>' + E(t) + (b ? '<span class="bdg">' + b + '</span>' : '') + '</b><small>' + s + '</small><em>' + p + '</em></div><div class="ph">' + e + '</div></div>').join('') + '</div>' +
+    '<div class="sec" id="rvs"><h2>리뷰</h2><div class="rv-top"><div class="big"><b id="avg2"></b><span class="ss" id="bst">★★★☆☆</span><small>리뷰 <span id="cnt2"></span>개</small></div><div class="bars">' +
+    base.map((n, i) => '<div class="br" data-s="' + (5 - i) + '"><span>' + (5 - i) + '점</span><div class="tr"><div class="fl"></div></div><b>' + n + '</b></div>').join('') + '</div></div>' +
+    '<div id="list"><div class="rv"><div class="hd"><span class="av" style="background:#9AA5B1">익</span><p class="nm">익명의 동창<small>2주 전</small></p></div><div class="st sm"><i class="on">★</i><i class="on">★</i><i>★</i><i>★</i><i>★</i></div><p class="bd">40분 기다렸습니다. 도착하자마자 「배고프다」고 했습니다.</p></div>' +
+    '<div class="rv"><div class="hd"><span class="av" style="background:#C8A27A">단</span><p class="nm">단골 3년<small>1달 전</small></p></div><div class="st sm"><i class="on">★</i><i class="on">★</i><i class="on">★</i><i>★</i><i>★</i></div><p class="bd">늦는 건 알고 갑니다. 그래도 또 갑니다.</p></div></div></div></div>' +
+    '<div id="nav"><i>←</i><span class="sp">' + who + '네</span><i>♡</i><i>⤴</i></div><div id="toast"></div>';
+  K.footer();
+  const counts = base.slice(); setStats(counts);
+  K.$('#go').onclick = () => { K.unlock(); K.tone(1046, .08, { type: 'sine', vol: .2 }); K.$('#gate').remove(); run(d, counts); };
+}
+function setStats(c){
+  const n = c.reduce((a, b) => a + b, 0), avg = c.reduce((a, v, i) => a + v * (5 - i), 0) / n, mx = Math.max(...c);
+  K.$('#avg1').textContent = K.$('#avg2').textContent = avg.toFixed(1); const fs = Math.round(avg); K.$('#bst').textContent = '★'.repeat(fs) + '☆'.repeat(5 - fs); K.$('#cnt1').textContent = K.$('#cnt2').textContent = n;
+  K.$$('.br').forEach((r, i) => { r.querySelector('.fl').style.width = (c[i] / mx * 100) + '%'; r.querySelector('b').textContent = c[i]; });
+}
+function scrollTo(y, ms){ const pg = K.$('#pg'), y0 = pg.scrollTop, t0 = performance.now(); return new Promise(res => { const f = () => { const p = Math.min(1, (performance.now() - t0) / ms), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; pg.scrollTop = y0 + (y - y0) * e; p < 1 ? requestAnimationFrame(f) : res(); }; f(); }); }
+async function type(el, s, ms){ for (let i = 0; i <= s.length; i++) { el.innerHTML = K.esc(s.slice(0, i)) + '<span class="cur"></span>'; if (s[i - 1] && s[i - 1] !== ' ') K.tone(K.rand(1700, 2300), .022, { type: 'square', vol: .04 }); await K.sleep(ms); } el.textContent = s; }
+
+async function run(d, counts){
+  const S = K.sleep, E = K.esc, nav = 52;
+  await S(700);
+  await scrollTo(K.$('#menu').offsetTop - nav, 900);
+  await S(2600);
+  await scrollTo(K.$('#rvs').offsetTop - nav, 900);
+  await S(500);
+  // 새 리뷰
+  const list = K.$('#list'), ini = d.fr.slice(0, 1);
+  list.insertAdjacentHTML('afterbegin', '<div class="rv new"><div class="hd"><span class="av" style="background:#FF6A2B">' + E(ini) + '</span><p class="nm">' + E(d.fr) + '<small>방금 전 · 친구 ' + (3 + d.fr.length * 2) + '년차</small></p><span class="nw">NEW</span></div>' +
+    '<div class="st" id="nst"><i>★</i><i>★</i><i>★</i><i>★</i><i>★</i></div><p class="bd" id="nbd"></p><p class="od">주문: 「거의 다 왔어」 × 3</p><div id="ownw"></div></div>');
+  K.tone(660, .08, { type: 'triangle', vol: .2 }); K.tone(990, .1, { type: 'triangle', vol: .2, at: .08 });
+  await S(700);
+  const st = K.$$('#nst i');
+  for (let i = 0; i < d.star; i++) { st[i].classList.add('on'); K.tone(880 + i * 160, .16, { type: 'triangle', vol: .25 }); K.noise(.05, { bp: 2400, q: 1.5, vol: .2 }); K.vibe(10); await S(330); }
+  if (d.star < 5) { await S(200); K.tone(220, .2, { type: 'sine', vol: .25, slide: 160 }); }
+  await S(350);
+  await type(K.$('#nbd'), d.txt, 55);
+  await S(400);
+  // 그래프 반영
+  const bi = 5 - d.star; counts[bi]++; setStats(counts); const br = K.$$('.br')[bi]; br.classList.add('up');
+  const av = K.$('#avg2'); av.classList.add('fl'); setTimeout(() => av.classList.remove('fl'), 900);
+  K.tone(520, .1, { type: 'square', vol: .07 }); K.tone(780, .12, { type: 'square', vol: .07, at: .1 });
+  await S(900);
+  // 사장님 답글
+  const ow = K.$('#ownw'); ow.innerHTML = '<div class="own"><p class="oh"><i>사장님</i>' + E(d.who) + '<span id="ost">입력 중</span></p><div class="ob" id="ob"><span class="dots"><b></b><b></b><b></b></span></div></div>';
+  for (let i = 0; i < 4; i++) K.tick({ f: 1400, vol: .04, at: i * .4 });
+  await S(2000);
+  K.$('#ost').textContent = '방금';
+  await type(K.$('#ob'), REPLY[d.star], 60);
+  K.ding({ f: 1046, vol: .22 });
+  await S(900);
+  const t = K.$('#toast'); t.textContent = '「' + d.who + '네」는 오늘도 정상 영업합니다. 늦게 엽니다.'; t.classList.add('on');
+  await S(1600);
+  K.again({ makeText: '나도 리뷰 남기기' });
+}
+
+K.start({
+  parse,
+  make: () => K.maker({
+    kicker: '친구 리뷰', title: '친구 별점 리뷰', sub: '친구에게도 별점을 남길 수 있습니다.',
+    fields: [
+      { k: 'who', label: '리뷰할 친구', ph: '영집', max: 10, def: '친구' },
+      { k: 'star', label: '별점', type: 'select', val: '1', opts: [['5', '★★★★★ 5점'], ['4', '★★★★☆ 4점'], ['3', '★★★☆☆ 3점'], ['2', '★★☆☆☆ 2점'], ['1', '★☆☆☆☆ 1점 (솔직하게)']] },
+      { k: 'txt', label: '리뷰 내용', type: 'textarea', ph: '오늘도 늦었습니다. 맛은 있었습니다.', max: 80, def: '오늘도 늦었습니다. 맛은 있었습니다.' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+    ],
+    toArr: v => [v.who, +v.star || 1, v.txt, v.fr],
+  }),
+  show,
+});
+</script>
+</body>
+</html>

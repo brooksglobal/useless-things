@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>나가기 싫음 증명서</title>
+<meta name="description" content="나가기 싫음을 공식적으로 증명해 드립니다.">
+<meta property="og:title" content="증명서가 발급되었습니다">
+<meta property="og:description" content="집에있기청에서 귀하 앞으로 증명서를 발급했습니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/stay-home/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#EEF1F6;--k-fg:#14233B;--k-sub:#5d6a80;--k-card:#fff;--k-line:#cdd5e2;--k-acc:#1F4FBF;--k-acc-fg:#fff;--k-focus:#1F4FBF;
+  --navy:#14233B;--blue:#1F4FBF;--sky:#E7EEFB;--red:#D0202F;--paper:#FFFDF8;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:#2a3954;color:var(--navy);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+/* 발급기 몸체 */
+#kiosk{position:fixed;inset:0;background:linear-gradient(180deg,#34476a 0%,#22314d 100%)}
+#kh{position:absolute;top:0;left:0;right:0;padding:max(12px,env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px;color:#fff;z-index:4}
+#kh .lg{width:32px;height:32px;border-radius:8px;background:#fff;color:var(--blue);display:grid;place-items:center;font-size:18px}
+#kh b{font-size:16px;font-weight:900;display:block;letter-spacing:.02em}
+#kh small{font-size:11px;color:#b9c6de;letter-spacing:.06em}
+#kh .tm{margin-left:auto;font-family:Menlo,monospace;font-size:12px;color:#b9c6de}
+#slot{position:absolute;left:18px;right:18px;top:calc(max(12px,env(safe-area-inset-top)) + 54px);height:12px;border-radius:6px;background:#0b1220;box-shadow:inset 0 3px 6px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,.15);z-index:3}
+#slot i{position:absolute;right:10px;top:-14px;width:8px;height:8px;border-radius:50%;background:#3a4;box-shadow:0 0 8px #4f6}
+#slot.busy i{background:#fb3;box-shadow:0 0 8px #fb3;animation:bl .3s steps(2) infinite}
+@keyframes bl{50%{opacity:.2}}
+/* 화면 */
+#scr{position:absolute;left:18px;right:18px;top:calc(max(12px,env(safe-area-inset-top)) + 80px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 120px);background:var(--sky);border-radius:14px;box-shadow:inset 0 0 0 6px #0f1a2e,0 10px 30px rgba(0,0,0,.35);padding:22px 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+#scr .t{font-size:13px;font-weight:800;color:var(--blue);letter-spacing:.2em}
+#scr h2{font-size:26px;font-weight:900;margin:6px 0 4px;letter-spacing:-.02em;line-height:1.3}
+#scr .rw{width:100%;display:flex;justify-content:space-between;background:#fff;border-radius:10px;padding:12px 14px;margin-top:8px;font-size:15px;text-align:left}
+#scr .rw span{color:#5d6a80}
+#scr .rw b{font-weight:800}
+#scr .go{width:100%;margin-top:18px;border:0;border-radius:12px;padding:18px;font:inherit;font-size:19px;font-weight:900;background:var(--blue);color:#fff;cursor:pointer;box-shadow:0 6px 0 #163a8e}
+#scr .go:active{transform:translateY(3px);box-shadow:0 3px 0 #163a8e}
+.spin{width:64px;height:64px;border-radius:50%;border:7px solid #c9d6f0;border-top-color:var(--blue);animation:sp .8s linear infinite;margin-bottom:16px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pb{width:100%;height:14px;border-radius:99px;background:#c9d6f0;overflow:hidden;margin:16px 0 10px}
+.pb i{display:block;height:100%;width:0;background:var(--blue);transition:width .6s}
+.ps{font-size:15px;font-weight:700;color:#3a4a66;min-height:22px}
+/* 증명서 */
+#pwrap{position:absolute;left:14px;right:14px;top:calc(max(12px,env(safe-area-inset-top)) + 60px);bottom:0;overflow:hidden;z-index:2;pointer-events:none}
+#paper{background:var(--paper);border-radius:0 0 4px 4px;box-shadow:0 18px 40px rgba(0,0,0,.4);padding:20px 18px 16px;transform:translateY(-102%);color:#1a1a1a;position:relative}
+#paper::before{content:"";position:absolute;inset:8px;border:1px solid #c9bfa8;pointer-events:none}
+#paper.print{transition:transform 2.6s steps(26)}
+#paper.out{transform:none}
+#paper .no{font-size:11px;color:#777;letter-spacing:.04em}
+#paper h1{text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:24px;letter-spacing:.14em;margin:6px 0 12px}
+#paper .r{display:flex;font-size:14px;line-height:1.5;padding:4px 0;border-bottom:1px solid #eee5d3}
+#paper .r b{flex:none;width:64px;color:#6b6252;font-weight:700}
+#paper .r span{font-weight:800}
+#paper h4{font-size:13px;margin:12px 0 4px;color:#6b6252;font-weight:800}
+.cb{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700;padding:3px 0;position:relative}
+.cb .bx{flex:none;width:20px;height:20px;border:2px solid #333;border-radius:3px;position:relative;background:#fff}
+.cb .bx::after{content:"";position:absolute;left:5px;top:0;width:6px;height:12px;border:solid #1F4FBF;border-width:0 3px 3px 0;transform:rotate(45deg);transition:opacity .15s}
+.cb.off .bx::after{opacity:0}
+.cb .tx{position:relative}
+.cb .tx::after{content:"";position:absolute;left:-2px;right:-2px;top:52%;height:2px;background:var(--red);transform:scaleX(0);transform-origin:left;transition:transform .25s}
+.cb.no .tx{color:#555}
+.cb.no .tx::after{transform:scaleX(1)}
+.cb .rj{font-size:11px;font-weight:900;color:var(--red);border:1.5px solid var(--red);border-radius:3px;padding:0 4px;opacity:0;transform:scale(1.8);transition:all .2s}
+.cb.no .rj{opacity:1;transform:rotate(-6deg)}
+.cb.yes{color:var(--red)}
+.cb.yes .bx{border-color:var(--red)}
+.cb.yes .bx::after{border-color:var(--red);width:9px;height:20px;left:5px;top:-8px;border-width:0 4px 4px 0}
+.cb.yes .tx{font-size:18px;font-weight:900;background:linear-gradient(transparent 55%,#ffe36b 55%)}
+#paper .stmt{margin-top:12px;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:16px;line-height:1.6;text-align:center;opacity:0;transition:opacity .5s}
+#paper .stmt.on{opacity:1}
+#paper .sg{position:relative;margin-top:10px;text-align:center;font-size:13px;line-height:1.6;min-height:78px;padding-top:6px}
+#paper .sg b{display:block;font-family:"Nanum Myeongjo",serif;font-size:20px;letter-spacing:.3em;margin-top:2px}
+/* 이불 관인 */
+#seal{position:absolute;right:4px;top:-8px;width:92px;height:92px;border:4px solid var(--red);border-radius:12px;opacity:0;transform:scale(3) rotate(-14deg);mix-blend-mode:multiply;overflow:hidden;
+  background:repeating-linear-gradient(45deg,transparent 0 9px,rgba(208,32,47,.85) 9px 11px),repeating-linear-gradient(-45deg,transparent 0 9px,rgba(208,32,47,.85) 9px 11px)}
+#seal::before{content:"";position:absolute;left:-4px;right:-4px;top:-4px;height:22px;background:var(--red);border-radius:0 0 40% 40%/0 0 100% 100%}
+#seal::after{content:"";position:absolute;inset:4px;border:1.5px dashed rgba(208,32,47,.9);border-radius:8px}
+#seal span{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);background:var(--paper);color:var(--red);font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:13px;line-height:1.15;padding:3px 6px;border:2px solid var(--red);border-radius:4px;white-space:nowrap;z-index:1}
+#seal.on{animation:stamp .26s cubic-bezier(.5,0,.7,1) forwards}
+@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-14deg)}100%{opacity:.9;transform:scale(1) rotate(-8deg)}}
+#paper .fine{margin-top:8px;font-size:11px;color:#8a8170;text-align:center}
+body.shake #paper{animation:shk .18s linear}
+@keyframes shk{25%{transform:translate(-4px,2px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-2px,-2px)}}
+#twist{position:fixed;left:16px;right:16px;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 112px);background:var(--navy);color:#fff;border-radius:10px;padding:13px 14px;text-align:center;font-weight:900;font-size:16px;line-height:1.4;box-shadow:0 12px 28px rgba(0,0,0,.35);opacity:0;transform:translateY(16px);transition:all .4s cubic-bezier(.2,1.4,.4,1);z-index:6}
+#twist.on{opacity:1;transform:none}
+#toast{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);background:#fff;color:var(--navy);font-weight:900;padding:16px 20px;border-radius:10px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;line-height:1.45;display:none;width:max-content;max-width:300px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+K.start({
+  parse: a => ({ fr: K.str(a[0], '신청인', 10), to: K.str(a[1], '친구', 10), ap: K.str(a[2], '오늘 약속', 14) }),
+  make: () => K.maker({
+    kicker: '민원 발급', title: '나가기 싫음 증명서', sub: '공식적으로 증명해 드립니다.',
+    fields: [
+      { k: 'fr', label: '신청인 (보내는 사람)', ph: '현우', max: 10, def: '신청인' },
+      { k: 'to', label: '제출처 (받는 사람)', ph: '영집', max: 10, def: '친구' },
+      { k: 'ap', label: '약속 이름', ph: '오늘 약속', max: 14, def: '오늘 약속' },
+    ],
+    toArr: v => [v.fr, v.to, v.ap],
+  }),
+  show,
+});
+
+const REASONS = ['태풍 북상', '갑작스러운 장염', '집안 행사', '회사 긴급 호출', '할머니 생신 (올해 세 번째)', '휴대폰 고장'];
+
+function show(d){
+  const E = K.esc, fr = E(d.fr), to = E(d.to), ap = E(d.ap), now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('app').innerHTML =
+    '<div id="kiosk"><div id="kh"><span class="lg">🛋</span><div><b>집에있기청</b><small>무인 민원 발급기 3번</small></div><span class="tm">' + hh + '</span></div>' +
+    '<div id="slot"><i></i></div>' +
+    '<div id="scr"><p class="t">증명서 발급 대기</p><h2>' + to + ' 님 앞으로<br>증명서가 신청되었습니다</h2>' +
+    '<p class="rw"><span>증명서</span><b>나가기 싫음 증명서</b></p><p class="rw"><span>신청인</span><b>' + fr + '</b></p><p class="rw"><span>수수료</span><b>0원 (이불로 납부)</b></p>' +
+    '<button class="go" id="enter">발급</button></div>' +
+    '<div id="pwrap"><div id="paper"></div></div></div><div id="twist"></div><div id="toast"></div>';
+  K.footer({ dark: true });
+  K.$('#enter').onclick = () => { K.unlock(); K.tone(1200, .06, { type: 'square', vol: .1 }); run(d); };
+}
+
+const beep = (f = 1200) => K.tone(f, .07, { type: 'square', vol: .08 });
+function printer(dur){ const n = Math.floor(dur / .09); for (let i = 0; i < n; i++) { K.noise(.07, { bp: 700 + (i % 3) * 200, q: 3, vol: .32, at: i * .09 }); K.tone(140, .06, { type: 'square', vol: .03, at: i * .09 }); } }
+
+async function run(d){
+  const S = K.sleep, E = K.esc, fr = E(d.fr), to = E(d.to), ap = E(d.ap), scr = K.$('#scr'), slot = K.$('#slot');
+  // 발급 중
+  scr.innerHTML = '<div class="spin"></div><p class="t">처리 중</p><h2>증명서 발급 중</h2><div class="pb"><i id="pbi"></i></div><p class="ps" id="ps"></p>';
+  const ST = ['신청인 확인 중… ' + fr, '제출처 확인 중… ' + to + ' 님', '「' + ap + '」 조회 중…', '발급 사유 심사 중…', '관인 날인 준비 중…'];
+  for (let i = 0; i < ST.length; i++) { K.$('#ps').textContent = ST[i]; K.$('#pbi').style.width = ((i + 1) / ST.length * 100) + '%'; beep(900 + i * 120); await S(i === 3 ? 1100 : 700); }
+  K.ding({ f: 1046, vol: .2 }); K.$('#ps').textContent = '출력합니다. 출력구를 확인해 주세요.';
+  await S(700);
+  // 출력
+  const now = new Date(), ds = now.getFullYear() + '년 ' + (now.getMonth() + 1) + '월 ' + now.getDate() + '일';
+  const no = '제 ' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + String(now.getDate()).padStart(2, '0') + '-' + String(100 + (d.fr.length * 53 + d.ap.length * 7) % 900) + ' 호';
+  const P = K.$('#paper');
+  P.innerHTML = '<p class="no">' + no + '</p><h1>나가기 싫음 증명서</h1>' +
+    '<p class="r"><b>신청인</b><span>' + fr + '</span></p><p class="r"><b>제출처</b><span>' + to + ' 님</span></p><p class="r"><b>대상</b><span>' + ap + '</span></p>' +
+    '<h4>발급 사유 (해당란에 ✓)</h4>' + REASONS.map(r => '<p class="cb"><span class="bx"></span><span class="tx">' + E(r) + '</span><span class="rj">반려</span></p>').join('') +
+    '<p class="cb off" id="honest"><span class="bx"></span><span class="tx">솔직함</span></p>' +
+    '<p class="stmt" id="stmt">위 사람은 「' + ap + '」에<br>나가기 싫음을 증명합니다.</p>' +
+    '<div class="sg">' + ds + '<b>집에있기청장</b><span id="seal"><span>집에있기<br>청장인</span></span></div>' +
+    '<p class="fine">본 증명서는 이불 안에서 발급되었습니다.</p>';
+  scr.style.transition = 'opacity .4s'; scr.style.opacity = '0';
+  slot.classList.add('busy'); P.classList.add('print'); void P.offsetWidth; P.classList.add('out'); printer(2.6);
+  await S(2700); slot.classList.remove('busy'); K.tone(1500, .05, { type: 'square', vol: .08 });
+  await S(500);
+  // 사유 하나씩 반려
+  const cbs = K.$$('.cb:not(#honest)');
+  for (const c of cbs) { c.classList.add('off', 'no'); K.noise(.12, { hp: 2000, vol: .3 }); K.tone(220, .1, { type: 'square', vol: .07 }); await S(480); }
+  await S(350);
+  const h = K.$('#honest'); h.classList.remove('off'); h.classList.add('yes'); K.boom({ vol: .5, f: 160, d: .3 }); K.ding({ f: 1318, vol: .22, at: .05 });
+  await S(900);
+  K.$('#stmt').classList.add('on'); beep(700);
+  await S(1000);
+  K.$('#seal').classList.add('on'); setTimeout(() => { K.boom({ vol: .85, f: 80 }); K.noise(.2, { lp: 300, vol: .5 }); K.vibe(40); document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }, 230);
+  await S(1400);
+  const tw = K.$('#twist'); tw.textContent = '이 증명서는 이불 밖에서 효력이 없습니다'; tw.classList.add('on'); K.tone(660, .12, { type: 'triangle', vol: .2 }); K.tone(494, .4, { type: 'triangle', vol: .2, at: .14 });
+  await S(1500);
+  K.again({ replayText: '재발급', makeText: '나도 증명서 떼기', onReplay: () => {
+    const t = K.$('#toast'); t.innerHTML = '재발급은 이불 안에서만<br>신청할 수 있습니다'; t.style.display = 'block'; beep(400);
+    setTimeout(() => { t.style.display = 'none'; K.$('.k-again').classList.add('on'); }, 2200); } });
+}
+</script>
+</body>
+</html>

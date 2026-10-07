@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>반성 충전기</title>
+<meta name="description" content="반성을 충전합니다.">
+<meta property="og:title" content="반성이 부족합니다">
+<meta property="og:description" content="반성 충전이 필요합니다. 탭해서 충전하세요.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/sorry-charge/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#0F1214;--k-fg:#EFF3F1;--k-sub:#8b958f;--k-card:#181d20;--k-line:#2a3135;--k-acc:#39FF88;--k-acc-fg:#06210f;--k-focus:#39FF88;
+  --g:#39FF88;--y:#FFD23F;--r:#FF4D4D;--c:#FF4D4D;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(100% 60% at 50% 42%,#1a2124 0%,#0F1214 65%,#080a0b 100%);color:#EFF3F1;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+#top{position:fixed;top:max(16px,env(safe-area-inset-top));left:16px;right:16px;text-align:center;z-index:3}
+#top .k{font-size:12px;font-weight:800;letter-spacing:.24em;color:#8b958f}
+#top h1{font-size:23px;font-weight:900;margin-top:8px;letter-spacing:-.02em;line-height:1.35}
+#top h1 em{font-style:normal;color:var(--c);transition:color .3s}
+#top .why{display:inline-flex;gap:6px;margin-top:10px;font-size:13px;font-weight:700;color:#b8c1bc;background:#181d20;border:1px solid #2a3135;border-radius:999px;padding:6px 12px}
+#top .why b{color:#fff}
+#stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:60px;padding-bottom:110px;touch-action:manipulation;cursor:pointer}
+/* 배터리 */
+#bat{position:relative;width:150px;height:250px;border:6px solid #dfe6e2;border-radius:24px;padding:7px;transition:transform .08s}
+#bat::before{content:"";position:absolute;left:50%;top:-20px;width:54px;height:14px;margin-left:-27px;border-radius:6px 6px 0 0;background:#dfe6e2}
+#bat .in{position:relative;width:100%;height:100%;border-radius:13px;overflow:hidden;background:#141819}
+#bat .fl{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--c);transition:height .18s cubic-bezier(.2,1.4,.4,1),background .3s;box-shadow:0 0 30px var(--c)}
+#bat .fl::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.18) 0 10px,transparent 10px 20px);animation:mv .6s linear infinite}
+@keyframes mv{to{background-position:28px 0}}
+#bat .pc{position:absolute;inset:0;display:grid;place-items:center;font-size:44px;font-weight:900;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 2px 10px rgba(0,0,0,.6);letter-spacing:-.03em}
+#bat .bolt{position:absolute;left:50%;top:50%;font-size:120px;transform:translate(-50%,-50%) scale(0);opacity:0;filter:drop-shadow(0 0 20px #fff)}
+#bat.full .bolt{animation:bolt .7s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes bolt{60%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+#bat.hit{transform:scale(.95)}
+#bat.full{box-shadow:0 0 60px rgba(57,255,136,.6);border-color:var(--g)}
+#bat.full::before{background:var(--g)}
+#bat.dead{border-color:#555}
+#bat.dead::before{background:#555}
+#st{margin-top:28px;font-size:18px;font-weight:900;min-height:26px;text-align:center;padding:0 20px}
+#st.pop{animation:pop2 .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop2{0%{transform:scale(.8)}100%{transform:none}}
+@keyframes pop{0%{transform:scale(.7);opacity:0}100%{transform:none;opacity:1}}
+#cnt{margin-top:8px;font-size:13px;font-weight:800;color:#8b958f;font-variant-numeric:tabular-nums}
+#hint{margin-top:16px;font-size:13px;font-weight:800;letter-spacing:.14em;color:#6f7a74;animation:bl 1.2s ease-in-out infinite}
+@keyframes bl{50%{opacity:.35}}
+#go{margin-top:24px;border:0;border-radius:14px;padding:15px 38px;font:inherit;font-size:17px;font-weight:900;background:var(--g);color:#06210f;cursor:pointer;box-shadow:0 10px 30px rgba(57,255,136,.3)}
+#auto{position:fixed;right:14px;top:calc(max(16px,env(safe-area-inset-top)) + 0px);z-index:6;border:1px solid #2a3135;background:#181d20;color:#cfd6d2;border-radius:999px;padding:8px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer;display:none}
+#auto.on{display:block}
+.fx{position:fixed;font-weight:900;font-size:16px;color:var(--g);pointer-events:none;z-index:7;animation:up .8s ease-out forwards;text-shadow:0 2px 8px rgba(0,0,0,.6)}
+@keyframes up{to{transform:translateY(-70px);opacity:0}}
+.rp{position:fixed;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;border:3px solid rgba(255,255,255,.7);pointer-events:none;z-index:7;animation:rp .45s ease-out forwards}
+@keyframes rp{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.6);opacity:0}}
+/* 유효기간 */
+#exp{text-align:center;display:none;margin-top:22px}
+#exp.on{display:block;animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+#exp .lb{font-size:13px;font-weight:800;letter-spacing:.1em;color:#8b958f}
+#exp .tm{font-size:56px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.02em;line-height:1.1;margin-top:2px}
+#exp.fast .tm{color:var(--r);animation:jit .08s linear infinite}
+@keyframes jit{50%{transform:translateX(2px)}}
+#dead{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px 160px;text-align:center;background:rgba(8,10,11,.95);z-index:8}
+#dead.on{display:flex}
+#dead .ic{font-size:64px;filter:grayscale(1)}
+#dead h2{font-size:30px;font-weight:900;margin-top:14px;letter-spacing:-.02em;animation:pop .4s cubic-bezier(.2,1.6,.4,1) both}
+#dead h2 em{font-style:normal;color:var(--r)}
+#dead p{margin-top:12px;font-size:15px;line-height:1.6;color:#b8c1bc;font-weight:700;opacity:0;transition:opacity .5s}
+#dead p.on{opacity:1}
+#dead .bill{margin-top:18px;width:100%;max-width:300px;background:#181d20;border:1px solid #2a3135;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:700;color:#9aa49e;line-height:1.8;text-align:left;opacity:0;transition:opacity .5s}
+#dead .bill.on{opacity:1}
+#dead .bill span{float:right;color:#fff;font-variant-numeric:tabular-nums}
+body.shake #bat{animation:shk .3s linear}
+@keyframes shk{25%{transform:translate(-6px,2px) rotate(-2deg)}50%{transform:translate(6px,-2px) rotate(2deg)}75%{transform:translate(-3px,1px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const NEED = 36;   // 실제로 필요한 탭 수 (화면에는 1,000회라고 씀)
+const LINES = [[0, '반성의 기미가 없음'], [4, '일단 미안하다고는 함'], [12, '표정만 반성 중'], [24, '변명 준비 중'], [36, '변명 철회'], [48, '시계를 보기 시작함'],
+  [60, '진심이 조금 섞임'], [72, '재발 방지 서약서 작성'], [84, '커피를 사겠다고 함'], [95, '거의 사람이 됨']];
+K.start({
+  parse: a => ({ who: K.str(a[0], '친구', 10), why: K.str(a[1], '약속 늦음', 16), fr: K.str(a[2], '나', 10) }),
+  make: () => K.maker({
+    kicker: '반성 요구', title: '반성 충전기', sub: '반성을 충전합니다.', dark: true,
+    fields: [
+      { k: 'who', label: '반성할 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'why', label: '사유', ph: '약속 늦음', max: 16, def: '약속 늦음' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+    ],
+    toArr: v => [v.who, v.why, v.fr],
+  }),
+  show,
+});
+
+function show(d){
+  document.getElementById('app').innerHTML =
+    '<div id="top"><p class="k">반성 충전소</p><h1>' + K.esc(d.who) + '님의 반성이<br><em id="lv">부족합니다</em></h1>' +
+    '<p class="why">사유 <b>' + K.esc(d.why) + '</b> · 신고 <b>' + K.esc(d.fr) + '</b></p></div>' +
+    '<div id="stage"><div id="bat"><div class="in"><div class="fl"></div><div class="pc"><span id="pct">0%</span></div></div><div class="bolt">⚡</div></div>' +
+    '<p id="st">반성 0%: 반성의 기미가 없음</p><p id="cnt">필요 반성 횟수 1,000회</p><button id="go">반성 시작</button><div id="exp"><p class="lb">반성 유효기간</p><p class="tm" id="tm">3:00</p></div></div>' +
+    '<button id="auto" class="on">자동 충전</button>' +
+    '<div id="dead"><div class="ic">🔋</div><h2>반성이 <em>만료</em>되었습니다</h2><p id="dp">' + K.esc(d.who) + '님은 원래 상태로 돌아갔습니다.</p>' +
+    '<div class="bill" id="bill">충전한 반성 <span>100%</span><br>유지된 시간 <span id="kept"></span><br>다음 「' + K.esc(d.why) + '」 예정 <span>다음 약속</span></div></div>';
+  K.footer({ dark: true });
+
+  const bat = K.$('#bat'), fl = K.$('#bat .fl'), pct = K.$('#pct'), st = K.$('#st'), cnt = K.$('#cnt'), root = document.documentElement;
+  let taps = 0, p = 0, on = false, full = false, autoT = null;
+  const color = v => v < 35 ? '#FF4D4D' : v < 75 ? '#FFD23F' : '#39FF88';
+  function render(){
+    fl.style.height = p + '%'; pct.textContent = Math.floor(p) + '%'; root.style.setProperty('--c', color(p));
+    let s = LINES[0][1]; for (const [k, t] of LINES) if (p >= k) s = t;
+    const txt = '반성 ' + Math.floor(p) + '%: ' + s; if (st.textContent.split(': ')[1] !== s) { st.classList.remove('pop'); void st.offsetWidth; st.classList.add('pop'); } st.textContent = txt;
+    cnt.textContent = '반성 횟수 ' + taps + ' / 1,000';
+  }
+  K.$('#go').onclick = e => { e.stopPropagation(); K.unlock(); on = true; K.$('#go').remove(); K.$('#auto').classList.add('on');
+    cnt.textContent = '반성 횟수 0 / 1,000'; cnt.insertAdjacentHTML('afterend', '<p id="hint">배터리를 탭해서 반성하기</p>'); K.tone(440, .1, { type: 'square', vol: .08 }); };
+  function tap(x, y){
+    if (!on || full) return;
+    taps++; const np = Math.min(100, 100 * Math.pow(taps / NEED, 2.1)); const add = np - p; p = np;
+    if (taps === 1) { const h = K.$('#hint'); if (h) h.remove(); }
+    render();
+    bat.classList.add('hit'); setTimeout(() => bat.classList.remove('hit'), 80);
+    const r = document.createElement('div'); r.className = 'rp'; r.style.left = x + 'px'; r.style.top = y + 'px'; document.body.appendChild(r); setTimeout(() => r.remove(), 460);
+    const f = document.createElement('div'); f.className = 'fx'; f.textContent = '+' + add.toFixed(add < 1 ? 1 : 0) + '%'; f.style.left = (x + K.rand(-30, 20)) + 'px'; f.style.top = (y - 40) + 'px'; f.style.color = color(p); document.body.appendChild(f); setTimeout(() => f.remove(), 820);
+    K.tone(300 + p * 9, .07, { type: 'square', vol: .07, slide: 500 + p * 12 }); K.noise(.04, { hp: 3000, vol: .08 }); K.vibe(8);
+    if (p >= 100) charged();
+  }
+  K.$('#stage').addEventListener('pointerdown', e => tap(e.clientX, e.clientY));
+  K.$('#auto').onclick = () => {
+    if (!on) K.$('#go').onclick({ stopPropagation(){} });
+    if (autoT) return;
+    const b = bat.getBoundingClientRect();
+    const step = () => { if (full) return; tap(b.left + b.width / 2 + K.rand(-30, 30), b.top + b.height / 2 + K.rand(-60, 60)); autoT = setTimeout(step, taps < 6 ? 230 : 130); };
+    step();
+  };
+
+  async function charged(){
+    full = true; K.$('#auto').remove();
+    st.textContent = '반성 충전 완료'; st.style.color = 'var(--g)'; st.classList.remove('pop'); void st.offsetWidth; st.classList.add('pop');
+    cnt.textContent = taps + '회 만에 충전 완료 (조기 달성)';
+    K.$('#lv').textContent = '충전되었습니다';
+    bat.classList.add('full'); document.body.classList.add('shake');
+    K.fanfare([[523, .1], [659, .1], [784, .1], [1047, .35]], { vol: .1 }); K.boom({ vol: .5, f: 160 });
+    await K.sleep(1500);
+    // 유효기간 3분
+    st.style.display = 'none'; cnt.style.display = 'none'; K.$('#exp').classList.add('on'); K.tone(880, .08, { type: 'sine', vol: .2 });
+    const t0 = performance.now(); let shown = 180, lastS = 180, done = false;
+    const tm = K.$('#tm');
+    await new Promise(res => { const f = () => {
+      const t = (performance.now() - t0) / 1000;
+      // 처음 3초는 정상 속도, 그 뒤 2.2초 동안 남은 시간을 전부 소진
+      let left = t < 3 ? 180 - t : Math.max(0, 177 * (1 - Math.pow((t - 3) / 2.2, 1.6)));
+      if (t >= 3) K.$('#exp').classList.add('fast');
+      const s = Math.ceil(left); if (s !== lastS) { lastS = s; tm.textContent = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); K.tick({ f: t < 3 ? 1200 : 1600 + (180 - s) * 6, vol: t < 3 ? .08 : .04 }); }
+      const v = Math.max(0, left / 180 * 100); fl.style.transition = 'none'; fl.style.height = v + '%'; pct.textContent = Math.floor(v) + '%'; root.style.setProperty('--c', color(v));
+      if (t >= 3) { bat.classList.remove('full'); }
+      left > 0 ? requestAnimationFrame(f) : res(); }; f(); });
+    tm.textContent = '0:00'; bat.classList.add('dead');
+    K.tone(600, .8, { type: 'sawtooth', vol: .12, slide: 60 });
+    await K.sleep(600);
+    K.$('#dead').classList.add('on'); K.boom({ vol: .6, f: 70 });
+    K.$('#kept').textContent = (((performance.now() - t0) / 1000)).toFixed(1) + '초';
+    await K.sleep(900); K.$('#dp').classList.add('on');
+    await K.sleep(700); K.$('#bill').classList.add('on'); K.tone(330, .12, { type: 'square', vol: .06 });
+    await K.sleep(900);
+    K.again({ replayText: '다시 반성하기', makeText: '나도 반성 요구하기' });
+  }
+}
+</script>
+</body>
+</html>

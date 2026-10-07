@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>고백 공격 방어막</title>
+<meta name="description" content="충격에 대비해 드립니다.">
+<meta property="og:title" content="「할 말 있어」가 도착했습니다">
+<meta property="og:description" content="충격 대비 절차를 시작합니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/confess-shield/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#0B1220;--k-fg:#EAF6FF;--k-sub:#8aa0b8;--k-card:#121c2e;--k-line:#24334d;--k-acc:#4DE1FF;--k-acc-fg:#04121c;--k-focus:#4DE1FF;
+  --cy:#4DE1FF;--red:#FF3B4E;--bg:#0B1220;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(110% 70% at 50% 40%,#13213a 0%,#0B1220 60%,#060a13 100%);color:#EAF6FF;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+/* 경보 */
+#gate{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 26px 140px;text-align:center;z-index:5;background:#1a0508}
+#gate::before{content:"";position:absolute;inset:0;border:12px solid transparent;border-image:repeating-linear-gradient(45deg,#FF3B4E 0 18px,#1a0508 18px 36px) 12;animation:edge 1s linear infinite;pointer-events:none}
+#gate::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 35%,rgba(255,59,78,.35),transparent 70%);animation:glow 1s ease-in-out infinite;pointer-events:none}
+@keyframes glow{50%{opacity:.25}}
+@keyframes edge{50%{opacity:.55}}
+.siren{position:relative;width:96px;height:96px;margin-bottom:26px;z-index:1}
+.siren .dome{position:absolute;left:14px;right:14px;top:8px;bottom:22px;border-radius:40px 40px 6px 6px;background:radial-gradient(circle at 40% 35%,#ff9aa4,#FF3B4E 50%,#a0101e);box-shadow:0 0 40px 10px rgba(255,59,78,.55);animation:sr .5s steps(2) infinite}
+.siren .base{position:absolute;left:4px;right:4px;bottom:6px;height:18px;border-radius:4px;background:#2c2f36}
+@keyframes sr{50%{box-shadow:0 0 10px 2px rgba(255,59,78,.3);filter:brightness(.7)}}
+#gate .tag{position:relative;z-index:1;display:inline-block;background:#FF3B4E;color:#fff;font-weight:900;font-size:13px;letter-spacing:.24em;padding:5px 12px;border-radius:4px}
+#gate h1{position:relative;z-index:1;font-size:24px;font-weight:900;line-height:1.45;margin-top:16px;letter-spacing:-.02em}
+#gate h1 q{color:#FFD24D;quotes:"「" "」"}
+#gate p.s{position:relative;z-index:1;margin-top:10px;font-size:16px;color:#ffb3ba;font-weight:700}
+#gate button{position:relative;z-index:1;margin-top:28px;width:100%;max-width:320px;border:0;border-radius:14px;padding:16px;font:inherit;font-size:17px;font-weight:900;background:#fff;color:#1a0508;cursor:pointer}
+/* 절차 */
+#proc{position:fixed;inset:0;display:none}
+#proc.on{display:block}
+#hdr{position:absolute;top:max(16px,env(safe-area-inset-top));left:16px;right:16px;text-align:center}
+#hdr .t{font-size:12px;font-weight:800;letter-spacing:.22em;color:var(--cy)}
+#hdr .who{font-size:13px;color:#8aa0b8;margin-top:4px;font-weight:700}
+#steps{display:flex;gap:6px;justify-content:center;margin-top:12px}
+#steps span{font-size:12px;font-weight:800;padding:6px 9px;border-radius:999px;background:#152238;color:#5d7391;transition:background .3s,color .3s}
+#steps span.on{background:var(--cy);color:#04121c}
+#steps span.ok{background:#1d3a4a;color:#9fe9ff}
+#viz{position:absolute;left:50%;top:44%;width:300px;height:300px;margin:-150px 0 0 -150px}
+#breath{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:radial-gradient(circle,rgba(77,225,255,.35),rgba(77,225,255,.08) 70%);border:2px solid rgba(77,225,255,.6);transform:scale(.6);opacity:0;transition:transform 1.8s ease-in-out,opacity .4s}
+#breath.on{opacity:1}
+/* 사람 */
+#me{position:absolute;left:50%;top:50%;width:90px;height:130px;margin:-62px 0 0 -45px}
+#me .hd{position:absolute;left:50%;top:0;width:54px;height:54px;margin-left:-27px;border-radius:50%;background:#FFD7A8;display:grid;place-items:center;font-size:34px;line-height:1;box-shadow:inset 0 -5px 0 rgba(0,0,0,.08)}
+#me .bd{position:absolute;left:8px;right:8px;top:58px;height:60px;border-radius:24px 24px 10px 10px;background:#3a6df0;overflow:hidden}
+#me .belt{position:absolute;left:-10px;top:26px;width:130px;height:12px;background:#222;transform-origin:0 50%;transform:rotate(-32deg) scaleX(0);transition:transform .5s cubic-bezier(.3,1.3,.5,1)}
+#me .belt.on{transform:rotate(-32deg) scaleX(1)}
+#me .bk{position:absolute;left:50%;top:84px;width:22px;height:16px;margin-left:-11px;border-radius:3px;background:#c9d2de;border:2px solid #8a96a8;opacity:0;transform:scale(2);transition:all .25s .4s}
+#me .bk.on{opacity:1;transform:none}
+#me .tg{position:absolute;left:50%;top:124px;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:900;background:#EAF6FF;color:#0B1220;padding:3px 8px;border-radius:5px}
+/* 방어막 */
+#shield{position:absolute;inset:0;overflow:visible;pointer-events:none}
+#shield polygon{fill:rgba(77,225,255,.12);stroke:#4DE1FF;stroke-width:1.4;opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.2);transition:opacity .25s,transform .35s cubic-bezier(.2,1.6,.4,1)}
+#shield polygon.on{opacity:1;transform:none}
+#shield.hum polygon.on{animation:hum 1.6s ease-in-out infinite}
+@keyframes hum{50%{fill:rgba(77,225,255,.24)}}
+#shield polygon.fly{transition:transform .9s cubic-bezier(.2,.6,.4,1),opacity .9s ease-in;opacity:0!important}
+#ring{position:absolute;inset:6px;border-radius:50%;border:2px solid rgba(77,225,255,.0);box-shadow:0 0 0 rgba(77,225,255,0);transition:all .6s}
+#ring.on{border-color:rgba(77,225,255,.7);box-shadow:0 0 40px rgba(77,225,255,.45),inset 0 0 40px rgba(77,225,255,.25)}
+#crack{position:absolute;inset:0;pointer-events:none;opacity:0}
+#crack.on{opacity:1}
+#crack path{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:400;stroke-dashoffset:400;filter:drop-shadow(0 0 4px #fff)}
+#crack.on path{animation:dr .25s ease-out forwards}
+@keyframes dr{to{stroke-dashoffset:0}}
+#txt{position:absolute;left:20px;right:20px;top:calc(44% + 168px);text-align:center}
+#txt h2{font-size:26px;font-weight:900;letter-spacing:-.02em;line-height:1.3}
+#txt p{font-size:14px;color:#8aa0b8;margin-top:6px;font-weight:700;min-height:20px}
+#gauge{margin:14px auto 0;width:min(86%,300px);height:22px;border-radius:999px;background:#152238;overflow:hidden;opacity:0;transition:opacity .3s;position:relative}
+#gauge.on{opacity:1}
+#gauge i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4DE1FF,#7CFFB2)}
+#gauge b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:900;color:#04121c;mix-blend-mode:normal}
+#open{position:absolute;left:50%;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 76px);transform:translateX(-50%);border:0;border-radius:999px;padding:16px 34px;font:inherit;font-size:18px;font-weight:900;background:#FF3B4E;color:#fff;cursor:pointer;display:none;box-shadow:0 0 0 0 rgba(255,59,78,.6);animation:pl 1.2s infinite;white-space:nowrap}
+#open.on{display:block}
+#open small{display:block;font-size:11px;font-weight:700;opacity:.8;margin-top:2px}
+@keyframes pl{70%{box-shadow:0 0 0 18px rgba(255,59,78,0)}100%{box-shadow:0 0 0 0 rgba(255,59,78,0)}}
+/* 공개 */
+#msg{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px 170px;text-align:center;z-index:8}
+#msg.on{display:flex}
+#msg .k{font-size:13px;font-weight:800;letter-spacing:.2em;color:#8aa0b8}
+#msg .big{font-size:clamp(70px,24vw,110px);font-weight:900;letter-spacing:-.05em;line-height:1.05;margin-top:10px;animation:slam .45s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes slam{0%{transform:scale(3);opacity:0}100%{transform:none;opacity:1}}
+#msg .fr{font-size:17px;font-weight:800;color:#c8d6e6;margin-top:12px;opacity:0;transition:opacity .5s}
+#msg .rp{margin-top:22px;background:#152238;border:1px solid #24334d;border-radius:12px;padding:12px 16px;font-size:13px;line-height:1.7;font-weight:700;color:#9fb3c9;text-align:left;opacity:0;transition:opacity .5s}
+#msg .rp b{color:#FF3B4E}
+#msg .on{opacity:1}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:9}
+#flash.on{animation:fl .5s ease-out}
+@keyframes fl{0%{opacity:.9}100%{opacity:0}}
+body.shake #proc,body.shake #msg{animation:shk .35s linear}
+@keyframes shk{20%{transform:translate(-8px,4px)}40%{transform:translate(7px,-5px)}60%{transform:translate(-5px,-3px)}80%{transform:translate(3px,3px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), fr: K.str(a[1], '나', 10), msg: K.str(a[2], '돈 좀', 12) }),
+  make: () => K.maker({
+    kicker: '할 말 보내기', title: '고백 공격 방어막', sub: '충격에 대비해 드립니다.', dark: true,
+    fields: [
+      { k: 'to', label: '받는 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+      { k: 'msg', label: '진짜 할 말', ph: '돈 좀', max: 12, def: '돈 좀' },
+    ],
+    toArr: v => [v.to, v.fr, v.msg],
+  }),
+  show,
+});
+
+function hexes(){
+  // 반지름 140 원 안의 육각형 격자
+  const s = 17, w = Math.sqrt(3) * s, out = [];
+  for (let r = -10; r <= 10; r++) for (let q = -10; q <= 10; q++) {
+    const x = 150 + w * (q + r / 2), y = 150 + 1.5 * s * r, dd = Math.hypot(x - 150, y - 150);
+    if (dd > 136) continue;
+    const pts = []; for (let k = 0; k < 6; k++) { const a = Math.PI / 180 * (60 * k - 30); pts.push((x + (s - 1.5) * Math.cos(a)).toFixed(1) + ',' + (y + (s - 1.5) * Math.sin(a)).toFixed(1)); }
+    out.push({ x, y, dd, p: pts.join(' ') });
+  }
+  return out.sort((a, b) => a.dd - b.dd);
+}
+
+function show(d){
+  const H = hexes();
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><div class="siren"><div class="dome"></div><div class="base"></div></div><span class="tag">충격 경보</span>' +
+    '<h1>' + K.esc(d.fr) + '님이<br><q>할 말 있어</q>를 보냈습니다</h1><p class="s">충격 대비 절차를 시작합니다.</p><button id="enter">절차 시작</button></div>' +
+    '<div id="proc"><div id="hdr"><p class="t">충격 대비 절차</p><p class="who">대상자 ' + K.esc(d.to) + ' · 발신자 ' + K.esc(d.fr) + '</p>' +
+    '<div id="steps"><span>1 심호흡</span><span>2 안전벨트</span><span>3 방어막</span><span>4 마음의 준비</span></div></div>' +
+    '<div id="viz"><div id="breath"></div><div id="ring"></div>' +
+    '<div id="me"><div class="hd" id="face">😐</div><div class="bd"><div class="belt"></div></div><div class="bk"></div><span class="tg">' + K.esc(d.to) + '</span></div>' +
+    '<svg id="shield" viewBox="0 0 300 300">' + H.map(h => '<polygon points="' + h.p + '"/>').join('') + '</svg>' +
+    '<svg id="crack" viewBox="0 0 300 300"><path d="M150 150 L118 96 L124 60 L98 22"/><path d="M150 150 L204 128 L232 140 L278 112"/><path d="M150 150 L172 206 L160 242 L184 284"/><path d="M150 150 L96 170 L64 160 L22 190"/><path d="M118 96 L84 90"/><path d="M204 128 L214 92"/><path d="M172 206 L214 222"/><path d="M96 170 L102 214"/></svg></div>' +
+    '<div id="txt"><h2 id="h2"></h2><p id="sub"></p><div id="gauge"><i></i><b>0%</b></div></div>' +
+    '<button id="open">공개<small>3초 뒤 자동 공개</small></button></div>' +
+    '<div id="msg"><p class="k">' + K.esc(d.fr) + '님이 하려던 말</p><p class="big">' + K.esc(d.msg) + '</p><p class="fr">— ' + K.esc(d.fr) + '</p>' +
+    '<p class="rp">방어막 내구도 <b>0%</b><br>방어막이 막지 못한 유형: <b>현실</b></p></div><div id="flash"></div>';
+  K.footer({ dark: true });
+  K.$('#enter').onclick = () => { K.unlock(); siren(); K.$('#gate').remove(); K.$('#proc').classList.add('on'); run(d); };
+}
+
+function siren(){ for (let i = 0; i < 3; i++) { K.tone(700, .28, { type: 'sawtooth', vol: .07, slide: 1100, at: i * .56 }); K.tone(1100, .28, { type: 'sawtooth', vol: .07, slide: 700, at: i * .56 + .28 }); } }
+
+async function run(d){
+  const S = K.sleep, sp = K.$$('#steps span'), h2 = K.$('#h2'), sub = K.$('#sub'), face = K.$('#face');
+  const step = (i, t, s) => { sp.forEach((x, k) => { x.classList.toggle('on', k === i); x.classList.toggle('ok', k < i); }); h2.textContent = t; sub.textContent = s || ''; K.tone(880, .07, { type: 'square', vol: .06 }); K.tone(1320, .09, { type: 'square', vol: .05, at: .07 }); };
+  await S(1600);
+  // 1) 심호흡
+  step(0, '들이쉬세요', '천천히. 코로.'); face.textContent = '😮‍💨';
+  const br = K.$('#breath'); br.classList.add('on');
+  K.noise(1.8, { lp: 700, vol: .25, curve: 'flat' });
+  requestAnimationFrame(() => br.style.transform = 'scale(2.3)');
+  await S(1900); h2.textContent = '내쉬세요'; sub.textContent = '할 수 있습니다.';
+  K.noise(1.8, { lp: 450, vol: .2 }); br.style.transform = 'scale(.6)';
+  await S(1900); br.classList.remove('on'); face.textContent = '😐';
+  // 2) 안전벨트
+  step(1, '안전벨트를 착용하세요', '충격이 예상됩니다.');
+  await S(700); K.$('#me .belt').classList.add('on'); K.noise(.35, { bp: 1800, q: .8, vol: .2 });
+  await S(450); K.$('#me .bk').classList.add('on');
+  await S(250); K.tone(2400, .03, { type: 'square', vol: .2 }); K.noise(.05, { hp: 3000, vol: .4 }); K.tone(1600, .04, { type: 'square', vol: .15, at: .06 }); K.vibe(20);
+  sub.textContent = '착용 완료. 찰칵.'; face.textContent = '😬';
+  await S(1200);
+  // 3) 방어막
+  step(2, '방어막 전개', '육각 결정 ' + K.$$('#shield polygon').length + '장 배치 중');
+  const P = K.$$('#shield polygon');
+  K.tone(80, 2.4, { type: 'sawtooth', vol: .12, slide: 320 });
+  for (let i = 0; i < P.length; i++) { P[i].classList.add('on'); if (i % 6 === 0) K.tone(600 + i * 6, .06, { type: 'sine', vol: .07 }); if (i % 3 === 0) await S(Math.max(8, 70 - i)); }
+  K.$('#ring').classList.add('on'); K.$('#shield').classList.add('hum');
+  K.tone(392, .2, { type: 'triangle', vol: .2 }); K.tone(784, .5, { type: 'triangle', vol: .15, at: .1 });
+  sub.textContent = '방어막 강도 100%';
+  await S(1300);
+  // 4) 마음의 준비
+  step(3, '마음의 준비', '어떤 말이든 괜찮습니다.'); face.textContent = '😤';
+  const g = K.$('#gauge'), gi = g.querySelector('i'), gb = g.querySelector('b'); g.classList.add('on');
+  const lab = [[0, '어떤 말이든 괜찮습니다.'], [35, '「좋아해」에 대비 중'], [62, '「사실 나…」에 대비 중'], [85, '최악의 경우까지 대비 중'], [99, '거의 됐습니다']];
+  await new Promise(res => { const t0 = performance.now(), D = 2800; let lt = 0;
+    const f = () => { const t = (performance.now() - t0) / D; const v = t < .7 ? t / .7 * 99 : t < .92 ? 99 : 100;
+      gi.style.width = v + '%'; gb.textContent = Math.floor(v) + '%'; for (const [k, s] of lab) if (v >= k) sub.textContent = s;
+      if (performance.now() - lt > 70 && v < 99) { K.tick({ f: 900 + v * 8, vol: .04 }); lt = performance.now(); }
+      t < 1 ? requestAnimationFrame(f) : res(); }; f(); });
+  gb.textContent = '100%'; sub.textContent = '준비 완료'; K.ding({ vol: .2 });
+  sp[3].classList.remove('on'); sp[3].classList.add('ok');
+  await S(700);
+  // 공개
+  h2.textContent = '공개합니다'; sub.textContent = ''; g.classList.remove('on'); face.textContent = '😑';
+  const ob = K.$('#open'); ob.classList.add('on');
+  let n = 3; await new Promise(res => { ob.onclick = res; const iv = setInterval(() => { n--; if (n <= 0) { clearInterval(iv); res(); } else { ob.querySelector('small').textContent = n + '초 뒤 자동 공개'; K.tick({ f: 1000 }); } }, 1000); ob._iv = iv; });
+  clearInterval(ob._iv); ob.classList.remove('on');
+  // 메시지가 날아와 부딪힘
+  h2.textContent = ''; K.tone(200, .5, { type: 'sawtooth', vol: .1, slide: 900 });
+  await S(450);
+  K.$('#crack').classList.add('on'); K.noise(.12, { hp: 4000, vol: .5 }); K.tone(3200, .08, { type: 'sine', vol: .2 }); face.textContent = '😨';
+  document.body.classList.add('shake');
+  await S(650); document.body.classList.remove('shake'); void document.body.offsetWidth;
+  // 유리처럼 깨짐
+  K.$('#flash').classList.add('on'); K.$('#ring').classList.remove('on'); K.$('#crack').classList.remove('on');
+  shatter(); K.boom({ vol: .8 }); K.vibe([30, 40, 60]);
+  P.forEach(p => { const b = p.getBBox(), dx = b.x + b.width / 2 - 150, dy = b.y + b.height / 2 - 150, k = K.rand(2, 4.5);
+    p.style.transform = 'translate(' + (dx * k + K.rand(-40, 40)) + 'px,' + (dy * k + K.rand(30, 260)) + 'px) rotate(' + K.rand(-260, 260) + 'deg) scale(' + K.rand(.4, 1) + ')'; p.classList.add('fly'); });
+  document.body.classList.add('shake');
+  await S(700);
+  K.$('#viz').style.transition = 'opacity .4s'; K.$('#viz').style.opacity = 0; K.$('#txt').style.opacity = 0; K.$('#hdr').style.opacity = .3;
+  await S(350);
+  K.$('#msg').classList.add('on'); K.boom({ vol: .9, f: 70 });
+  await S(1100); K.$('#msg .fr').classList.add('on');
+  await S(900); K.$('#msg .rp').classList.add('on'); K.tone(330, .12, { type: 'square', vol: .07 }); K.tone(247, .4, { type: 'square', vol: .07, at: .14 });
+  await S(1200);
+  K.again({ replayText: '다시 막아 보기', makeText: '나도 할 말 있음' });
+}
+function shatter(){ for (let i = 0; i < 9; i++) { K.noise(K.rand(.08, .25), { hp: K.rand(2500, 6000), vol: K.rand(.15, .35), at: i * K.rand(.02, .07) }); K.tone(K.rand(2500, 5200), K.rand(.15, .4), { type: 'sine', vol: .06, at: i * .05 }); } }
+</script>
+</body>
+</html>

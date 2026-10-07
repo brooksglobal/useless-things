@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>오타 번역기</title>
+<meta name="description" content="친구의 오타를 고문서처럼 해독합니다.">
+<meta property="og:title" content="귀하의 문장이 해독되었습니다">
+<meta property="og:description" content="국립오타해독원 고문헌 판독실에서 보낸 해독 결과입니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/typo-translator/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Brush+Script&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#F4EEDF;--k-fg:#2B1D12;--k-sub:#7a6a55;--k-card:#FFFCF4;--k-line:#DCCFB2;--k-acc:#2B1D12;--k-acc-fg:#F2D28B;--k-focus:#8C2A1C;
+  --ink:#2B1D12;--paper:#FBF6E9;--red:#A3271B;--gold:#D9B26A;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(90% 60% at 50% 18%,#4a3524 0%,#2a1d13 55%,#150e08 100%);color:#F4EEDF;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+.serif{font-family:"Nanum Myeongjo",serif}
+/* 만들기 화면 추가물 */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chips button{border:1.5px solid var(--k-line);background:#fff;border-radius:999px;padding:6px 11px;font:inherit;font-size:13px;font-weight:700;color:var(--ink);cursor:pointer}
+.chips button:active{background:#f1e6cc}
+.qbtn{display:block;width:100%;margin-top:10px;border:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+#quick{margin-top:14px}
+#quick .entry{box-shadow:0 10px 24px rgba(60,30,10,.15)}
+#quick .tr{margin-top:12px}
+/* 의뢰서 */
+#gate{position:fixed;inset:0;display:grid;place-items:center;padding:24px;z-index:5}
+.doc{background:var(--paper);color:var(--ink);border-radius:3px;box-shadow:0 30px 60px rgba(0,0,0,.55);padding:28px 22px 24px;width:min(100%,350px);position:relative;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .15 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.doc .dh{text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:23px;letter-spacing:.32em;border-bottom:3px double var(--ink);padding-bottom:12px}
+.doc .org{text-align:center;font-size:12px;letter-spacing:.2em;color:#7a6a55;font-weight:700;margin-bottom:10px}
+.doc .row{display:flex;font-size:14px;margin-top:11px;line-height:1.5}
+.doc .row b{flex:none;width:70px;color:#7a6a55;font-weight:700}
+.doc .row span{font-weight:700}
+.doc .body{margin-top:16px;font-family:"Nanum Myeongjo",serif;font-size:16px;line-height:1.7}
+.doc .gbtn{display:block;width:100%;margin-top:22px;border:0;border-radius:4px;padding:15px;font:inherit;font-weight:800;font-size:17px;background:var(--ink);color:var(--gold);cursor:pointer}
+/* 판독실 */
+#lab{position:fixed;inset:0;display:none}
+#lab.on{display:block}
+#hd{position:absolute;top:max(16px,env(safe-area-inset-top));left:0;right:0;text-align:center}
+#hd .o{font-size:11px;letter-spacing:.3em;color:var(--gold);font-weight:800}
+#hd h2{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:21px;margin-top:6px;color:#fff}
+#hd h2 .dots i{font-style:normal;animation:dt 1.2s infinite}
+#hd h2 .dots i:nth-child(2){animation-delay:.2s}#hd h2 .dots i:nth-child(3){animation-delay:.4s}
+@keyframes dt{0%,100%{opacity:.2}50%{opacity:1}}
+#scroll{position:absolute;left:50%;top:calc(max(16px,env(safe-area-inset-top)) + 96px);width:350px;margin-left:-175px;height:270px;border-radius:6px 10px 5px 12px;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 50%,#f3e6c4 0%,#e3cc98 70%,#c9a868 100%);box-shadow:0 24px 50px rgba(0,0,0,.6),inset 0 0 40px rgba(110,70,20,.45);transition:transform .7s cubic-bezier(.5,0,.3,1),opacity .5s}
+#scroll::before{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.55' numOctaves='4'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .08 0 0 0 .22 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:multiply}
+#scroll .txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:0 18px;flex-wrap:wrap;align-content:center;gap:0 2px;font-family:"Nanum Brush Script",cursive;color:#2a1708;line-height:1.05;text-align:center}
+#scroll .u{display:inline-flex;flex-direction:column;align-items:center;position:relative;min-width:.3em}
+#scroll .u.sp{width:.35em}
+#scroll .u .jm{font-family:"Pretendard",sans-serif;font-size:17px;font-weight:800;color:#6b4a22;letter-spacing:.04em;height:0;overflow:hidden;opacity:0;transition:opacity .4s,height .4s;white-space:nowrap}
+#scroll.split .u .jm{height:24px;opacity:1;margin-top:4px}
+#scroll .u.mk.on .jm{color:var(--red)}
+#scroll .u.mk::after{content:"";position:absolute;left:50%;top:44%;width:1.15em;height:1.15em;margin:-.58em 0 0 -.58em;border:3px solid var(--red);border-radius:50%;opacity:0;transform:scale(1.8)}
+#scroll .u.mk.on::after{animation:ring .35s cubic-bezier(.3,1.6,.5,1) forwards}
+@keyframes ring{to{opacity:.85;transform:scale(1) rotate(-6deg)}}
+#scroll .u .lb{position:absolute;top:-6px;right:-14px;background:var(--red);color:#fff;font-family:"Pretendard",sans-serif;font-size:11px;font-weight:800;padding:2px 5px;border-radius:3px;transform:rotate(8deg) scale(0);transition:transform .25s cubic-bezier(.3,1.8,.5,1);white-space:nowrap;z-index:2}
+#scroll .u.mk.on .lb{transform:rotate(8deg) scale(1)}
+#beam{position:absolute;left:-10px;right:-10px;top:-20px;height:16px;background:linear-gradient(180deg,transparent,rgba(120,255,200,.55) 45%,rgba(220,255,240,.95) 50%,rgba(120,255,200,.55) 55%,transparent);box-shadow:0 0 30px rgba(120,255,200,.7);opacity:0;z-index:3}
+#beam.go{animation:beam 1.3s cubic-bezier(.45,0,.55,1) 2 alternate}
+@keyframes beam{0%{top:-20px;opacity:1}100%{top:274px;opacity:1}}
+#scroll .grid{position:absolute;inset:0;background:linear-gradient(rgba(60,255,180,.18) 1px,transparent 1px) 0 0/100% 23px,linear-gradient(90deg,rgba(60,255,180,.18) 1px,transparent 1px) 0 0/23px 100%;opacity:0;transition:opacity .4s;z-index:2}
+#scroll.scan .grid{opacity:1}
+#pct{position:absolute;left:0;right:0;top:calc(max(16px,env(safe-area-inset-top)) + 384px);text-align:center;font-family:Menlo,monospace;font-weight:700;font-size:54px;color:#7dffc4;text-shadow:0 0 24px rgba(125,255,196,.45);font-variant-numeric:tabular-nums;transition:opacity .4s}
+#pct small{display:block;font-family:"Pretendard",sans-serif;font-size:12px;letter-spacing:.3em;color:#b9d8c4;font-weight:800;margin-bottom:2px;text-shadow:none}
+#stat{position:absolute;left:50%;width:350px;margin-left:-175px;top:calc(max(16px,env(safe-area-inset-top)) + 480px);font-family:Menlo,monospace;font-size:12.5px;color:#b9d8c4;line-height:1.75;transition:opacity .4s}
+#stat p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#stat p b{color:#7dffc4;font-weight:700}
+#stat .pb{height:6px;background:rgba(255,255,255,.1);border-radius:3px;margin-top:8px;overflow:hidden}
+#stat .pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3ddc97,#c8ffe6);transition:width .25s linear}
+/* 사전 항목 */
+#card{position:absolute;left:12px;right:12px;top:calc(max(16px,env(safe-area-inset-top)) + 70px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 62px);display:none;overflow:hidden}
+#card.on{display:block}
+.entry{background:var(--paper);color:var(--ink);border-radius:4px;padding:18px 18px 16px;box-shadow:0 26px 50px rgba(0,0,0,.55);text-align:left;font-size:14px;line-height:1.6;position:relative;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.8' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .32 0 0 0 0 .15 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.entry .ln{opacity:1}
+#card .entry .ln{display:none}
+#card .entry .ln.on{display:flex;animation:lnin .4s cubic-bezier(.2,1.2,.4,1) both}
+#card .entry .ln.hw.on{display:flex}
+@keyframes lnin{0%{opacity:0;transform:translateY(10px);filter:blur(3px)}100%{opacity:1;transform:none;filter:none}}
+.entry .hw{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 8px;border-bottom:2px solid var(--ink);padding-bottom:8px}
+.entry .hw b{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:30px;letter-spacing:-.01em;line-height:1.2;word-break:break-all}
+.entry .hw sup{font-size:14px;font-weight:800;color:var(--red);margin-left:-6px}
+.entry .hw em{font-style:normal;color:#7a6a55;font-size:14px;font-weight:600}
+.entry .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:9px;font-size:12.5px;color:#7a6a55}
+.entry .pos{border:1.5px solid var(--ink);color:var(--ink);font-weight:800;padding:1px 7px;border-radius:2px;font-size:12.5px}
+.entry .sec{margin-top:9px;display:flex;gap:8px}
+.entry .sec>i{flex:none;font-style:normal;font-size:11.5px;font-weight:800;color:#fff;background:var(--red);padding:2px 5px;border-radius:2px;height:fit-content;margin-top:2px;letter-spacing:.04em}
+.entry .sec>div{flex:1;font-family:"Nanum Myeongjo",serif;font-size:14px;line-height:1.62}
+.entry .sec ol{list-style:none;padding:0}
+.entry .sec ol li{position:relative;padding-left:20px;margin-bottom:3px}
+.entry .sec ol li::before{content:attr(data-n);position:absolute;left:0;font-family:"Pretendard",sans-serif;font-weight:800;font-size:12px;color:var(--red);top:1px}
+.entry .ety{font-size:13.5px}
+.entry .ety u{text-decoration:none;font-style:normal;color:#5a3d1e;font-weight:700}
+.entry .rs{font-family:"Pretendard",sans-serif!important;font-weight:800;font-size:17px!important}
+.entry .ex{color:#4b3a28}
+.entry .ex small{display:block;font-family:"Pretendard",sans-serif;font-size:11.5px;color:#9a8a75;margin-top:1px}
+.tr{background:#1b130c;color:#fff;border-radius:4px;padding:16px 16px 18px;position:relative}
+.tr small{display:block;font-size:11.5px;letter-spacing:.24em;color:var(--gold);font-weight:800}
+.tr p{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:20px;line-height:1.5;margin-top:8px}
+.tr .rat{font-size:12px;color:#bba98e;margin-top:8px;font-family:"Pretendard",sans-serif}
+/* 마지막 번역 */
+#fin{position:fixed;inset:0;display:none;flex-direction:column;justify-content:center;padding:0 26px calc(max(14px,env(safe-area-inset-bottom)) + 120px);z-index:8;background:rgba(14,9,5,.9);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+#fin.on{display:flex;animation:fi .5s both}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+#fin .k{font-size:12px;letter-spacing:.3em;color:var(--gold);font-weight:800}
+#fin .src{margin-top:12px;font-size:14px;color:#bba98e}
+#fin .src b{font-family:"Nanum Brush Script",cursive;font-size:34px;color:#fff;font-weight:400;margin-left:4px}
+#fin .arrow{margin:10px 0 6px;color:var(--gold);font-size:20px}
+#fin .big{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:27px;line-height:1.48;color:#fff;min-height:120px}
+#fin .big span{opacity:0;transition:opacity .25s}
+#fin .big span.on{opacity:1}
+#fin .rat{margin-top:16px;font-size:13px;color:#bba98e;opacity:0;transition:opacity .5s}
+#fin .rat b{color:#fff}
+#fin .rat.on{opacity:1}
+#seal{position:absolute;right:26px;top:calc(max(16px,env(safe-area-inset-top)) + 70px);width:88px;height:88px;border:4px solid #d23a2a;border-radius:50%;color:#d23a2a;display:grid;place-items:center;text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:15px;line-height:1.15;opacity:0;transform:scale(3) rotate(-18deg)}
+#seal.on{animation:stamp .28s cubic-bezier(.5,0,.7,1) forwards}
+@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-18deg)}100%{opacity:.92;transform:scale(1) rotate(-12deg)}}
+body.shake #fin{animation:shk .2s linear}
+@keyframes shk{25%{transform:translate(-5px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,-2px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+/* ───────── 한글 자모 계산 ───────── */
+const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ', JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+const JONG = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const isSyl = c => c >= '가' && c <= '힣', isCon = c => c >= 'ㄱ' && c <= 'ㅎ', isVow = c => c >= 'ㅏ' && c <= 'ㅣ', isLat = c => /[a-zA-Z]/.test(c);
+const dec = c => { const n = c.charCodeAt(0) - 0xAC00; return [CHO[Math.floor(n / 588)], JUNG[Math.floor(n % 588 / 28)], JONG[n % 28]]; };
+const com = (a, b, c) => String.fromCharCode(0xAC00 + CHO.indexOf(a) * 588 + JUNG.indexOf(b) * 28 + JONG.indexOf(c || ''));
+const VSPLIT = { 'ㅘ':'ㅗㅏ','ㅙ':'ㅗㅐ','ㅚ':'ㅗㅣ','ㅝ':'ㅜㅓ','ㅞ':'ㅜㅔ','ㅟ':'ㅜㅣ','ㅢ':'ㅡㅣ' };
+const VC = {}; for (const k in VSPLIT) VC[VSPLIT[k]] = k;
+const JSPLIT = { 'ㄳ':'ㄱㅅ','ㄵ':'ㄴㅈ','ㄶ':'ㄴㅎ','ㄺ':'ㄹㄱ','ㄻ':'ㄹㅁ','ㄼ':'ㄹㅂ','ㄽ':'ㄹㅅ','ㄾ':'ㄹㅌ','ㄿ':'ㄹㅍ','ㅀ':'ㄹㅎ','ㅄ':'ㅂㅅ' };
+const JC = {}; for (const k in JSPLIT) JC[JSPLIT[k]] = k;
+const JNAME = { 'ㄱ':'기역','ㄲ':'쌍기역','ㄴ':'니은','ㄷ':'디귿','ㄸ':'쌍디귿','ㄹ':'리을','ㅁ':'미음','ㅂ':'비읍','ㅃ':'쌍비읍','ㅅ':'시옷','ㅆ':'쌍시옷','ㅇ':'이응','ㅈ':'지읒','ㅉ':'쌍지읒','ㅊ':'치읓','ㅋ':'키읔','ㅌ':'티읕','ㅍ':'피읖','ㅎ':'히읗' };
+const lastV = j => VSPLIT[j] ? VSPLIT[j][1] : j;
+// 자모 나열을 음절로 조립
+function assemble(seq){
+  let out = '', c = null, v = null, t = null;
+  const flush = () => { if (c && v) out += com(c, v, t || ''); else { if (c) out += c; if (v) out += v; } c = v = t = null; };
+  for (const j of seq) {
+    if (isCon(j)) {
+      if (c && v) { if (!t) { if (JONG.includes(j) && j !== 'ㄸ' && j !== 'ㅃ' && j !== 'ㅉ') t = j; else { flush(); c = j; } } else if (JC[t + j]) t = JC[t + j]; else { flush(); c = j; } }
+      else { flush(); c = j; }
+    } else {
+      if (c && !v) v = j;
+      else if (v && !t) { if (VC[v + j]) v = VC[v + j]; else { flush(); v = j; } }
+      else if (t) { let keep = '', mv = t; if (JSPLIT[t]) { keep = JSPLIT[t][0]; mv = JSPLIT[t][1]; } t = keep || null; flush(); c = mv; v = j; }
+      else { flush(); v = j; }
+    }
+  }
+  flush(); return out;
+}
+const QW = { q:'ㅂ',w:'ㅈ',e:'ㄷ',r:'ㄱ',t:'ㅅ',y:'ㅛ',u:'ㅕ',i:'ㅑ',o:'ㅐ',p:'ㅔ',a:'ㅁ',s:'ㄴ',d:'ㅇ',f:'ㄹ',g:'ㅎ',h:'ㅗ',j:'ㅓ',k:'ㅏ',l:'ㅣ',z:'ㅋ',x:'ㅌ',c:'ㅊ',v:'ㅍ',b:'ㅠ',n:'ㅜ',m:'ㅡ',Q:'ㅃ',W:'ㅉ',E:'ㄸ',R:'ㄲ',T:'ㅆ',O:'ㅒ',P:'ㅖ' };
+const fromQwerty = s => assemble([...s].map(ch => QW[ch] || QW[ch.toLowerCase()] || ch));
+// 로마자
+const RC = { 'ㄱ':'g','ㄲ':'kk','ㄴ':'n','ㄷ':'d','ㄸ':'tt','ㄹ':'r','ㅁ':'m','ㅂ':'b','ㅃ':'pp','ㅅ':'s','ㅆ':'ss','ㅇ':'','ㅈ':'j','ㅉ':'jj','ㅊ':'ch','ㅋ':'k','ㅌ':'t','ㅍ':'p','ㅎ':'h' };
+const RV = ['a','ae','ya','yae','eo','e','yeo','ye','o','wa','wae','oe','yo','u','wo','we','wi','yu','eu','ui','i'];
+const RT = ['','k','k','k','n','n','n','t','l','k','m','l','l','l','p','l','m','p','p','t','t','ng','t','t','k','t','p','t'];
+const romaSyl = s => { const [a, b, c] = dec(s); return RC[a] + RV[JUNG.indexOf(b)] + RT[JONG.indexOf(c)]; };
+
+const ro = w => { const c = String(w).slice(-1); if (!isSyl(c)) return '로'; const j = dec(c)[2]; return j && j !== 'ㄹ' ? '으로' : '로'; };
+/* ───────── 시드 난수 ───────── */
+function hash(s){ let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function rng(seed){ let a = seed || 1; return () => { a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+
+/* ───────── 사전 데이터 ───────── */
+const ABBR = { 'ㅂㄱㅅㅍ':'보고 싶다','ㅅㄹㅎ':'사랑해','ㅇㅋ':'오케이','ㅇㅇ':'응','ㄱㄱ':'가자','ㄴㄴ':'아니','ㅈㅅ':'죄송','ㄱㅅ':'감사','ㅊㅋ':'축하','ㅅㄱ':'수고','ㅎㅇ':'하이','ㅂㅂ':'바이','ㅂㅇ':'바이','ㄱㅊ':'괜찮아','ㅇㄷ':'어디','ㄹㅇ':'리얼','ㅇㅈ':'인정','ㅁㄹ':'몰라','ㅈㅂ':'제발','ㅁㅊ':'미친','ㅃㅇ':'빠이','ㄷㄷ':'(떨림)','ㅇㄴ':'아니' };
+// [찾을 것, 바꿀 것, 단어 앞에서만(w)/어디서나(a), 분석]
+const SUBS = [
+  ['몇시', '몇 시', 'a', '「몇시」는 띄어쓰기가 생략되었다. 화자는 만남을 서두르고 있다.'],
+  ['낼', '내일', 'w', '「낼」은 「내일」의 둘째 음절이 탈락한 축약형이다. 탈락한 음절은 아직 발견되지 않았다.'],
+  ['넘', '너무', 'w', '「넘」은 「너무」가 한 음절로 압착된 형태다. 압착 과정에서 ㅜ 하나가 유실되었다.'],
+  ['걍', '그냥', 'a', '「걍」은 「그냥」의 두 음절이 충돌해 생긴 융합형이다. 충돌 당시 ㅡ와 ㄴ이 소실되었다.'],
+  ['첨', '처음', 'w', '「첨」은 「처음」의 압축형이다. 처음이라는 말조차 처음처럼 쓰지 않았다.'],
+  ['젤', '제일', 'w', '「젤」은 「제일」에서 ㅇ·ㅣ가 탈락한 형태다. 화자는 제일을 제일 짧게 썼다.'],
+  ['몰겠', '모르겠', 'a', '「몰겠」은 「모르겠」의 ㅡ가 빠진 형태다. 모른다는 사실조차 끝까지 쓰지 않았다.'],
+  ['머해', '뭐 해', 'a', '「머」는 「뭐」에서 ㅜ가 빠진 형태다. 묻는 사람의 관심도가 ㅜ 하나만큼 낮다.'],
+  ['모해', '뭐 해', 'a', '「모」는 「뭐」가 둥글게 마모된 형태다. 화자는 귀여워 보이기를 원했다.'],
+  ['뭐해', '뭐 해', 'a', '「뭐해」는 띄어쓰기가 생략되었다. 화자는 대답보다 반응을 원한다.'],
+  ['시퍼', '싶어', 'a', '「시퍼」는 받침 ㅍ이 다음 음절로 넘어간 소리 그대로의 표기다. 화자는 맞춤법보다 감정을 택했다.'],
+  ['겟', '겠', 'a', '「겟」의 받침 ㅅ은 ㅆ에서 획 하나가 유실된 것이다. 시프트 키를 누를 여유가 없었다.'],
+  ['됬', '됐', 'a', '「됬」은 표준어에 존재하지 않는 글자다. 그러나 매일 수십만 번 발송된다.'],
+  ['햇어', '했어', 'a', '「햇」의 받침 ㅅ은 ㅆ의 반쪽이다. 나머지 반쪽은 키보드 어딘가에 남아 있다.'],
+  ['늦을듯', '늦을 듯', 'a', '「듯」 앞의 띄어쓰기가 생략되었다. 늦는 사람은 띄어 쓸 시간도 없다.'],
+  ['가는중', '가는 중', 'a', '「가는중」의 붙여 쓰기는 화자가 실제로는 아직 출발하지 않았음을 시사한다.'],
+  ['가튼', '같은', 'a', '「가튼」은 받침 ㅌ이 다음 음절로 넘어간 소리 그대로의 표기다. 화자는 확신이 없다.'],
+  ['조아', '좋아', 'a', '「조아」는 받침 ㅎ이 증발한 형태다. 기쁨이 너무 가벼워 ㅎ을 실을 수 없었다.'],
+  ['마자', '맞아', 'a', '「마자」는 받침 ㅈ이 다음 음절로 미끄러진 형태다. 화자는 격하게 고개를 끄덕였다.'],
+  ['구래', '그래', 'a', '「구」는 「그」의 ㅡ가 입술을 내밀며 ㅜ로 둥글어진 형태다.'],
+  ['웅', '응', 'w', '「웅」은 「응」의 ㅡ가 입술을 내밀며 ㅜ로 둥글어진 형태다.'],
+  ['엉', '응', 'w', '「엉」은 「응」의 입 모양이 반쯤 열린 형태다. 대답의 성의가 반쯤 열려 있다.'],
+  ['넹', '네', 'w', '「넹」의 받침 ㅇ은 애교 접사다. 1990년대 이후 문헌에서만 발견된다.'],
+  ['넵', '네', 'w', '「넵」의 받침 ㅂ은 입을 다무는 소리다. 더 이상의 대화는 없다는 뜻이 담겼다.'],
+];
+const CUTE = { 'ㅇ':'해야아어지요네게래줘봐워여자까니', 'ㅁ':'해야아어지요네게래줘봐워자까', 'ㅎ':'*', 'ㅋ':'*' };
+const NOT_CUTE = { '행':'여은비진시실수동운평강유발병선기급악직', '양':'태모다서교영양해대', '앙':'중환재신', '징':'상특표', '용':'내사이비효활허적수무필중신작용', '염':'오감전폐', '엌':'부', '녘':'동' };
+const CUTE_NOTE = {
+  'ㅇ':'받침 ㅇ은 애교 접사로, 1990년대 이후 문헌에서만 발견된다.',
+  'ㅁ':'받침 ㅁ은 공문서체 「~함」이 구어로 스며든 흔적이다.',
+  'ㅎ':'받침 ㅎ은 숨을 내쉬는 소리다. 화자는 한숨을 함께 보냈다.',
+  'ㅋ':'받침 ㅋ은 웃음 「ㅋ」가 음절 안으로 침투한 형태다. 화자는 웃음을 참지 못했다.' };
+const END_FIX = { '녀':['여','소미자손그장차선마효여궁무왕숙처추하'], '뇨':['요','당'], '녜':['예',''] };
+const KEYPOS = { 'ㄴ':['ㅇ','S','D'] };
+const ENG = ['ok','lol','omg','hi','bye','no','yes','sorry','thx','thanks','good','nice','wow','haha','hello'];
+
+const TOPICS = [
+  { id:'hunger', keys:['배고','배곺','고파','고프','출출','허기','굶','배 고'], pos:'형용사(탄원형)', gloss:'위장이 우는 소리',
+    def:'배가 고프다는 사실을 알리는 동시에, 식사 비용의 분담을 넌지시 제안하는 말.',
+    tr:['나는 지금 이 우주에서 가장 허기진 존재이며, 그 책임의 절반은 너에게 있다.','나의 위장은 방금 국가 비상사태를 선포했으며, 너에게 공식적으로 식량 지원을 요청한다.','밥을 사 줄 사람을 찾고 있다. 후보는 한 명이며, 그 사람은 너다.'] },
+  { id:'meet', keys:['만나','몇 시','몇시','언제','내일','보자','볼까','만날'], pos:'동사(통보형)', gloss:'두 그림자가 같은 땅을 밟는 때',
+    def:'만날 시간을 묻는 형식을 띠나, 실제로는 이미 만나기로 결정했음을 통보하는 말.',
+    tr:['내일 우리의 만남은 이미 정해진 운명이며, 그 시각만이 아직 인류에게 공개되지 않았다.','나는 너를 만날 준비를 모두 마쳤다. 남은 것은 시간이라는 마지막 퍼즐 한 조각뿐이다.','너의 일정표에 나를 위한 자리를 즉시 마련하라. 이것은 부탁이 아니라 예언이다.'] },
+  { id:'ok', keys:['오케이','오케','오키','응','그래','알겠','알았','콜','네'], pos:'감동사(수락)', gloss:'들고 있던 돌을 내려놓다',
+    def:'상대의 말에 동의함을 나타내되, 그 이상의 대화는 원하지 않음을 함께 표시하는 말.',
+    tr:['나는 너의 제안을 아무 조건 없이 받아들이며, 이 결정은 역사에 기록될 것이다.','너의 뜻에 동의한다. 다만 이 동의에는 어떠한 열정도 포함되어 있지 않다.','좋다. 이 짧은 대답을 위해 나는 엄지손가락의 모든 근력을 사용했다.'] },
+  { id:'sorry', keys:['미안','죄송','쏘리','미아내'], pos:'명사(반성)', gloss:'무릎이 땅에 닿는 소리',
+    def:'잘못을 인정하는 말. 다만 같은 잘못을 다시 하지 않겠다는 약속은 포함하지 않는다.',
+    tr:['나는 지금 깊이 반성하고 있으며, 그 깊이는 대략 마리아나 해구와 같다.','나의 잘못을 인정한다. 이 인정은 오늘 자정까지 유효하다.'] },
+  { id:'thanks', keys:['고마','감사','땡큐','고맙'], pos:'명사(채무)', gloss:'갚아야 할 쌀 세 섬',
+    def:'은혜를 입었음을 인정하는 말. 갚는 시기는 명시하지 않는다.',
+    tr:['너의 은혜는 3대에 걸쳐 갚아야 할 규모이며, 우리 가문은 이를 잊지 않을 것이다.','고맙다. 이 감사는 원금이고, 이자는 다음에 밥으로 갚겠다.'] },
+  { id:'what', keys:['뭐 해','뭐함','뭐하','뭐해','머하','모하'], pos:'의문 동사(개입형)', gloss:'남의 마당을 들여다보다',
+    def:'상대의 근황을 묻는 형식을 띠나, 실제로는 자신이 심심하다는 사실을 알리는 말.',
+    tr:['나는 지금 몹시 심심하며, 이 사태를 해결할 수 있는 사람은 지구상에 너 하나뿐이다.','지금 너의 일상에 나라는 사건이 개입하려 한다. 저항하지 마라.'] },
+  { id:'where', keys:['어디','어딨','어딘'], pos:'의문 대명사(추적)', gloss:'별자리로 길을 묻다',
+    def:'상대의 위치를 묻는 말. 대개 화자는 이미 약속 장소에 도착해 있다.',
+    tr:['너의 좌표를 즉시 보고하라. 나는 이미 이곳에서 세 번째 계절을 맞이하고 있다.','나는 도착했다. 너는 아직 출발하지 않았다는 것을 나는 알고 있다.'] },
+  { id:'sleep', keys:['자니','졸려','졸리','잘자','굿밤','자?','잠'], pos:'동사(심야형)', gloss:'달이 창문을 두드리다',
+    def:'잠들었는지 묻는 말. 깨어 있기를 바라는 마음으로 보낸다.',
+    tr:['이 밤에 깨어 있는 사람이 나 하나가 아니기를 간절히 바란다. 그리고 그 사람이 너이기를.','나의 눈꺼풀은 지금 지구의 중력과 홀로 싸우고 있다. 응원을 부탁한다.'] },
+  { id:'miss', keys:['보고 싶','보고싶','보고시','그리워'], pos:'형용사(결핍형)', gloss:'빈 의자를 오래 보다',
+    def:'상대를 만나고 싶다는 말. 만날 날짜는 정하지 않는 것이 관례다.',
+    tr:['너의 부재는 나의 하루에 지름 3미터의 구멍을 냈으며, 그 구멍은 지금도 넓어지고 있다.','나는 너를 보고 싶다. 이 문장에는 과장이 단 한 글자도 없다.'] },
+  { id:'love', keys:['사랑','좋아해','조아해','좋아'], pos:'동사(불가역)', gloss:'불씨가 옮겨붙다',
+    def:'호감을 나타내는 말. 같은 말을 돌려받기를 기대하며 보낸다.',
+    tr:['나의 마음은 지금 너를 향해 초속 30만 킬로미터로 이동 중이며, 되돌릴 방법은 없다.','이 감정은 이제 나의 통제를 벗어났다. 책임은 전적으로 너에게 있다.'] },
+  { id:'late', keys:['늦','지각','가는 중','출발','가는중'], pos:'부사(시간 왜곡형)', gloss:'해시계가 뒤로 걷다',
+    def:'늦는다는 사실을 알리는 말. 실제로 늦는 시간은 적힌 시간의 2배다.',
+    tr:['나는 지금 가고 있다. 이 문장의 「지금」은 물리학적 의미보다 다소 넓게 해석되어야 한다.','나의 도착은 이미 확정되었다. 다만 그 시각은 신만이 알고 있다.'] },
+  { id:'go', keys:['가자','하자','놀자','고고','출발하자'], pos:'청유형 동사(강제)', gloss:'말에 안장을 얹다',
+    def:'함께 하자고 권하는 말. 상대의 의사는 묻지 않는다.',
+    tr:['우리는 지금 떠난다. 목적지는 중요하지 않으며, 너의 동의는 이미 받은 것으로 간주한다.','나는 이미 신발을 신었다. 이제 남은 것은 너의 결단뿐이다.'] },
+  { id:'hello', keys:['안녕','하이','ㅎㅇ','방가'], pos:'감탄사(서막)', gloss:'성문 앞에서 깃발을 흔들다',
+    def:'인사하는 말. 대개 부탁이 뒤따른다.',
+    tr:['나는 지금 너에게 인사를 건넸다. 이 인사는 곧 이어질 긴 부탁의 서막이다.','나는 무사히 살아 있다. 이 소식을 가장 먼저 너에게 알린다.'] },
+  { id:'no', keys:['아니','싫어','시러','노노'], pos:'부사(거절)', gloss:'성문을 닫다',
+    def:'거절하는 말. 재고의 여지는 표면상 없다.',
+    tr:['나는 이 제안을 정중하지 않게 거절하며, 재심 청구는 받지 않는다.','아니다. 이것은 나의 최종 입장이며, 내일 아침에 바뀔 수 있다.'] },
+  { id:'wow', keys:['헐','대박','미친','떨림','와'], pos:'감탄사(충격)', gloss:'하늘이 두 쪽 나는 소리',
+    def:'놀라움을 나타내는 말. 무엇에 놀랐는지는 대개 밝히지 않는다.',
+    tr:['방금 일어난 일은 나의 세계관을 뿌리째 흔들었으며, 나는 당분간 이 충격에서 회복하지 못할 것이다.','나는 지금 입을 다물지 못하고 있다. 이것은 비유가 아니다.'] },
+  { id:'tired', keys:['피곤','힘들','퇴근','지쳐','지친','집 가','집에'], pos:'형용사(소진형)', gloss:'소가 쟁기를 내려놓다',
+    def:'지쳤다는 말. 위로와 야식을 함께 요청하는 뜻이 있다.',
+    tr:['나는 오늘 하루를 끝까지 버텨 냈다. 이제 세상은 나를 집에 보내 줄 의무가 있다.','나의 체력은 0이 되었다. 남은 것은 너의 위로를 받을 힘뿐이다.'] },
+  { id:'drink', keys:['술','한잔','한 잔','맥주','소주'], pos:'명사(결의)', gloss:'잔과 잔이 부딪는 소리',
+    def:'술자리를 제안하는 말. 「딱 한 잔」의 「한」은 수량을 뜻하지 않는다.',
+    tr:['오늘 밤 우리는 잔을 들 것이며, 내일 아침 그 결정을 후회하지 않기로 미리 합의한다.'] },
+  { id:'lol', keys:['(웃음)','크크','킥'], pos:'의성 부사', gloss:'배꼽이 굴러가는 소리',
+    def:'웃음소리를 옮긴 말. 실제로 소리 내어 웃었는지는 확인되지 않는다.',
+    tr:['너의 말은 나를 바닥에 굴렸으며, 나는 아직 일어나지 못했다.','나는 지금 웃고 있다. 얼굴은 무표정이지만, 마음속으로는 확실히 웃고 있다.'] },
+  { id:'cry', keys:['(눈물)','흑','슬퍼','ㅠ'], pos:'명사(수분)', gloss:'처마 끝 빗물',
+    def:'슬픔을 나타내는 말. 위로를 요청하는 뜻이 들어 있다.',
+    tr:['나는 지금 울고 있다. 정확히는, 울 준비가 된 얼굴로 너의 위로를 기다리고 있다.'] },
+];
+const GENERIC = { pos:'감탄사(미분류)', gloss:'바람이 문틈을 지나는 소리', def:'정확한 뜻은 화자 본인도 모르는 것으로 알려진 말. 대체로 「답장해 달라」는 뜻으로 쓰인다.',
+  tr:['「{w}」. 이 한 마디에는 내가 오늘 느낀 모든 감정이 압축되어 있으며, 너는 이것을 해제할 책임이 있다.','본인은 「{w}」에 관하여 더 이상 물러설 곳이 없음을 엄숙히 선언한다.','「{w}」. 나는 이 말을 하기 위해 태어났으며, 방금 그 사명을 완수했다.'] };
+const LANGS = [
+  ['중세 국어', s => '〈' + s.syl.map((x, i) => (i % 2 ? ':' : '·') + x).join('') + '〉', '1447', '『오타언해(誤打諺解)』'],
+  ['고대 수메르어', s => '*' + s.ro.map(x => x.toUpperCase()).join('-'), '기원전 2100년경', '점토판 제38호'],
+  ['원시 알타이어', s => '*' + s.ro.join('-').replace(/ae/g, 'ä').replace(/eo/g, 'ö').replace(/eu/g, 'ü').replace(/p/g, 'pʰ').replace(/k/g, 'kʰ'), '재구형', ''],
+  ['고대 그리스어', s => s.ro.join('').replace(/[a-z]/g, ch => ({a:'α',b:'β',g:'γ',d:'δ',e:'ε',o:'ο',p:'π',k:'κ',t:'τ',n:'ν',m:'μ',l:'λ',r:'ρ',s:'σ',i:'ι',u:'υ',y:'υ',w:'ω',j:'ζ',c:'χ',h:'ἁ'})[ch] || ch), '기원전 5세기', '단편 B.7'],
+  ['라틴어', s => s.ro.join('').replace(/[aeiou]?$/, '') + 'āre', '1세기', ''],
+  ['산스크리트어', s => s.ro.join('').replace(/a/, 'ā').replace(/i/, 'ī') + 'ḥ', '베다 시대', ''],
+];
+const EX = [
+  '{to} 점심을 먹은 지 {n}분 만에 「{o}」 하고 보냈다.',
+  '새벽 {h}시 {m}분, 「{o}」 한 줄이 도착했다. 발신인은 {to2}이었다.',
+  '「{o}」. {to} 이 말을 남기고 {n}분간 메시지를 읽지 않았다.',
+  '답장이 늦어지자 {to} 「{o}」{rl} 한 번 더 보냈다.',
+];
+
+/* ───────── 해독 ───────── */
+function analyze(raw, to){
+  const text = String(raw).trim() || '배고퐈';
+  const R = rng(hash(text)), P = a => a[Math.floor(R() * a.length)];
+  const chars = [...text];
+  // 1) 덩어리로 나누기
+  const toks = []; let i = 0;
+  const kind = c => isSyl(c) ? 'S' : (isCon(c) || isVow(c)) ? 'J' : isLat(c) ? 'L' : /\s/.test(c) ? 'W' : 'P';
+  while (i < chars.length) { const k = kind(chars[i]); let j = i + 1; if (k !== 'S') while (j < chars.length && kind(chars[j]) === k) j++;
+    toks.push({ k, s: chars.slice(i, j).join(''), at: i }); i = j; }
+  const notes = [], marks = {}, out = [], feats = {};
+  const nsIdx = []; { let q = 0; chars.forEach((ch, k) => { nsIdx[k] = q; if (!/\s/.test(ch)) q++; }); }
+  const pos = n => (nsIdx[n] + 1) + '번째 글자';
+  const mark = (at, lb, n) => { if (!marks[at]) marks[at] = lb; for (let q = 1; q < (n || 1); q++) if (marks[at + q] == null) marks[at + q] = ''; };
+  const latN = chars.filter(isLat).length, letN = chars.filter(c => !/\s/.test(c)).length;
+  toks.forEach((t, ti) => {
+    const prev = toks[ti - 1], next = toks[ti + 1];
+    const wordEnd = !next || next.k === 'W' || next.k === 'P' || next.k === 'J';
+    if (t.k === 'W') { out.push(' '); return; }
+    if (t.k === 'P') { out.push(t.s);
+      const dots = (t.s.match(/\./g) || []).length, q = (t.s.match(/\?/g) || []).length, ex = (t.s.match(/!/g) || []).length;
+      if (dots >= 2) notes.push({ p: 3, t: '말줄임표 ' + dots + '점. 침묵의 길이는 약 ' + (dots * .8).toFixed(1) + '초로 측정된다. 화자는 무언가를 숨기고 있다.' });
+      if (q) { feats.q = 1; notes.push({ p: 4, t: '의문 부호 ' + q + '개. 질문의 형식이지만, 화자는 이미 답을 정해 두었다.' }); }
+      if (ex) notes.push({ p: 4, t: '느낌표 ' + ex + '개. 음량으로 환산하면 약 ' + (62 + ex * 9) + 'dB에 해당한다.' });
+      return; }
+    if (t.k === 'L') {
+      const low = t.s.toLowerCase();
+      if (ENG.includes(low)) { out.push(t.s); feats.lat = 1; notes.push({ p: 2, t: '로마자 「' + t.s + '」. 기원전 7세기 라틴 문자가 카톡까지 흘러들어 온 외래 혼입어다.' }); mark(t.at, '혼입'); return; }
+      const conv = fromQwerty(t.s), sylN = [...conv].filter(isSyl).length;
+      if (latN / letN > .5 && sylN >= [...conv].length * .6) { out.push(conv); feats.lat = 1;
+        notes.push({ p: 0, t: '고대 라틴 문자 「' + t.s + '」 혼입. 한/영 전환 키를 누르지 않은 흔적이다. 두벌식 자판 위치로 대조한 결과 「' + conv + '」' + ro(conv) + ' 복원된다.' }); mark(t.at, '혼입'); }
+      else { out.push(t.s); notes.push({ p: 3, t: '로마자 「' + t.s + '」. 판독 대상에서 제외한다.' }); }
+      return; }
+    if (t.k === 'J') {
+      const cs = [...t.s], allC = cs.every(isCon), allV = cs.every(isVow);
+      const markJ = (a, l) => mark(a, l, cs.length);
+      if (allC) {
+        if (cs.every(c => c === 'ㅋ')) { feats.lol = 1; out.push('(웃음)'); markJ(t.at, '웃음');
+          notes.push({ p: 1, t: 'ㅋ ' + cs.length + '회 반복. 웃음 강도는 표준 「ㅋㅋㅋ」 대비 ' + Math.round(cs.length / 3 * 100) + '%다.' }); return; }
+        if (cs.every(c => c === 'ㅎ')) { feats.lol = 1; out.push('(미소)'); markJ(t.at, '미소');
+          notes.push({ p: 1, t: 'ㅎ ' + cs.length + '회. ㅎ은 ㅋ보다 입꼬리 각도가 7도 낮은 웃음이다. 화자는 예의를 지키고 있다.' }); return; }
+        // 초성 축약 사전
+        let k = 0, words = [], ok = true;
+        while (k < cs.length) { let hit = null; for (const L of [4, 3, 2]) { const s = cs.slice(k, k + L).join(''); if (ABBR[s]) { hit = s; break; } } if (!hit) { ok = false; break; } words.push(ABBR[hit]); k += hit.length; }
+        if (ok) { feats.abbr = 1; out.push(words.join(' ')); markJ(t.at, '축약');
+          notes.push({ p: 0, t: P(['「' + t.s + '」는 모음이 모두 탈락한 초성 축약형이다. 조선 후기 서찰에서 종이를 아끼려던 생략 관습과 구조가 같다.', '「' + t.s + '」는 모음이 전부 증발한 초성체다. 화자는 모음을 입력하는 ' + cs.length + '타의 시간조차 아꼈다.']) + ' 원형은 「' + words.join(' ') + '」.' }); return; }
+        if (prev && prev.k === 'S' && cs.every(c => c === dec(prev.s)[2])) { markJ(t.at, '여음');
+          notes.push({ p: 0, t: pos(prev.at) + ' 「' + prev.s + '」의 받침 ' + cs[0] + '이 한 번 더 울렸다. 화자는 이 말을 ' + (cs.length + 1) + '박자로 길게 끌었다.' }); return; }
+        out.push('(판독 불가)'); markJ(t.at, '불가');
+        notes.push({ p: 1, t: '판독 불가 초성열 「' + t.s + '」. 자판 위를 손바닥으로 문지른 흔적으로 추정된다. 감정 과부하 상태다.' }); return;
+      }
+      if (allV) {
+        if (cs.every(c => c === 'ㅠ' || c === 'ㅜ')) { feats.cry = 1; out.push('(눈물)'); markJ(t.at, '눈물');
+          notes.push({ p: 1, t: cs[0] + ' ' + cs.length + '개. 눈물 두 줄기가 세로로 흐르는 상형 문자다. 수분 손실은 약 ' + (cs.length * .3).toFixed(1) + 'ml로 추정된다.' }); return; }
+        if (prev && prev.k === 'S') { const pv = lastV(dec(prev.s)[1]);
+          if (cs.every(c => c === pv)) { markJ(t.at, '여음');
+            notes.push({ p: 0, t: pos(prev.at) + ' 「' + prev.s + '」 뒤의 ' + t.s + '는 모음이 한 번 더 울린 여음(餘音)이다. 이 대목에 대한 화자의 의지가 ' + (1 + .5 * cs.length).toFixed(1) + '배임을 뜻한다.' }); return; } }
+        markJ(t.at, '유랑'); notes.push({ p: 2, t: '떠도는 모음 「' + t.s + '」. 어느 음절에도 소속되지 않았다. 화자의 마음도 이와 같다.' }); return;
+      }
+      const asm = assemble(cs); out.push(asm); markJ(t.at, '분해');
+      notes.push({ p: 0, t: '자모가 조립되지 않은 채 발송되었다. 「' + t.s + '」를 다시 조립하면 「' + asm + '」. 화자는 조립할 시간도 없이 급했다.' }); return;
+    }
+    // 음절
+    let [c, v, j] = dec(t.s), s = t.s;
+    const wordStart = !prev || prev.k !== 'S';
+    const prevSyl = prev && prev.k === 'S' ? prev.s : '';
+    if (wordEnd && (!wordStart || j === 'ㅋ' || j === 'ㅎ') && j && CUTE[j] && (CUTE[j] === '*' || CUTE[j].includes(com(c, v))) && !(NOT_CUTE[s] && prevSyl && NOT_CUTE[s].includes(prevSyl))) {
+      s = com(c, v); mark(t.at, j === 'ㅋ' ? '침투' : '애교'); notes.push({ p: 0, t: pos(t.at) + ' 「' + t.s + '」의 ' + CUTE_NOTE[j] + ' 원형은 「' + s + '」.' });
+      if (j === 'ㅋ') feats.lol = 1;
+    } else if (wordEnd && !j && END_FIX[t.s] && !(prevSyl && END_FIX[t.s][1].includes(prevSyl)) && !(wordStart && toks.length === 1)) {
+      s = END_FIX[t.s][0]; mark(t.at, '오타');
+      notes.push({ p: 0, t: pos(t.at) + ' 「' + t.s + '」의 ㄴ은 두벌식 자판에서 ㅇ 바로 왼쪽 키다. 손가락이 1.9cm 미끄러진 흔적이며, 원형은 「' + s + '」.' });
+    } else if ((v === 'ㅘ' || v === 'ㅝ') && 'ㅍㅌㅋㅊ'.includes(c)) {
+      s = com(c, v === 'ㅘ' ? 'ㅏ' : 'ㅓ', j); mark(t.at, '고어');
+      notes.push({ p: 0, t: pos(t.at) + ' 「' + t.s + '」의 ' + v + '는 감탄사 「' + (v === 'ㅘ' ? '와' : '워') + '」가 응축된 고어 표기다. 화자는 이 대목에서 탄식했다.' });
+      notes.push({ p: 2, t: '같은 글자의 초성 ' + c + '은 평음 ' + ({ 'ㅍ':'ㅂ','ㅌ':'ㄷ','ㅋ':'ㄱ','ㅊ':'ㅈ' })[c] + '이 격음화된 것으로, 감정의 압력이 한 단계 높아졌음을 보여 준다.' });
+    }
+    out.push(s);
+  });
+  // 2) 단어 단위 교정
+  let rest = out.join('').replace(/([^\s(])\(/g, '$1 (').replace(/\)([^\s)])/g, ') $1').replace(/\s+/g, ' ').trim();
+  for (const [a, b, w, n] of SUBS) {
+    const re = w === 'w' ? new RegExp('(^|\\s)' + a + '(?=$|\\s|[^가-힣])') : new RegExp(a);
+    if (re.test(rest)) { rest = rest.replace(re, w === 'w' ? '$1' + b : b); notes.push({ p: 1, t: n }); const at = text.indexOf(a); if (at >= 0) mark(at, '축약'); }
+  }
+  // 3) 같은 음절 반복
+  const rep = text.match(/([가-힣])\1{2,}/);
+  if (rep) notes.push({ p: 1, t: '「' + rep[1] + '」 ' + rep[0].length + '회 반복. 반복 1회당 진심이 약 12%씩 누적된다.' });
+  // 4) 비어 있으면 일반 분석
+  const syls = chars.filter(isSyl);
+  if (notes.length < 2 && syls.length) {
+    const tense = syls.find(x => 'ㅋㅌㅍㅊㄲㄸㅃㅆㅉ'.includes(dec(x)[0]));
+    if (tense) { const cc = dec(tense)[0], gyeok = 'ㅋㅌㅍㅊ'.includes(cc);
+      notes.push({ p: 3, t: '「' + tense + '」의 초성 ' + cc + '은 평음이 ' + (gyeok ? '격음화' : '경음화') + '된 것으로, 이 대목에서 감정의 압력이 높아졌다.' }); mark(text.indexOf(tense), gyeok ? '격음' : '경음'); }
+    const bat = syls.filter(x => dec(x)[2]).length;
+    notes.push({ p: 5, t: '총 ' + syls.length + '음절 중 받침이 있는 음절 ' + bat + '개(' + Math.round(bat / syls.length * 100) + '%). 표준 문어체(41%)와 비교하면 화자의 ' + (bat / syls.length > .41 ? '말이 무겁다.' : '마음이 가볍다.') });
+    if (notes.length < 2) notes.push({ p: 6, t: '표면상 오타가 발견되지 않았다. 판독원 경력 30년, 이것이 가장 위험한 신호다.' });
+  }
+  notes.sort((a, b) => a.p - b.p);
+  // 5) 주제·번역
+  const hay = rest + ' ' + text;
+  let tp = TOPICS.find(x => x.keys.some(k => hay.includes(k)));
+  if (!tp && feats.lol) tp = TOPICS.find(x => x.id === 'lol');
+  if (!tp && feats.cry) tp = TOPICS.find(x => x.id === 'cry');
+  const T = tp || GENERIC;
+  const word = rest.replace(/\(.*?\)/g, '').trim() || text;
+  const tr = P(T.tr).replace('{w}', word);
+  // 품사
+  let posName = T.pos;
+  if (feats.abbr && !tp) posName = '초성 감탄사';
+  else if (feats.lat && !tp) posName = '외래 혼입어';
+  // 발음
+  const pron = chars.map(ch => isCon(ch) ? JNAME[ch] : isVow(ch) ? com('ㅇ', ch) : ch).join('').replace(/(키읔){4,}/g, m => '키읔×' + m.length / 2).replace(/(히읗){4,}/g, m => '히읗×' + m.length / 2);
+  const pS = [...pron]; const firstS = pS.findIndex(isSyl);
+  if (firstS >= 0) pS.splice(firstS + 1, 0, 'ː');
+  // 어원
+  const baseSyl = [...(word.split(' ').find(w => [...w].some(isSyl)) || '')].filter(isSyl).slice(0, 4);
+  const src = baseSyl.length ? baseSyl : [...pron].filter(isSyl).slice(0, 4);
+  const S = { syl: src, ro: src.map(romaSyl) };
+  const li = Math.floor(R() * LANGS.length); let lj = Math.floor(R() * (LANGS.length - 1)); if (lj >= li) lj++;
+  const [A, B] = [LANGS[li], LANGS[lj]].sort((x, y) => (x[0] === '중세 국어' ? -1 : 0) - (y[0] === '중세 국어' ? -1 : 0));
+  const ety = '← ' + A[0] + ' <u>' + K.esc(A[1](S)) + '</u>' + (A[3] ? ' ' + A[3] : '') + ' (' + A[2] + ')<br>← ' + B[0] + ' <u>' + K.esc(B[1](S)) + '</u> 「' + T.gloss + '」';
+  // 용례
+  const now = new Date(), dt = now.getFullYear() + '. ' + (now.getMonth() + 1) + '. ' + now.getDate() + '.';
+  const ex = P(EX).replace('{to}', K.esc(to) + K.josa(to, '은', '는')).replace('{to2}', K.esc(to)).replace('{o}', K.esc(text)).replace('{rl}', K.josa(text, '을', '를')).replace('{n}', 3 + Math.floor(R() * 40)).replace('{h}', 1 + Math.floor(R() * 4)).replace('{m}', 10 + Math.floor(R() * 49));
+  return { text, chars, notes: notes.slice(0, 3).map(n => n.t), marks, rest: rest || text, pos: posName, def: T.def, pron: pS.join(''), roma: S.ro.join('.'),
+    ety, ex, dt, tr, sup: '¹²³'[Math.floor(R() * 3)], ratio: Math.round(tr.replace(/\s/g, '').length / Math.max(1, text.replace(/\s/g, '').length) * 100) };
+}
+
+/* ───────── 사전 항목 그리기 ───────── */
+function entryHTML(d, A){
+  const L = [];
+  L.push('<div class="ln hw"><b>' + K.esc(A.text) + '</b><sup>' + A.sup + '</sup><em>[' + K.esc(A.pron) + ']</em></div>');
+  L.push('<div class="ln meta"><span class="pos">' + A.pos + '</span><span>출전: ' + K.esc(d.to) + ', 카톡 메시지, ' + A.dt + '</span></div>');
+  L.push('<div class="ln sec"><i>뜻</i><div>' + A.def + '</div></div>');
+  L.push('<div class="ln sec"><i>분석</i><div><ol>' + A.notes.map((n, i) => '<li data-n="' + (i + 1) + ')">' + K.esc(n) + '</li>').join('') + '</ol></div></div>');
+  L.push('<div class="ln sec"><i>어원</i><div class="ety">' + A.ety + '</div></div>');
+  L.push('<div class="ln sec"><i>복원</i><div class="rs">' + K.esc(A.rest) + '</div></div>');
+  L.push('<div class="ln sec"><i>용례</i><div class="ex">¶ ' + A.ex + '<small>《카톡 대화록》 ' + A.dt + '</small></div></div>');
+  return '<div class="entry">' + L.join('') + '</div>';
+}
+
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), typo: K.str(a[1], '배고퐈', 30), fr: K.str(a[2], '나', 10) }),
+  make,
+  show,
+});
+
+function make(){
+  K.maker({
+    kicker: '국립오타해독원', title: '오타 번역기', sub: '친구의 오타를 고문서처럼 해독합니다.',
+    fields: [
+      { k: 'to', label: '친구 이름', ph: '영집', max: 10, def: '친구' },
+      { k: 'typo', label: '친구가 보낸 오타', ph: '배고퐈', max: 30, def: '배고퐈' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+    ],
+    btn: '해독 결과 링크 만들기',
+    toArr: v => [v.to, v.typo, v.fr],
+  });
+  const ex = ['배고퐈', '낼 몇시에 만나ㅏ', 'ㅇㅋ녀', '알겟어', '사랑행', 'dkssud', '자니..?', '보고시퍼ㅠㅠ', 'ㅈㅅㅈㅅ 늦을듯', '머해', 'ㅋ', '헐ㄹ대박'];
+  K.$('#kf-typo').insertAdjacentHTML('afterend', '<div class="chips">' + ex.map(e => '<button type="button">' + K.esc(e) + '</button>').join('') + '</div><button type="button" class="qbtn" id="qgo">바로 번역</button><div id="quick"></div>');
+  K.$('.chips').onclick = e => { if (e.target.tagName === 'BUTTON') { K.$('#kf-typo').value = e.target.textContent; quick(); } };
+  K.$('#qgo').onclick = quick;
+  function quick(){
+    const d = { to: K.str(K.$('#kf-to').value, '친구', 10), typo: K.str(K.$('#kf-typo').value, '배고퐈', 30) };
+    const A = analyze(d.typo, d.to);
+    K.$('#quick').innerHTML = entryHTML(d, A) + '<div class="tr"><small>현대어 번역</small><p>' + K.esc(A.tr) + '</p><p class="rat">원문 대비 ' + A.ratio + '% 확장</p></div>';
+  }
+}
+
+function show(d){
+  const A = analyze(d.typo, d.to);
+  const units = A.chars.map((ch, i) => {
+    if (/\s/.test(ch)) return '<span class="u sp"></span>';
+    const jm = isSyl(ch) ? dec(ch).filter(Boolean).join(' ') : ch;
+    const mk = A.marks[i] != null ? ' mk' : '';
+    return '<span class="u' + mk + '" data-i="' + i + '">' + K.esc(ch) + '<span class="jm">' + jm + '</span>' + (A.marks[i] ? '<span class="lb">' + A.marks[i] + '</span>' : '') + '</span>';
+  }).join('');
+  const n = A.chars.filter(c => !/\s/.test(c)).length, fs = n <= 3 ? 92 : n <= 5 ? 74 : n <= 8 ? 56 : n <= 12 ? 44 : 34;
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><div class="doc"><p class="org">국립오타해독원 · 고문헌 판독실</p><p class="dh">해독 의뢰서</p>' +
+    '<p class="row"><b>의뢰인</b><span>' + K.esc(d.fr) + '</span></p><p class="row"><b>문헌 저자</b><span>' + K.esc(d.to) + '</span></p><p class="row"><b>문헌</b><span>카톡 메시지 1건 (' + n + '자)</span></p><p class="row"><b>상태</b><span>판독 불가 → 정밀 해독 대기</span></p>' +
+    '<p class="body">' + K.esc(d.to) + '님이 보낸 문장의 뜻을 아무도 확신하지 못하여, 본원에 정밀 해독을 의뢰합니다.</p>' +
+    '<button class="gbtn" id="enter">해독 시작</button></div></div>' +
+    '<div id="lab"><div id="hd"><p class="o">국립오타해독원 · 고문헌 판독실</p><h2 id="h2">' + K.esc(d.to) + '님의 문장을 해독 중<span class="dots"><i>.</i><i>.</i><i>.</i></span></h2></div>' +
+    '<div id="scroll"><div class="grid"></div><div class="txt" style="font-size:' + fs + 'px">' + units + '</div><div id="beam"></div></div>' +
+    '<div id="pct"><small>해독률</small><span id="pv">0.0</span>%</div><div id="stat"></div><div id="card"></div></div>' +
+    '<div id="fin"><span id="seal">해독<br>완료</span><p class="k">현대어 번역</p><p class="src">원문<b>' + K.esc(A.text) + '</b></p><p class="arrow">↓</p><p class="big" id="big"></p><p class="rat" id="rat">원문 ' + n + '자 → 번역 ' + A.tr.replace(/\s/g, '').length + '자. <b>' + A.ratio + '% 확장</b>되었습니다.</p></div>';
+  K.footer({ dark: true });
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#lab').classList.add('on'); run(d, A); };
+}
+
+async function run(d, A){
+  const S = K.sleep, sc = K.$('#scroll'), st = K.$('#stat');
+  const line = h => { st.querySelector('.pb').insertAdjacentHTML('beforebegin', '<p>' + h + '</p>'); const ps = st.querySelectorAll('p'); if (ps.length > 5) ps[0].remove(); K.tick({ f: 2200 }); };
+  st.innerHTML = '<div class="pb"><i id="pb"></i></div>';
+  const pb = K.$('#pb'), setP = p => pb.style.width = p + '%';
+  // 1) 스캔
+  await S(300);
+  sc.classList.add('scan'); K.$('#beam').classList.add('go');
+  K.tone(70, 2.6, { type: 'sawtooth', vol: .07, slide: 140 }); K.tone(1400, 2.6, { type: 'sine', vol: .03, slide: 1900 });
+  const nJ = A.chars.reduce((s, c) => s + (isSyl(c) ? dec(c).filter(Boolean).length : /\s/.test(c) ? 0 : 1), 0);
+  const steps = [['문헌 스캔', '600dpi'], ['자모 분해', A.chars.filter(c => !/\s/.test(c)).length + '자 → ' + nJ + '자모'], ['고문헌 대조', '1,384권'], ['수메르 점토판 대조', '212점'], ['이상 표기 검출', Object.values(A.marks).filter(Boolean).length + '건']];
+  const pv = K.$('#pv'), t0 = performance.now(); (function f(){ const q = Math.min(1, (performance.now() - t0) / 3000); pv.textContent = (q < 1 ? (99.9 * (1 - Math.pow(1 - q, 2))) : 100).toFixed(1); if (q < 1) requestAnimationFrame(f); })();
+  for (let k = 0; k < steps.length; k++) {
+    line('&gt; ' + steps[k][0] + ' … <b>' + steps[k][1] + '</b>'); setP((k + 1) * 20);
+    if (k === 1) sc.classList.add('split');
+    await S(560);
+  }
+  sc.classList.remove('scan'); setP(100);
+  // 2) 이상 표기 표시
+  const mks = K.$$('#scroll .u.mk');
+  const gap = Math.max(90, Math.min(380, 2400 / Math.max(1, mks.length)));
+  for (const m of mks) { m.classList.add('on'); K.tone(980, .08, { type: 'square', vol: .1 }); K.tone(740, .12, { type: 'square', vol: .08, at: .07 }); await S(gap); }
+  await S(mks.length ? 700 : 400);
+  K.$('#h2').textContent = '해독 결과';
+  // 3) 사전 항목
+  st.style.opacity = 0; K.$('#pct').style.opacity = 0; sc.style.transform = 'translateY(-40px) scale(.6)'; sc.style.opacity = 0;
+  K.noise(.35, { hp: 2500, vol: .25 });
+  await S(450); sc.remove();
+  const card = K.$('#card'); card.innerHTML = entryHTML(d, A); card.classList.add('on');
+  const lns = K.$$('#card .ln');
+  for (let k = 0; k < lns.length; k++) {
+    lns[k].classList.add('on');
+    K.noise(.08, { bp: 2400, q: .8, vol: .18 }); K.tone(k === 0 ? 523 : 880 + k * 40, .07, { type: 'sine', vol: .12 });
+    await S(k === 0 ? 900 : k === 3 ? 1700 : 1050);
+  }
+  await S(900);
+  // 4) 현대어 번역
+  const fin = K.$('#fin'), big = K.$('#big');
+  big.innerHTML = [...A.tr].map(c => '<span>' + K.esc(c) + '</span>').join('');
+  fin.classList.add('on'); K.tone(196, 1.4, { type: 'sawtooth', vol: .08 }); K.tone(294, 1.4, { type: 'sawtooth', vol: .06, at: .05 });
+  await S(700);
+  const sp = K.$$('#big span');
+  for (let k = 0; k < sp.length; k++) { sp[k].classList.add('on'); if (k % 3 === 0) K.tick({ f: 1200, vol: .04 }); await S(45); }
+  await S(500);
+  K.$('#seal').classList.add('on'); setTimeout(() => { K.boom({ vol: .9, f: 90 }); K.vibe(40); document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }, 230);
+  await S(900);
+  K.$('#rat').classList.add('on'); K.ding({ f: 1046 });
+  await S(1400);
+  K.again({ replayText: '다시 해독', makeText: '나도 해독 의뢰하기' });
+}
+</script>
+</body>
+</html>

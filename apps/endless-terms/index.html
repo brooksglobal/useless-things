@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>무한 약관</title>
+<meta name="description" content="약관이 조금 있습니다.">
+<meta property="og:title" content="중요한 것이 도착했습니다">
+<meta property="og:description" content="약관에 동의해야 볼 수 있습니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/endless-terms/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#F2F4F7;--k-fg:#14171F;--k-sub:#5f6673;--k-card:#fff;--k-line:#d5dae3;--k-acc:#2348D8;--k-acc-fg:#fff;--k-focus:#2348D8;
+  --blue:#2348D8;--ink:#14171F;--sub:#6a7180;--line:#e3e7ee;--red:#D7263D;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:#F2F4F7;color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+/* 도착 화면 */
+#gate{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 26px 130px;text-align:center;z-index:5;background:#F2F4F7}
+#gate .env{width:170px;height:118px;position:relative;margin-bottom:30px;animation:float 2.6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px) rotate(-1deg)}}
+.env .b{position:absolute;inset:0;background:#fff;border-radius:10px;box-shadow:0 18px 40px rgba(20,23,31,.15);overflow:hidden}
+.env .b::before{content:"";position:absolute;left:-10%;right:-10%;top:-62%;height:120%;background:#e9edf5;transform:rotate(0);clip-path:polygon(0 50%,50% 100%,100% 50%,100% 0,0 0);border-bottom:2px solid #d5dae3}
+.env .lk{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-14px 0 0 -23px;border-radius:50%;background:var(--red);display:grid;place-items:center;color:#fff;font-size:20px;box-shadow:0 4px 10px rgba(215,38,61,.35)}
+#gate .tag{font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--blue)}
+#gate h1{font-size:25px;font-weight:900;line-height:1.38;margin-top:10px;letter-spacing:-.02em}
+#gate p.s{font-size:15px;color:var(--sub);margin-top:10px;line-height:1.5}
+#gate button{margin-top:28px;width:100%;max-width:320px;border:0;border-radius:14px;padding:16px;font:inherit;font-size:17px;font-weight:800;background:var(--blue);color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(35,72,216,.3)}
+/* 약관 화면 */
+#terms{position:fixed;inset:0;display:none;flex-direction:column}
+#terms.on{display:flex}
+#hd{flex:none;background:#fff;padding:max(14px,env(safe-area-inset-top)) 16px 12px;border-bottom:1px solid var(--line);position:relative;z-index:3}
+#hd .t1{font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.06em}
+#hd h2{font-size:19px;font-weight:900;margin-top:3px;letter-spacing:-.02em}
+#prog{display:flex;align-items:center;gap:10px;margin-top:10px}
+#prog .tr{flex:1;height:8px;background:#eef1f6;border-radius:8px;overflow:hidden}
+#prog .fl{height:100%;width:0;background:var(--blue);transition:width .12s}
+#prog b{font-size:13px;font-weight:900;font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+#btns{display:flex;gap:8px;margin-top:10px;position:relative;height:44px}
+#all{position:absolute;left:0;top:0;width:calc(50% - 4px);height:44px;border:2px solid var(--blue);background:#fff;color:var(--blue);border-radius:12px;font:inherit;font-weight:900;font-size:15px;cursor:pointer;transition:transform .32s cubic-bezier(.2,1.4,.4,1),opacity .3s;z-index:4}
+#all.no{border-color:#c9ced8;color:#a6acb8;text-decoration:line-through}
+#fast{position:absolute;transition:transform .32s cubic-bezier(.2,1.4,.4,1);right:0;top:0;width:calc(50% - 4px);height:44px;border:0;background:#eef1f6;color:var(--ink);border-radius:12px;font:inherit;font-weight:800;font-size:14px;cursor:pointer}
+#list{flex:1;overflow-y:auto;padding:8px 14px 170px;-webkit-overflow-scrolling:touch;scroll-behavior:auto}
+.ar{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:12px;padding:13px 14px;margin-top:8px;border:1.5px solid transparent;cursor:pointer;transition:background .2s,border-color .2s}
+.ar .cb{flex:none;width:24px;height:24px;border-radius:7px;border:2px solid #c3c9d4;display:grid;place-items:center;margin-top:1px;transition:background .12s,border-color .12s}
+.ar .cb svg{width:14px;height:14px;opacity:0;transform:scale(.4);transition:opacity .12s,transform .2s cubic-bezier(.2,1.8,.4,1)}
+.ar.on .cb{background:var(--blue);border-color:var(--blue)}
+.ar.on .cb svg{opacity:1;transform:none}
+.ar.on{background:#f5f7ff}
+.ar.cur{border-color:var(--blue)}
+.ar .tx{font-size:14px;line-height:1.55;color:#2c313b}
+.ar .tx b{display:block;font-size:13.5px;font-weight:900;color:var(--ink);margin-bottom:2px;font-family:"Nanum Myeongjo",serif}
+.ar.del .tx{color:#a6acb8}
+.ar.sp{background:#fff7e0;border-color:#f3c44b}
+.ar.sp .tx{font-size:16px;font-weight:800;color:#1a1a1a}
+.ar.sp .tx b{color:#b5121b}
+.ar.sp .tx small{display:block;font-size:12px;font-weight:600;color:#8a7b55;margin-top:4px}
+#ok{position:fixed;left:16px;right:16px;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 60px);border:0;border-radius:14px;padding:16px;font:inherit;font-size:17px;font-weight:900;background:#c9ced8;color:#fff;z-index:6;transition:background .3s;cursor:not-allowed}
+#ok.ready{background:var(--blue);cursor:pointer;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.03)}}
+#toast{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.8);background:#14171F;color:#fff;font-weight:800;font-size:15px;padding:14px 18px;border-radius:12px;z-index:60;text-align:center;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .2s,transform .25s cubic-bezier(.2,1.6,.4,1);width:max-content;max-width:86vw}
+#toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#finger{position:fixed;left:0;top:0;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(20,23,31,.28);border:2px solid rgba(255,255,255,.9);z-index:70;pointer-events:none;opacity:0;transition:left .35s ease,top .35s ease,opacity .2s}
+#finger.on{opacity:1}
+#finger.tap{animation:tp .25s}
+@keyframes tp{50%{transform:scale(.7)}}
+/* 결과 */
+#res{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px 20px 150px;background:rgba(20,23,31,.84);z-index:20}
+#res.on{display:flex}
+#load{color:#fff;font-weight:800;font-size:16px;display:flex;align-items:center;gap:10px}
+#load i{width:22px;height:22px;border-radius:50%;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;animation:sp .7s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#box{display:none;width:min(100%,350px);text-align:center}
+#box .k{background:#fff;border-radius:16px;padding:24px 20px;box-shadow:0 30px 60px rgba(0,0,0,.4);animation:up .5s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes up{0%{transform:translateY(40px) scale(.9);opacity:0}100%{transform:none;opacity:1}}
+#box .k small{font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.2em}
+#box .k h3{font-size:30px;font-weight:900;margin-top:8px;letter-spacing:-.03em}
+#box .k h3 em{font-style:normal;color:var(--red)}
+#box .k p{font-size:15px;color:var(--sub);margin-top:10px;font-weight:700;opacity:0;transition:opacity .5s}
+#box .k p.on{opacity:1}
+#doc{margin-top:14px;background:#FBF7EC;border-radius:6px;padding:20px 18px 18px;text-align:left;box-shadow:0 20px 40px rgba(0,0,0,.35);position:relative;display:none;font-family:"Nanum Myeongjo",serif;color:#1a1a1a}
+#doc.on{display:block;animation:up .5s cubic-bezier(.2,1.3,.4,1) both}
+#doc .dh{text-align:center;font-weight:800;font-size:20px;letter-spacing:.4em;border-bottom:3px double #1a1a1a;padding-bottom:8px}
+#doc .cl{margin-top:14px;font-size:17px;font-weight:800;line-height:1.5}
+#doc .cl b{color:#b5121b;display:block;font-size:13px;letter-spacing:.06em}
+#doc .sg{margin-top:16px;font-size:14px;font-weight:700;line-height:1.7;color:#333;padding-right:96px;min-height:80px}
+#stamp{position:absolute;right:16px;bottom:16px;width:82px;height:82px;border-radius:50%;border:4px solid var(--red);color:var(--red);display:grid;place-items:center;text-align:center;font-weight:800;font-size:14px;line-height:1.2;opacity:0;transform:scale(3) rotate(-18deg);mix-blend-mode:multiply}
+#stamp.on{animation:st .26s cubic-bezier(.5,0,.7,1) forwards}
+@keyframes st{to{opacity:.9;transform:scale(1) rotate(-12deg)}}
+body.shake #doc{animation:shk .2s linear}
+@keyframes shk{25%{transform:translate(-5px,2px)}50%{transform:translate(5px,-2px)}75%{transform:translate(-2px,1px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const CHK = '<svg viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), fr: K.str(a[1], '나', 10), last: K.str(a[2], '치킨 쏘기에 동의함', 24) }),
+  make: () => K.maker({
+    kicker: '중요한 것 보내기', title: '무한 약관', sub: '약관이 조금 있습니다.',
+    fields: [
+      { k: 'to', label: '받는 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+      { k: 'last', label: '마지막 조항', ph: '치킨 쏘기에 동의함', max: 24, def: '치킨 쏘기에 동의함', hint: '79개 조항 뒤에 조용히 들어갑니다.' },
+    ],
+    toArr: v => [v.to, v.fr, v.last],
+  }),
+  show,
+});
+
+function articles(d){
+  const F = K.esc(d.fr), T = K.esc(d.to);
+  const A = {
+    1: ['목적', '이 약관은 ' + F + '(이하 「보낸 사람」)이 보낸 중요한 것을 ' + T + '(이하 「본인」)이 열람하는 데 필요한 사항을 정한다.'],
+    2: ['정의', '「중요한 것」이란 보낸 사람이 중요하다고 주장하는 것을 말한다.'],
+    3: ['효력', '본인은 이 화면을 연 순간부터 약관을 읽은 것으로 본다.'],
+    4: ['답장', '본인은 보낸 사람의 메시지에 성실히 답장한다.'],
+    5: ['읽씹', '본인은 메시지를 읽고 답하지 아니하는 행위를 하지 아니한다.'],
+    6: ['이모티콘', '답장을 이모티콘 하나로 대신할 수 없다.'],
+    7: ['ㅇㅇ', '「ㅇㅇ」은 답장으로 인정하지 아니한다.'],
+    8: ['단체 사진', '본인은 단체 사진을 고를 때 보낸 사람이 잘 나온 것을 고른다.'],
+    9: ['도착 예정', '본인은 집에서 나오기 전에 「거의 다 왔어」라고 말하지 아니한다.'],
+    10: ['지각', '지각은 5분 단위로 커피 한 잔으로 환산한다.'],
+    11: ['생일', '본인은 보낸 사람의 생일을 알림 없이 기억한다.'],
+    12: ['답장 기한', '본인은 답장을 3시간 안에 한다.'],
+    13: ['더치페이', '나누어 낼 때 100원 단위는 보낸 사람에게 유리하게 반올림한다.'],
+    14: ['추천곡', '본인은 보낸 사람이 추천한 노래를 끝까지 듣는다.'],
+    15: ['스포일러', '본인은 보낸 사람이 아직 안 본 드라마의 결말을 말하지 아니한다.'],
+    17: ['전화', '갑작스러운 전화는 용건을 먼저 문자로 알린 뒤 건다.'],
+    18: ['마지막 한 조각', '마지막 남은 한 조각은 묻고 먹는다.'],
+    19: ['관찰', '본인은 보낸 사람이 머리를 자른 것을 3초 안에 알아챈다.'],
+    20: ['잠수', '연락 두절은 48시간을 넘지 아니한다.'],
+    22: ['단톡방', '본인은 단톡방 공지를 읽었다는 표시를 남긴다.'],
+    23: ['밥', '「언제 밥 한번」은 30일 안에 시행한다.'],
+    24: ['우산', '빌린 우산은 비가 그친 뒤에도 돌려준다.'],
+    25: ['충전기', '빌려 간 충전기는 그날 안에 돌려준다.'],
+    26: ['예외', '이 약관에 예외는 없다. 다만 보낸 사람은 예외로 한다.'],
+    28: ['흑역사', '본인은 보낸 사람의 흑역사를 제3자에게 공개하지 아니한다.'],
+    29: ['확인', '본인은 이 조항까지 읽었음을 확인한다. 읽지 아니하였으면 제1조로 돌아간다.'],
+    30: ['해석', '이 약관의 해석이 애매한 경우 보낸 사람의 기분에 따른다.'],
+    31: ['택배', '본인은 보낸 사람의 택배를 대신 받아 준다.'],
+    32: ['반응', '본인은 보낸 사람의 농담에 「ㅋ」를 세 개 이상 붙인다.'],
+    33: ['사과', '「미안」은 「미안해」로 대체할 수 있으나 「ㅁㅇ」으로 대체할 수 없다.'],
+    34: ['개정', '보낸 사람은 이 약관을 언제든 고칠 수 있으며 따로 알리지 아니한다.'],
+    36: ['약속 장소', '약속 장소는 두 사람의 중간 지점보다 보낸 사람 쪽으로 정한다.'],
+    37: ['원본', '같이 찍은 사진은 그날 안에 원본으로 보낸다.'],
+    38: ['배터리', '본인은 배터리가 1%가 될 때까지 메시지를 확인한다.'],
+    40: ['중간 점검', '여기까지 온 것을 환영한다. 절반쯤 왔다.'],
+    41: ['분쟁', '분쟁이 생기면 가위바위보 3판 2선승으로 정한다.'],
+    42: ['관할', '관할 법원은 보낸 사람의 집에서 가장 가까운 치킨집으로 한다.'],
+    43: ['메뉴', '「아무거나」라고 말한 사람은 고른 메뉴에 반대하지 아니한다.'],
+    44: ['줄임말', '보낸 사람이 모르는 줄임말에는 설명을 붙인다.'],
+    46: ['응원', '본인은 보낸 사람의 게시물에 좋아요를 누른다.'],
+    47: ['게임', '함께하는 게임에서 혼자 도망가지 아니한다.'],
+    48: ['팝콘', '영화관 팝콘은 나누어 먹되 마지막 한 줌은 제18조에 따른다.'],
+    50: ['비밀 유지', '본인은 이 약관의 존재를 비밀로 한다. 다만 링크 공유는 권장한다.'],
+    51: ['야간 연락', '공휴일 전날 밤 연락은 업무 연락으로 보지 아니한다.'],
+    52: ['노래방', '노래방에서 보낸 사람이 예약한 곡을 취소하지 아니한다.'],
+    54: ['날씨', '비가 오는 날의 약속은 「비 오니까 더 좋다」로 해석한다.'],
+    55: ['기간', '이 약관의 유효기간은 영원으로 하되 1년마다 자동 연장한다.'],
+    56: ['선물', '받은 선물에 대한 감상은 24시간 안에 전한다.'],
+    58: ['조사', '본인은 ' + F + K.josa(d.fr, '이', '가') + ' 맞는지 ' + F + K.josa(d.fr, '은', '는') + ' 맞는지 틀리지 아니한다.'],
+    59: ['빌린 돈', '빌린 돈은 「나중에」가 아니라 날짜를 정해 갚는다.'],
+    61: ['산책', '산책 제안을 세 번 연속 거절하지 아니한다.'],
+    62: ['알림', '본인은 보낸 사람의 대화방 알림을 끄지 아니한다.'],
+    64: ['긴장', '보낸 사람의 「할 말 있어」에 과도하게 긴장하지 아니한다.'],
+    65: ['인내', '본인은 지금까지 잘 참았다.'],
+    67: ['정정', '제12조의 「3시간」은 「3분」의 오기로 본다.'],
+    69: ['안내', '정말 거의 다 왔다.'],
+    73: ['환불', '이 약관을 읽는 데 쓴 시간은 환불하지 아니한다.'],
+    76: ['부칙', '이 약관은 동의한 날부터 시행한다.'],
+    77: ['부칙', '이 약관은 동의하지 아니한 날부터도 시행한다.'],
+    78: ['경과 조치', '이전에 한 모든 약속은 이 약관에 따른 것으로 본다.'],
+    79: ['예고', '다음 조항이 마지막이다.'],
+  };
+  const out = [];
+  for (let n = 1; n <= 79; n++) {
+    if (A[n]) out.push({ n, h: A[n][0], t: A[n][1] });
+    else if (n % 3 === 0 || n % 7 === 0) out.push({ n, h: '삭제', t: '', del: true });
+    else out.push({ n, h: '준용', t: '제' + Math.max(1, n - 5) + '조의 규정은 제' + Math.max(1, n - 11) + '조에 준용한다.' });
+  }
+  out.push({ n: 80, h: '특약', t: K.esc(d.last), sp: true });
+  return out;
+}
+
+
+function show(d){
+  const ARTS = articles(d), N = ARTS.length;
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><div class="env"><div class="b"></div><div class="lk">🔒</div></div><p class="tag">수신 알림</p>' +
+    '<h1>' + K.esc(d.fr) + '님이<br>중요한 것을 보냈습니다</h1><p class="s">약관에 동의해야 볼 수 있습니다.</p><button id="enter">약관 보기</button></div>' +
+    '<div id="terms"><div id="hd"><p class="t1">' + K.esc(d.to) + '님 전용 · 제1판</p><h2>중요한 것 열람 이용약관</h2>' +
+    '<div id="prog"><div class="tr"><div class="fl"></div></div><b id="cnt">0 / ' + N + '</b></div>' +
+    '<div id="btns"><button id="all">전체 동의</button><button id="fast">하나씩 빠르게 동의</button></div></div>' +
+    '<div id="list">' + ARTS.map((a, i) => '<div class="ar' + (a.del ? ' del' : '') + (a.sp ? ' sp' : '') + '" data-i="' + i + '"><span class="cb">' + CHK + '</span><p class="tx"><b>제' + a.n + '조 (' + a.h + ')</b>' +
+      (a.del ? '(삭제)' : a.t) + (a.sp ? '<small>본 조항은 앞의 79개 조항과 같은 효력을 가진다.</small>' : '') + '</p></div>').join('') + '</div>' +
+    '<button id="ok">' + N + '개 모두 동의해야 열 수 있습니다</button></div>' +
+    '<div id="res"><p id="load"><i></i>중요한 것을 여는 중</p><div id="box"><div class="k"><small>' + K.esc(d.fr) + '님이 보낸 것</small><h3>중요한 것: <em>없음</em></h3><p id="but">단, 마지막 조항에 동의하셨습니다.</p></div>' +
+    '<div id="doc"><p class="dh">계약서</p><p class="cl"><b>제80조 (특약)</b>' + K.esc(d.last) + '</p>' +
+    '<p class="sg">동의자 ' + K.esc(d.to) + '<br>상대방 ' + K.esc(d.fr) + '<br><span id="when"></span></p><span id="stamp">' + K.esc(d.to.slice(0, 4)) + '<br>동의</span></div></div></div>' +
+    '<div id="toast"></div><div id="finger"></div>';
+  K.footer();
+
+  const list = K.$('#list'), rows = K.$$('.ar'), fl = K.$('#prog .fl'), cnt = K.$('#cnt'), ok = K.$('#ok'), all = K.$('#all');
+  const done = new Set(); let auto = false, opened = false, dodge = 0;
+
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#terms').classList.add('on'); K.tone(660, .08, { type: 'sine', vol: .2 }); K.tone(990, .12, { type: 'sine', vol: .15, at: .07 }); };
+
+  function setRow(i, on){
+    const r = rows[i]; if (on === done.has(i)) return;
+    on ? done.add(i) : done.delete(i); r.classList.toggle('on', on);
+    fl.style.width = (done.size / N * 100) + '%'; cnt.textContent = done.size + ' / ' + N;
+    if (on) K.tone(900 + done.size * 9, .04, { type: 'square', vol: .05 });
+    const full = done.size === N; ok.classList.toggle('ready', full); ok.textContent = full ? '동의하고 열기' : N + '개 모두 동의해야 열 수 있습니다';
+  }
+  rows.forEach((r, i) => r.onclick = () => { if (!auto) setRow(i, !done.has(i)); });
+
+  // 전체 동의: 도망가다가 거절
+  function toast(t, ms = 1600){ const el = K.$('#toast'); el.innerHTML = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), ms); }
+  function dodgeAll(){
+    dodge++;
+    if (dodge <= 2) {
+      const sw = dodge === 1;   // 첫 번째: 자리 바꾸기, 두 번째: 원위치
+      all.style.transform = sw ? 'translateX(calc(100% + 8px))' : 'none';
+      K.$('#fast').style.transform = sw ? 'translateX(calc(-100% - 8px))' : 'none';
+      K.tone(500, .18, { type: 'sine', vol: .2, slide: 1400 }); K.noise(.12, { hp: 2500, vol: .12 });
+    } else {
+      all.classList.add('no'); toast('전체 동의는 지원하지 않습니다.<br>한 조항씩 읽고 동의해 주세요.', 2000);
+      K.tone(180, .22, { type: 'square', vol: .1 }); K.tone(150, .3, { type: 'square', vol: .1, at: .2 });
+    }
+  }
+  all.addEventListener('pointerdown', e => { e.preventDefault(); if (!auto) dodgeAll(); });
+  K.$('#fast').onclick = () => { if (!auto) runAuto(); };
+
+  const finger = K.$('#finger');
+  async function tapAt(el){ const r = el.getBoundingClientRect(); finger.style.left = (r.left + r.width / 2) + 'px'; finger.style.top = (r.top + r.height / 2) + 'px'; finger.classList.add('on'); await K.sleep(380);
+    finger.classList.remove('tap'); void finger.offsetWidth; finger.classList.add('tap'); await K.sleep(120); }
+
+  async function runAuto(){
+    auto = true;
+    // 전체 동의를 세 번 시도
+    if (dodge < 3) {
+      finger.style.transition = 'none'; finger.style.left = '195px'; finger.style.top = '520px'; void finger.offsetWidth; finger.style.transition = '';
+      while (dodge < 3) { await tapAt(all); dodgeAll(); await K.sleep(dodge < 3 ? 520 : 1700); }
+    }
+    finger.classList.remove('on');
+    // 하나씩, 점점 빠르게
+    for (let i = 0; i < N; i++) {
+      if (done.has(i)) continue;
+      const r = rows[i]; rows.forEach(x => x.classList.remove('cur')); r.classList.add('cur');
+      const target = r.offsetTop - list.clientHeight * .45;
+      list.scrollTop = Math.max(0, target);
+      if (i === N - 1) { await K.sleep(900); }
+      setRow(i, true);
+      await K.sleep(i < 4 ? 300 : i === N - 1 ? 700 : Math.max(38, 230 * Math.pow(.93, i - 4)));
+    }
+    rows.forEach(x => x.classList.remove('cur'));
+    await K.sleep(300); await tapAt(ok); finger.classList.remove('on'); open();
+  }
+  ok.onclick = () => { if (done.size === N) open(); };
+
+  async function open(){
+    if (opened) return; opened = true; auto = true;
+    const res = K.$('#res'); res.classList.add('on'); ok.style.display = 'none';
+    for (let i = 0; i < 6; i++) K.tick({ f: 1200, at: i * .25 });
+    await K.sleep(1600);
+    K.$('#load').style.display = 'none'; K.$('#box').style.display = 'block';
+    K.tone(523, .1, { type: 'triangle', vol: .25 }); K.tone(392, .5, { type: 'triangle', vol: .25, at: .12, slide: 300 });
+    await K.sleep(1500);
+    K.$('#but').classList.add('on'); K.tone(330, .12, { type: 'square', vol: .08 });
+    await K.sleep(900);
+    const t = new Date(); K.$('#when').textContent = t.getFullYear() + '. ' + (t.getMonth() + 1) + '. ' + t.getDate() + '. ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+    K.$('#doc').classList.add('on'); K.noise(.25, { hp: 3000, vol: .15 });
+    await K.sleep(900);
+    K.$('#stamp').classList.add('on'); setTimeout(() => { K.boom({ vol: .9, f: 90 }); K.vibe(40); document.body.classList.add('shake'); }, 230);
+    await K.sleep(1400);
+    K.again({ replayText: '동의 철회', makeText: '나도 약관 보내기', onReplay: () => {
+      toast('동의 철회는 약관 제34조에 따라<br>다음 개정 때 검토합니다.', 2200); K.tone(180, .22, { type: 'square', vol: .1 });
+      setTimeout(() => K.$('.k-again').classList.add('on'), 2300); } });
+  }
+}
+</script>
+</body>
+</html>

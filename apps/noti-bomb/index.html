@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>알림 폭탄 체험</title>
+<meta name="description" content="조용한 단톡방을 깨웁니다.">
+<meta property="og:title" content="조용한 단톡방이 있습니다">
+<meta property="og:description" content="눌러서 깨워 보세요.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/noti-bomb/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#EEF0FB;--k-fg:#1B1D3A;--k-sub:#6b6f93;--k-card:#fff;--k-line:#d6daf0;--k-acc:#5B5BF0;--k-acc-fg:#fff;--k-focus:#5B5BF0;
+  --ind:#5B5BF0;--ink:#1B1D3A;--sub:#7c80a6;--red:#FF3355;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:#EEF0FB;color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+#room{position:fixed;inset:0;display:flex;flex-direction:column;touch-action:manipulation}
+#hd{flex:none;display:flex;align-items:center;gap:12px;padding:max(12px,env(safe-area-inset-top)) 16px 12px;background:rgba(238,240,251,.92);border-bottom:1px solid #dde0f3;position:relative;z-index:5}
+#hd .ic{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,#5B5BF0,#9B6BFF);display:grid;place-items:center;color:#fff;font-size:20px;flex:none}
+#hd .nm{flex:1;min-width:0}
+#hd .nm b{display:block;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hd .nm span{font-size:12px;color:var(--sub);font-weight:700}
+#bell{position:relative;width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:20px;flex:none;margin-right:2px}
+#badge{position:absolute;right:-8px;top:-7px;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--red);color:#fff;font-size:12px;font-weight:900;display:none;place-items:center;font-variant-numeric:tabular-nums;box-shadow:0 2px 6px rgba(255,51,85,.4);transform-origin:70% 30%}
+#badge.on{display:grid}
+#badge.pop{animation:bp .3s cubic-bezier(.2,1.8,.4,1)}
+@keyframes bp{0%{transform:scale(1.8)}100%{transform:none}}
+#list{flex:1;overflow:hidden;padding:12px 14px 200px;display:flex;flex-direction:column;justify-content:flex-end;gap:8px}
+.dv{align-self:center;font-size:12px;font-weight:800;color:var(--sub);background:#e2e5f6;padding:4px 10px;border-radius:999px;margin:6px 0}
+.m{display:flex;gap:8px;align-items:flex-end;max-width:86%;animation:min .22s cubic-bezier(.2,1.5,.4,1) both;flex:none}
+@keyframes min{0%{transform:translateY(14px) scale(.9);opacity:0}100%{transform:none;opacity:1}}
+.m .av{width:32px;height:32px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex:none}
+.m .bx small{display:block;font-size:11px;font-weight:800;color:var(--sub);margin:0 0 3px 2px}
+.m .bb{background:#fff;border-radius:4px 16px 16px 16px;padding:9px 12px;font-size:15px;font-weight:600;line-height:1.4;box-shadow:0 1px 0 #dde0f3}
+.m.big .bb{font-size:22px;font-weight:900}
+.sys{align-self:center;font-size:13px;font-weight:800;color:#fff;background:rgba(27,29,58,.82);padding:8px 14px;border-radius:999px;animation:min .4s both;flex:none}
+#quiet{align-self:center;font-size:13px;color:#a3a7c8;font-weight:700;margin-top:10px;letter-spacing:.06em}
+/* 배너 */
+#ban{position:fixed;left:10px;right:10px;top:max(8px,env(safe-area-inset-top));z-index:30;pointer-events:none;height:0}
+.bn{position:absolute;left:0;right:0;top:0;display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.96);border-radius:16px;padding:10px 12px;box-shadow:0 10px 30px rgba(27,29,58,.22);animation:bin .3s cubic-bezier(.2,1.4,.4,1) both;transition:transform .25s,opacity .25s}
+@keyframes bin{0%{transform:translateY(-120%)}100%{transform:none}}
+.bn .bi{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#5B5BF0,#9B6BFF);color:#fff;display:grid;place-items:center;font-size:16px;flex:none}
+.bn .bt{flex:1;min-width:0;font-size:13px;line-height:1.35}
+.bn .bt b{display:block;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bn .bt span{color:#555a80;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.bn em{font-style:normal;font-size:11px;color:var(--sub);font-weight:700;align-self:flex-start}
+/* 날아다니는 것 */
+.st{position:fixed;z-index:20;pointer-events:none;font-weight:900;animation:sin .35s cubic-bezier(.2,1.8,.4,1) both;text-shadow:0 2px 6px rgba(0,0,0,.12)}
+@keyframes sin{0%{transform:scale(0) rotate(var(--r))}100%{transform:scale(1) rotate(var(--r))}}
+.st.k{color:var(--ind);font-family:"Pretendard",sans-serif}
+.st.bd{min-width:30px;height:30px;padding:0 8px;border-radius:999px;background:var(--red);color:#fff;font-size:14px;display:grid;place-items:center;box-shadow:0 3px 10px rgba(255,51,85,.4)}
+#wake{position:fixed;left:50%;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 70px);transform:translateX(-50%);z-index:40;border:0;border-radius:999px;padding:17px 34px;font:inherit;font-size:18px;font-weight:900;background:var(--ind);color:#fff;cursor:pointer;box-shadow:0 12px 30px rgba(91,91,240,.45);white-space:nowrap;transition:transform .08s}
+#wake:active{transform:translateX(-50%) scale(.95)}
+#wake small{display:block;font-size:11px;font-weight:700;opacity:.75;margin-top:2px}
+#auto{position:fixed;right:12px;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 140px);z-index:40;border:1px solid #d6daf0;background:#fff;color:var(--ink);border-radius:999px;padding:8px 12px;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
+#meter{position:fixed;left:12px;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 140px);z-index:40;font-size:12px;font-weight:900;color:var(--sub);background:#fff;border:1px solid #d6daf0;border-radius:999px;padding:8px 12px;font-variant-numeric:tabular-nums}
+body.s1 #room{animation:sh1 .25s linear infinite}
+body.s2 #room,body.s2 .st{animation:sh2 .12s linear infinite}
+body.s3 #room,body.s3 .st,body.s3 #ban{animation:sh3 .07s linear infinite}
+@keyframes sh1{25%{transform:translate(-2px,1px)}75%{transform:translate(2px,-1px)}}
+@keyframes sh2{25%{transform:translate(-5px,3px) rotate(-.5deg)}75%{transform:translate(5px,-3px) rotate(.5deg)}}
+@keyframes sh3{25%{transform:translate(-9px,5px) rotate(-1deg)}75%{transform:translate(9px,-5px) rotate(1deg)}}
+body.freeze *{animation-play-state:paused!important}
+#dim{position:fixed;inset:0;background:rgba(238,240,251,.0);z-index:35;pointer-events:none;transition:background 1.4s}
+#dim.on{background:rgba(238,240,251,.82)}
+#mega{position:fixed;left:50%;top:44%;z-index:34;transform:translate(-50%,-50%) scale(0);background:var(--red);color:#fff;font-weight:900;font-size:64px;padding:10px 30px;border-radius:999px;box-shadow:0 20px 50px rgba(255,51,85,.5);pointer-events:none;font-variant-numeric:tabular-nums}
+#mega.on{animation:mg .35s cubic-bezier(.2,1.8,.4,1) forwards}
+@keyframes mg{to{transform:translate(-50%,-50%) scale(1) rotate(-6deg)}}
+#end{position:fixed;left:0;right:0;top:42%;transform:translateY(-50%);z-index:36;display:flex;flex-direction:column;align-items:center;gap:10px;pointer-events:none}
+#end .sys{font-size:15px;padding:10px 18px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const BADGE = [3, 9, 24, 57, 130, 270, 520, 999];   // 탭마다 안 읽은 수
+const KK = ['ㅋㅋ', 'ㅋㅋㅋ', 'ㅋㅋㅋㅋㅋ', 'ㅋㅋㅋㅋㅋㅋㅋㅋ', 'ㅋ'];
+const EMO = ['😂', '🤣', '🔥', '🍗', '👀', '💀', '😱', '🙌', '🫠', '📣'];
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), room: K.str(a[1], '우리끼리', 14), fr: K.str(a[2], '나', 10) }),
+  make: () => K.maker({
+    kicker: '단톡방 깨우기', title: '알림 폭탄 체험', sub: '조용한 단톡방을 깨웁니다.',
+    fields: [
+      { k: 'to', label: '받는 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'room', label: '단톡방 이름', ph: '우리끼리', max: 14, def: '우리끼리' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+    ],
+    toArr: v => [v.to, v.room, v.fr],
+  }),
+  show,
+});
+
+function show(d){
+  const M = [
+    { n: d.fr, a: '🦊', c: '#FFE3D1' }, { n: '야식요정', a: '🍗', c: '#FFF1C9' }, { n: '눈팅러', a: '👀', c: '#DDF3E6' }, { n: '방장', a: '🐻', c: '#E6E0FF' },
+  ];
+  const av = m => '<span class="av" style="background:' + m.c + '">' + m.a + '</span>';
+  const msg = (m, t, big) => '<div class="m' + (big ? ' big' : '') + '">' + av(m) + '<div class="bx"><small>' + K.esc(m.n) + '</small><div class="bb">' + t + '</div></div></div>';
+  document.getElementById('app').innerHTML =
+    '<div id="room"><div id="hd"><span class="ic">💬</span><div class="nm"><b>' + K.esc(d.room) + '</b><span id="mem">' + K.esc(d.to) + ' 외 4명</span></div><span id="bell">🔔<span id="badge"></span></span></div>' +
+    '<div id="list"><p class="dv">3일 전</p>' + msg(M[3], '다들 살아는 있지') + msg(M[0], '응') + '<p class="dv">어제</p>' + msg(M[1], '…') + '<p id="quiet">조용한 방입니다</p></div></div>' +
+    '<div id="ban"></div><div id="mega">999+</div><div id="dim"></div><div id="end"></div>' +
+    '<p id="meter">깨운 정도 0%</p><button id="auto">자동 재생</button>' +
+    '<button id="wake">눌러서 깨우기<small>' + K.esc(d.to) + '님 손가락으로</small></button>';
+  K.footer();
+
+  const list = K.$('#list'), ban = K.$('#ban'), badge = K.$('#badge'), meter = K.$('#meter');
+  let lv = 0, busy = false, over = false, bans = [], stickers = 0;
+  const LINES = () => [K.pick(KK), K.pick(KK), K.pick(KK), '뭐야', '누가 깨움', K.esc(d.to) + ' 깼다', '?', '자라', '치킨 ㄱ?', '알림 무슨 일', '살아 있었네', '폰 터지겠다', '나 지금 회의 중', K.esc(d.fr) + K.josa(d.fr, '이', '가') + ' 시켰대', K.pick(EMO) + K.pick(EMO)];
+
+  function sound(n){
+    // 알림음 n개를 겹치되 작게. 개수가 많아질수록 한 개는 더 작게
+    const v = Math.max(.025, .14 / Math.sqrt(n));
+    for (let i = 0; i < n; i++) { const at = Math.random() * .7, f = K.pick([988, 1175, 1319, 1568, 880]);
+      K.tone(f, .12, { type: 'sine', vol: v, at }); K.tone(f * 1.5, .18, { type: 'sine', vol: v * .7, at: at + .08 }); }
+    if (n > 8) K.noise(.6, { bp: 2200, q: .7, vol: Math.min(.2, n * .006) });
+  }
+  function banner(){
+    const m = K.pick(M), t = K.pick(LINES());
+    const el = document.createElement('div'); el.className = 'bn';
+    el.innerHTML = '<span class="bi">💬</span><p class="bt"><b>' + K.esc(d.room) + '</b><span>' + K.esc(m.n) + ': ' + t + '</span></p><em>지금</em>';
+    ban.appendChild(el); bans.unshift(el);
+    bans.forEach((b, i) => { b.style.transform = 'translateY(' + (i * 10) + 'px) scale(' + (1 - i * .04) + ')'; b.style.zIndex = 100 - i; b.style.opacity = i > 3 ? 0 : 1 - i * .12; });
+    while (bans.length > 6) bans.pop().remove();
+  }
+  function sticker(){
+    if (stickers > 160) return; stickers++;
+    const el = document.createElement('div'), r = Math.random();
+    if (r < .45) { el.className = 'st'; el.textContent = K.pick(EMO); el.style.fontSize = K.rand(28, 64) + 'px'; }
+    else if (r < .8) { el.className = 'st k'; el.textContent = K.pick(KK); el.style.fontSize = K.rand(18, 40) + 'px'; }
+    else { el.className = 'st bd'; el.textContent = Math.floor(K.rand(1, 99)); }
+    el.style.left = K.rand(-10, 340) + 'px'; el.style.top = K.rand(70, innerHeight - 220) + 'px'; el.style.setProperty('--r', K.rand(-30, 30) + 'deg');
+    document.body.appendChild(el);
+  }
+  function addMsg(){
+    const m = K.pick(M.slice(0, 3).concat(M[3])), t = K.pick(LINES());
+    list.insertAdjacentHTML('beforeend', msg(m, t, Math.random() < .2));
+    while (list.children.length > 14) list.firstElementChild.remove();
+  }
+
+  async function wake(){
+    if (busy || over) return; busy = true; setTimeout(() => busy = false, 180);
+    if (lv === 0) { K.unlock(); const q = K.$('#quiet'); if (q) q.remove(); }
+    lv++;
+    const n = Math.min(40, Math.round(Math.pow(1.6, lv)));   // 이번 탭에 쏟아지는 양
+    const c = BADGE[Math.min(lv, BADGE.length) - 1];
+    badge.classList.add('on'); badge.textContent = c >= 999 ? '999+' : c; badge.classList.remove('pop'); void badge.offsetWidth; badge.classList.add('pop');
+    badge.style.transform = 'scale(' + Math.min(2.2, 1 + lv * .12) + ')';
+    meter.textContent = '깨운 정도 ' + Math.round(Math.min(100, c / 999 * 100)) + '%';
+    document.body.classList.remove('s1', 's2', 's3'); if (lv >= 2) document.body.classList.add(lv >= 6 ? 's3' : lv >= 4 ? 's2' : 's1');
+    sound(Math.min(18, n)); K.vibe(lv * 20);
+    for (let i = 0; i < n; i++) setTimeout(() => { if (over) return; if (i % 2 === 0) addMsg(); if (i % 3 === 0) banner(); sticker(); if (lv >= 5 && i % 2) sticker(); }, i * (500 / n));
+    if (c >= 999) { over = true; setTimeout(climax, 650); }
+  }
+  async function climax(){
+    K.$('#mega').classList.add('on'); K.boom({ vol: .5, f: 140 });
+    await K.sleep(380);
+    document.body.classList.add('freeze'); K.$$('#wake,#auto,#meter').forEach(e => e.remove());
+    // 정적
+    await K.sleep(1500);
+    document.body.classList.remove('s1', 's2', 's3', 'freeze');
+    K.$('#dim').classList.add('on');
+    await K.sleep(900);
+    K.$('#end').innerHTML = '<p class="sys">방장님이 나갔습니다.</p>';
+    K.tone(523, .25, { type: 'sine', vol: .14 }); K.tone(392, .5, { type: 'sine', vol: .12, at: .2 });
+    K.$('#mem').textContent = K.esc(d.to) + ' 외 3명';
+    await K.sleep(1600);
+    K.$('#end').insertAdjacentHTML('beforeend', '<p class="sys" style="background:rgba(91,91,240,.9)">' + K.esc(d.to) + '님이 새 방장이 되었습니다.</p>');
+    K.tone(784, .12, { type: 'triangle', vol: .12 });
+    await K.sleep(1100);
+    K.again({ replayText: '다시 깨우기', makeText: '나도 단톡방 깨우기' });
+  }
+  K.$('#wake').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); wake(); });
+  K.$('#room').addEventListener('pointerdown', () => { if (lv > 0) wake(); });
+  K.$('#auto').onclick = async () => { K.$('#auto').style.visibility = 'hidden'; for (let i = 0; i < BADGE.length && !over; i++) { await wake(); await K.sleep(i < 2 ? 900 : i < 5 ? 700 : 550); } };
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>손짓 답장 신기술</title>
+<meta name="description" content="손짓 한 번으로 답장하는 신기술을 발표합니다.">
+<meta property="og:title" content="답장 좀 하라고 해서 신기술을 준비했습니다">
+<meta property="og:description" content="핸드리플라이 Pro 공개 발표">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/gesture-reply/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#0B0B10;--k-fg:#F4F4F8;--k-sub:#9a9aae;--k-card:#17171f;--k-line:#2c2c3a;--k-acc:#7C5CFF;--k-acc-fg:#fff;--k-focus:#7C5CFF;
+  --a:#7C5CFF;--b:#22D3EE;--c:#FF5CAA;color-scheme:dark}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:#050507;color:#F4F4F8;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.grad{background:linear-gradient(90deg,var(--b),var(--a) 50%,var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+/* 초대 */
+#gate{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;padding:0 28px 120px;z-index:5;background:radial-gradient(80% 50% at 50% 40%,#1b1336 0%,#050507 70%)}
+#gate .from{font-size:13px;color:#9a9aae;font-weight:700;letter-spacing:.1em}
+#gate h1{margin-top:14px;font-size:28px;font-weight:900;line-height:1.38;letter-spacing:-.02em}
+#gate p.s{margin-top:14px;font-size:15px;color:#b4b4c6;line-height:1.6}
+#gate button{margin-top:30px;align-self:flex-start;border:0;border-radius:999px;padding:15px 26px 15px 22px;font:inherit;font-size:17px;font-weight:800;background:#fff;color:#0B0B10;cursor:pointer;display:flex;align-items:center;gap:10px}
+#gate button i{font-style:normal;width:0;height:0;border-left:12px solid #0B0B10;border-top:8px solid transparent;border-bottom:8px solid transparent}
+/* 발표 */
+#stage{position:fixed;inset:0;display:none}
+#stage.on{display:block}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px 120px;opacity:0;transform:scale(1.04);transition:opacity .6s,transform .9s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.slide.on{opacity:1;transform:none}
+.slide small{font-size:12.5px;letter-spacing:.3em;color:#9a9aae;font-weight:800}
+.slide h2{font-size:44px;font-weight:900;letter-spacing:-.04em;line-height:1.15;margin-top:12px}
+.slide h3{font-size:30px;font-weight:900;letter-spacing:-.03em;line-height:1.3}
+.slide p{margin-top:14px;font-size:16px;color:#b4b4c6;line-height:1.55}
+.slide .hand{font-size:96px;filter:drop-shadow(0 0 30px rgba(124,92,255,.8));animation:hv 2.4s ease-in-out infinite}
+@keyframes hv{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-12px) rotate(6deg)}}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:22px}
+.chips span{border:1px solid #33334a;background:#12121a;border-radius:999px;padding:8px 13px;font-size:13.5px;font-weight:700;color:#d8d8e6;opacity:0;transform:translateY(10px);transition:all .4s}
+.slide.on .chips span{opacity:1;transform:none}
+.slide.on .chips span:nth-child(2){transition-delay:.25s}.slide.on .chips span:nth-child(3){transition-delay:.5s}
+.chips b{color:#fff}
+/* 데모 */
+#demo{position:absolute;inset:0;display:none;flex-direction:column;padding:calc(max(14px,env(safe-area-inset-top))) 14px calc(max(14px,env(safe-area-inset-bottom)) + 66px)}
+#demo.on{display:flex}
+#dh{flex:none;display:flex;align-items:center;gap:10px}
+#dh .rd{font-size:12px;font-weight:900;letter-spacing:.12em;background:#1d1d2a;border:1px solid #33334a;padding:5px 10px;border-radius:999px;color:#cfcfe0;font-variant-numeric:tabular-nums}
+#dh .nm{margin-left:auto;font-size:12px;font-weight:800;color:#9a9aae}
+#prompt{flex:none;margin-top:10px;font-size:24px;font-weight:900;letter-spacing:-.02em;min-height:34px}
+#pad{flex:1;min-height:0;position:relative;margin-top:10px;border-radius:20px;background:radial-gradient(70% 60% at 50% 45%,#141428 0%,#0b0b12 100%);border:1px solid #23233a;overflow:hidden;touch-action:none}
+#pad::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.4px);background-size:22px 22px;pointer-events:none}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#hintp{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:13px;font-weight:700;color:#7f7f98;pointer-events:none;transition:opacity .3s}
+#ghost{position:absolute;font-size:44px;pointer-events:none;opacity:0;transform:translate(-50%,-8%);filter:drop-shadow(0 6px 12px rgba(0,0,0,.6));transition:opacity .3s;z-index:3}
+#ghost.on{opacity:1}
+#ana{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(5,5,10,.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:4}
+#ana.on{display:flex}
+#ana .ring{width:84px;height:84px;border-radius:50%;border:4px solid #26263a;border-top-color:var(--b);border-right-color:var(--a);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ana b{margin-top:14px;font-size:17px;font-weight:900}
+#ana p{margin-top:6px;font-family:Menlo,monospace;font-size:12.5px;color:#9fe7f5;min-height:18px}
+#ana .bar{margin-top:10px;width:180px;height:5px;border-radius:3px;background:#22223a;overflow:hidden}
+#ana .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--b),var(--a),var(--c))}
+#out{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:5;pointer-events:none}
+#out.on{display:flex}
+#out .ok{font-size:120px;font-weight:900;letter-spacing:-.02em;line-height:1;animation:okin .5s cubic-bezier(.2,1.7,.4,1) both;text-shadow:0 0 40px rgba(124,92,255,.6)}
+@keyframes okin{0%{transform:scale(.2);opacity:0;filter:blur(10px)}100%{transform:none;opacity:1;filter:none}}
+#out p{margin-top:10px;font-size:14px;font-weight:800;color:#cfcfe0;background:#14141f;border:1px solid #33334a;padding:6px 12px;border-radius:999px;animation:okin .4s .15s both}
+#out p em{font-style:normal;color:var(--b)}
+#out.fly .ok{animation:fly .55s cubic-bezier(.6,0,.4,1) forwards}
+#out.fly p{opacity:0;transition:opacity .2s}
+@keyframes fly{to{transform:translate(120px,390px) scale(.15);opacity:0}}
+/* 대화 */
+#chat{flex:none;height:196px;margin-top:10px;border-radius:18px;background:#101018;border:1px solid #23233a;padding:10px 12px;display:flex;flex-direction:column;overflow:hidden}
+#chat .ch{flex:none;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:#cfcfe0;padding-bottom:8px;border-bottom:1px solid #23233a}
+#chat .ch span{width:26px;height:26px;border-radius:50%;background:#2a2a3c;display:grid;place-items:center;font-size:15px}
+#msgs{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding-top:8px;overflow:hidden}
+.m{max-width:75%;padding:8px 12px;border-radius:16px;font-size:15px;font-weight:700;line-height:1.35;animation:pop .35s cubic-bezier(.2,1.6,.4,1) both}
+.m.l{align-self:flex-start;background:#26263a;color:#eee;border-bottom-left-radius:4px}
+.m.r{align-self:flex-end;background:linear-gradient(135deg,var(--a),#5b3df5);color:#fff;border-bottom-right-radius:4px;display:flex;align-items:flex-end;gap:6px}
+.m.r small{font-size:10px;font-weight:700;opacity:.75}
+@keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:none;opacity:1}}
+/* 마지막 */
+#fin{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 24px 140px;background:#050507;z-index:6}
+#fin.on{display:flex;animation:fd .6s both}
+@keyframes fd{from{opacity:0}to{opacity:1}}
+#fin small{font-size:12.5px;letter-spacing:.3em;color:#9a9aae;font-weight:800}
+#fin .acc{font-size:76px;font-weight:900;letter-spacing:-.04em;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1.05}
+#fin .acc span{font-size:40px}
+#fin .tag{margin-top:22px;font-size:25px;font-weight:900;line-height:1.4;letter-spacing:-.02em;opacity:0;transform:translateY(12px);transition:all .7s}
+#fin .tag.on{opacity:1;transform:none}
+#fin .fine{margin-top:18px;font-size:12px;color:#6f6f86;opacity:0;transition:opacity .8s}
+#fin .fine.on{opacity:1}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const ROUNDS = [
+  { p: '하트를 그려 보세요', shape: 'heart', name: '하트' },
+  { p: '긴 답장을 손글씨로 써 보세요', shape: 'scrawl', name: '장문 (184자 추정)' },
+  { p: '아무 모양이나 그려 보세요', shape: 'star', name: '판독 불가 형태' },
+];
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), fr: K.str(a[1], '나', 10) }),
+  make: () => K.maker({
+    kicker: '신제품 발표', title: '손짓 답장 신기술', sub: '답장이 느린 친구에게 보냅니다.', dark: true,
+    fields: [
+      { k: 'to', label: '답장 안 하는 친구', ph: '영집', max: 10, def: '친구' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+    ],
+    btn: '발표 링크 만들기',
+    toArr: v => [v.to, v.fr],
+  }),
+  show,
+});
+
+function show(d){
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><p class="from">FROM. ' + K.esc(d.fr) + '</p><h1>' + K.esc(d.to) + '님,<br>답장 좀 하라고 해서<br><span class="grad">신기술을 준비했습니다.</span></h1><p class="s">손짓연구소 신제품 공개 발표에 초대합니다.</p><button id="enter"><i></i>발표 보기</button></div>' +
+    '<div id="stage">' +
+      '<div class="slide" id="s1"><div class="hand">✋</div><small style="margin-top:18px">손짓연구소 · 2026 신제품</small><h2><span class="grad">핸드리플라이</span> Pro</h2></div>' +
+      '<div class="slide" id="s2"><h3>답장,<br>아직도 손가락으로<br>치십니까?</h3><p>' + K.esc(d.to) + '님의 평균 답장 시간: 3시간 41분</p></div>' +
+      '<div class="slide" id="s3"><h3>손짓 한 번으로<br><span class="grad">답장하세요.</span></h3><div class="chips"><span>신경망 손짓 엔진 <b>HR-1</b></span><span>인식 정확도 <b>100%</b></span><span>필요한 타자 <b>0타</b></span></div></div>' +
+      '<div id="demo"><div id="dh"><span class="rd" id="rd">데모 1/3</span><span class="nm">핸드리플라이 Pro · 실시간 데모</span></div><p id="prompt"></p>' +
+        '<div id="pad"><canvas id="cv"></canvas><p id="hintp">화면에 손가락으로 그리세요</p><div id="ghost">👆</div>' +
+        '<div id="ana"><div class="ring"></div><b>손짓 분석 중</b><p id="anl"></p><div class="bar"><i id="anb"></i></div></div><div id="out"></div></div>' +
+        '<div id="chat"><div class="ch"><span>🙂</span>' + K.esc(d.fr) + '</div><div id="msgs"><div class="m l">' + K.esc(d.to) + ', 답장 좀 해</div></div></div></div>' +
+      '<div id="fin"><small>핸드리플라이 Pro 인식 결과</small><div class="acc">정확도 <b id="acc">0</b><span>%</span></div><p class="tag" id="tag">모든 손짓은<br>결국 <span class="grad">ㅇㅋ</span>입니다.</p><p class="fine" id="fine">핸드리플라이 Pro · 출시일 미정 · ' + K.esc(d.to) + '님 전용</p></div>' +
+    '</div>';
+  K.footer({ dark: true });
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#stage').classList.add('on'); run(d); };
+}
+
+function pad(){ // 부드러운 신스 패드
+  [261.6, 329.6, 392].forEach((f, i) => K.tone(f, 2.2, { type: 'sine', vol: .07, attack: .4, at: i * .02 }));
+}
+function whoosh(at){ K.noise(.5, { bp: 900, q: .7, vol: .35, at: at || 0, pow: 1 }); }
+
+async function run(d){
+  const S = K.sleep, sl = id => { K.$$('.slide').forEach(x => x.classList.remove('on')); if (id) K.$(id).classList.add('on'); };
+  await S(250);
+  sl('#s1'); pad(); whoosh(); await S(1500);
+  sl('#s2'); K.tone(196, 1.6, { type: 'sine', vol: .12, attack: .2 }); await S(1300);
+  sl('#s3'); K.fanfare([[392, .14], [523, .14], [659, .3]], { vol: .07 }); await S(1700);
+  sl(null); await S(250);
+  K.$('#demo').classList.add('on');
+  const cv = K.$('#cv'), padEl = K.$('#pad'), ctx = cv.getContext('2d'), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = padEl.clientWidth, H = padEl.clientHeight; cv.width = W * dpr; cv.height = H * dpr; ctx.scale(dpr, dpr);
+  let pts = [], drawing = false, enabled = false, userDrew = false, lastSnd = 0;
+  const hue0 = 190;
+  function paint(list, alpha){
+    ctx.clearRect(0, 0, W, H); if (list.length < 2) return;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (let pass = 0; pass < 2; pass++) {
+      ctx.lineWidth = pass ? 4 : 12; ctx.shadowBlur = pass ? 8 : 24;
+      for (let i = 1; i < list.length; i++) {
+        const h = hue0 + i * 1.6; ctx.strokeStyle = 'hsla(' + h + ',95%,' + (pass ? 80 : 62) + '%,' + (pass ? 1 : .55) * (alpha == null ? 1 : alpha) + ')'; ctx.shadowColor = 'hsl(' + h + ',95%,60%)';
+        ctx.beginPath(); ctx.moveTo(list[i - 1][0], list[i - 1][1]); ctx.lineTo(list[i][0], list[i][1]); ctx.stroke();
+      }
+    }
+    ctx.shadowBlur = 0;
+  }
+  const local = e => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  function seg(i){ const a = pts[i - 1], b = pts[i]; ctx.lineCap = 'round'; const h = hue0 + i * 1.6;
+    for (let pass = 0; pass < 2; pass++) { ctx.lineWidth = pass ? 4 : 12; ctx.shadowBlur = pass ? 8 : 24; ctx.shadowColor = 'hsl(' + h + ',95%,60%)'; ctx.strokeStyle = 'hsla(' + h + ',95%,' + (pass ? 80 : 62) + '%,' + (pass ? 1 : .55) + ')'; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
+    ctx.shadowBlur = 0; }
+  const addPt = p => { pts.push(p); if (pts.length > 1) seg(pts.length - 1); const now = performance.now(); if (now - lastSnd > 60) { K.tone(500 + (pts.length % 40) * 18, .05, { type: 'sine', vol: .05 }); lastSnd = now; } };
+  cv.addEventListener('pointerdown', e => { if (!enabled) return; e.preventDefault(); drawing = true; userDrew = true; cv.setPointerCapture(e.pointerId); K.$('#hintp').style.opacity = 0; addPt(local(e)); });
+  cv.addEventListener('pointermove', e => { if (drawing) addPt(local(e)); });
+  const up = () => { if (!drawing) return; drawing = false; if (len(pts) > 90) finish && finish(); };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  const len = a => { let s = 0; for (let i = 1; i < a.length; i++) s += Math.hypot(a[i][0] - a[i - 1][0], a[i][1] - a[i - 1][1]); return s; };
+  let finish = null;
+  function shapePts(kind){
+    const cx = W / 2, cy = H / 2 - 10, out = [];
+    if (kind === 'heart') for (let t = 0; t <= Math.PI * 2 + .01; t += .07) { const x = 16 * Math.pow(Math.sin(t), 3), y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t); out.push([cx + x * 6.5, cy - y * 6.5]); }
+    if (kind === 'scrawl') for (let t = 0; t <= 1; t += .006) { const x = W * .1 + t * W * .8 + 12 * Math.cos(t * 70), y = cy - 40 + t * 20 - 22 * Math.sin(t * 70) * (0.6 + .4 * Math.sin(t * 9)) + (t > .5 ? 60 : 0) - (t > .5 ? t * 20 : 0); out.push([t > .5 && t < .51 ? x : x, y]); }
+    if (kind === 'star') { const R = 95, r = 40; for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r : R, a0 = [cx + Math.cos(a) * rr, cy + Math.sin(a) * rr];
+      if (out.length) { const p = out[out.length - 1]; for (let k = 1; k <= 8; k++) out.push([p[0] + (a0[0] - p[0]) * k / 8, p[1] + (a0[1] - p[1]) * k / 8]); } else out.push(a0); } }
+    return out;
+  }
+  async function ghostDraw(kind){
+    const g = K.$('#ghost'), list = shapePts(kind); g.classList.add('on'); K.$('#hintp').style.opacity = 0;
+    const per = (kind === 'heart' ? 1300 : 1000) / list.length;
+    for (const p of list) { if (userDrew) { g.classList.remove('on'); return false; } g.style.left = p[0] + 'px'; g.style.top = p[1] + 'px'; addPt(p); await S(per); }
+    g.classList.remove('on'); return true;
+  }
+  const msgs = K.$('#msgs');
+  for (let r = 0; r < ROUNDS.length; r++) {
+    const R = ROUNDS[r];
+    K.$('#rd').textContent = '데모 ' + (r + 1) + '/3'; const pr = K.$('#prompt'); pr.textContent = R.p; pr.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 350 });
+    pts = []; paint(pts); userDrew = false; enabled = true; K.$('#hintp').style.opacity = 1; K.$('#out').className = ''; K.$('#out').innerHTML = '';
+    K.tone(880, .08, { type: 'sine', vol: .12 });
+    // 사용자 손짓을 기다리거나, 3.2초 뒤 자동 시연
+    await new Promise(res => {
+      finish = () => { finish = null; res(); };
+      setTimeout(async () => { if (!userDrew && finish) { const ok = await ghostDraw(R.shape); if (ok && finish) finish(); } }, r === 0 ? 1200 : 300);
+    });
+    enabled = false; drawing = false;
+    // 분석
+    const ana = K.$('#ana'), anl = K.$('#anl'), anb = K.$('#anb'); ana.classList.add('on');
+    const L = r === 0 ? ['궤적 추출 … ' + pts.length + '점', '형태 인식 … ' + R.name, '의도 추론 … 완료', '감정 벡터 계산 … 완료', '답장 최적화 … 완료'] : ['궤적 추출 … ' + pts.length + '점', '형태 인식 … ' + R.name, '답장 최적화 … 완료'];
+    K.tone(220, 1.9, { type: 'sawtooth', vol: .05, slide: 880 });
+    for (let k = 0; k < L.length; k++) { anl.textContent = L[k]; anb.style.width = ((k + 1) / L.length * 100) + '%'; anb.style.transition = 'width .3s'; K.tick({ f: 2000 + k * 200 }); await S(r === 0 ? 320 : 200); }
+    // 궤적 수축
+    ana.classList.remove('on');
+    cv.style.transition = 'transform .45s cubic-bezier(.6,0,.4,1),opacity .45s'; cv.style.transform = 'scale(.05) rotate(40deg)'; cv.style.opacity = 0; K.tone(900, .4, { type: 'sine', vol: .1, slide: 200 });
+    await S(460); paint([]); cv.style.transition = 'none'; cv.style.transform = ''; cv.style.opacity = 1;
+    const out = K.$('#out'); out.innerHTML = '<div class="ok grad">ㅇㅋ</div><p>' + R.name + ' → <em>ㅇㅋ</em> · 신뢰도 100%</p>'; out.classList.add('on');
+    K.boom({ vol: .4, f: 200 }); K.ding({ f: 1318 });
+    await S(r === 0 ? 1100 : 750);
+    out.classList.add('fly'); whoosh();
+    await S(420);
+    const t = new Date(), hm = (t.getHours() % 12 || 12) + ':' + String(t.getMinutes()).padStart(2, '0');
+    msgs.insertAdjacentHTML('beforeend', '<div class="m r"><small>' + hm + '</small>ㅇㅋ</div>'); K.tone(1046, .07, { type: 'sine', vol: .2 }); K.tone(1568, .1, { type: 'sine', vol: .15, at: .06 });
+    while (msgs.children.length > 4) msgs.firstElementChild.remove();
+    await S(450);
+  }
+  msgs.insertAdjacentHTML('beforeend', '<div class="m l">…</div>'); K.tone(330, .15, { type: 'sine', vol: .15 });
+  while (msgs.children.length > 4) msgs.firstElementChild.remove();
+  await S(800);
+  // 마지막
+  const fin = K.$('#fin'); fin.classList.add('on'); pad();
+  const acc = K.$('#acc'), t0 = performance.now();
+  await new Promise(res => { const f = () => { const p = Math.min(1, (performance.now() - t0) / 1100); acc.textContent = Math.round(100 * (1 - Math.pow(1 - p, 3))); if (Math.random() < .3) K.tick({ f: 1600 }); p < 1 ? requestAnimationFrame(f) : res(); }; f(); });
+  K.boom({ vol: .7, f: 110 });
+  await S(800);
+  K.$('#tag').classList.add('on'); K.fanfare([[523, .16], [659, .16], [784, .16], [1046, .5]], { vol: .08 });
+  await S(1100);
+  K.$('#fine').classList.add('on');
+  await S(500);
+  K.again({ replayText: '다시 보기', makeText: '나도 신기술 보내기' });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>끝없는 언박싱</title>
+<meta name="description" content="포장이 좀 많습니다.">
+<meta property="og:title" content="선물이 도착했습니다">
+<meta property="og:description" content="탭해서 열어 보세요.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/unbox/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#FFF1E6;--k-fg:#2a1a12;--k-sub:#8a6a5a;--k-card:#fff;--k-line:#f0cdb6;--k-acc:#FF4D6D;--k-acc-fg:#fff;--k-focus:#FF4D6D;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(120% 80% at 50% 30%,#FFF6EE 0%,#FFE3D3 60%,#FFC9B0 100%);color:#2a1a12;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+#stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:manipulation;cursor:pointer}
+#top{position:fixed;top:max(18px,env(safe-area-inset-top));left:0;right:0;text-align:center;pointer-events:none}
+#top .ft{font-size:14px;color:#8a6a5a;font-weight:700;letter-spacing:.02em}
+#top .ft b{color:#2a1a12}
+#cnt{margin-top:10px;display:inline-flex;gap:8px;align-items:center;background:#2a1a12;color:#fff;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;font-variant-numeric:tabular-nums}
+#cnt i{font-style:normal;color:#FFB4A2}
+#head{font-size:26px;font-weight:900;letter-spacing:-.02em;text-align:center;line-height:1.25;margin-bottom:26px;padding:0 24px;min-height:66px;display:flex;align-items:flex-end;justify-content:center}
+#cap{margin-top:34px;font-size:18px;font-weight:800;text-align:center;padding:0 24px;min-height:52px;line-height:1.35;transition:opacity .2s,transform .2s}
+#cap.pop{animation:cappop .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes cappop{0%{transform:scale(.7);opacity:0}100%{transform:none;opacity:1}}
+#hint{margin-top:10px;font-size:13px;color:#a07f6e;font-weight:700;letter-spacing:.1em}
+#slot{position:relative;width:240px;height:240px}
+/* 상자 */
+.box{position:absolute;left:50%;top:50%;width:220px;height:220px;margin:-110px 0 0 -110px;transform-origin:50% 80%;will-change:transform;scale:var(--s)}
+.box .bd{position:absolute;left:6%;right:6%;bottom:0;height:70%;border-radius:10px;background:var(--c);box-shadow:inset 0 -18px 0 rgba(0,0,0,.12),0 18px 30px rgba(120,40,10,.22)}
+.box .ld{position:absolute;left:0;right:0;top:12%;height:22%;border-radius:10px;background:var(--c2);box-shadow:inset 0 -8px 0 rgba(0,0,0,.12),0 6px 0 rgba(0,0,0,.08);z-index:2;transform-origin:30% 100%}
+.box.gift .bd::before,.box.gift .ld::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:30px;margin-left:-15px;background:var(--r)}
+.box.gift .bd::after{content:"";position:absolute;left:0;right:0;top:45%;height:24px;background:var(--r);opacity:.95}
+.box.gift .bow{position:absolute;left:50%;top:0;width:0;height:0;z-index:3}
+.box.gift .bow::before,.box.gift .bow::after{content:"";position:absolute;top:-6px;width:58px;height:38px;border:12px solid var(--r);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;box-sizing:border-box}
+.box.gift .bow::before{right:-2px;transform:rotate(-18deg)}.box.gift .bow::after{left:-2px;transform:rotate(18deg)}
+.box.kraft .bd,.box.kraft .ld{background:#C99A63}
+.box.kraft .ld::before{content:"";position:absolute;top:0;bottom:-2px;left:50%;width:46px;margin-left:-23px;background:rgba(255,248,220,.55)}
+.box.kraft .bd::before{content:"";position:absolute;top:0;height:44%;left:50%;width:46px;margin-left:-23px;background:rgba(255,248,220,.55)}
+.box.kraft .lab{position:absolute;left:18%;bottom:16%;background:#fff;color:#d1281f;font-weight:900;font-size:14px;padding:4px 8px;border:2px solid #d1281f;transform:rotate(-4deg);z-index:1}
+.box.news .bd,.box.news .ld{background:repeating-linear-gradient(0deg,#e9e6dd 0 5px,#bdb8aa 5px 6px);}
+.box.news .lab{position:absolute;left:10%;right:10%;bottom:52%;text-align:center;font-family:serif;font-weight:900;font-size:22px;color:#111;background:#e9e6dd;padding:2px 0;z-index:1}
+.box.bubble .bd,.box.bubble .ld{background:radial-gradient(circle at 10px 10px,rgba(255,255,255,.95) 0 6px,rgba(255,255,255,.35) 7px 9px,transparent 10px) 0 0/20px 20px,rgba(200,230,255,.75);box-shadow:inset 0 0 0 2px rgba(150,190,230,.8),0 18px 30px rgba(60,90,140,.2)}
+.box.lux .bd,.box.lux .ld{background:#141414}
+.box.lux .bd::before,.box.lux .ld::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:10px;margin-left:-5px;background:linear-gradient(90deg,#b8862b,#ffe39a,#b8862b)}
+.box.lux .lab{position:absolute;left:0;right:0;bottom:24%;text-align:center;color:#e8c46a;font-size:12px;letter-spacing:.4em;font-weight:700;z-index:1}
+.box.egg .bd{background:radial-gradient(circle at 50% 50%,#f3e2c4 0 14px,#e2c9a0 15px) 0 0/34px 34px}
+.box.egg .ld{background:#e2c9a0}
+.box.idle{animation:wig 2.4s ease-in-out infinite}
+@keyframes wig{0%,80%,100%{transform:rotate(0)}84%{transform:rotate(-5deg)}88%{transform:rotate(5deg)}92%{transform:rotate(-3deg)}96%{transform:rotate(2deg)}}
+.box.in{animation:boxin .38s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes boxin{0%{transform:translateY(40px) scale(.25);opacity:0}100%{transform:none;opacity:1}}
+.box.out .ld{animation:lidfly .5s cubic-bezier(.3,.1,.6,1) forwards}
+.box.out .bow{animation:lidfly .5s cubic-bezier(.3,.1,.6,1) forwards}
+.box.out .bd,.box.out .lab{animation:bdrop .42s ease-in .1s forwards}
+@keyframes lidfly{to{transform:translate(var(--lx),-300px) rotate(var(--lr));opacity:0}}
+@keyframes bdrop{to{transform:translateY(160px) scale(.9);opacity:0}}
+.pt{position:absolute;left:50%;top:50%;width:12px;height:8px;border-radius:4px;background:#fff6d8;box-shadow:0 0 0 1px rgba(0,0,0,.06);pointer-events:none;animation:pt .7s cubic-bezier(.1,.6,.3,1) forwards}
+@keyframes pt{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+body.shake #slot{animation:shk .18s linear}
+@keyframes shk{25%{transform:translate(-4px,2px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-2px,-2px)}}
+/* 쪽지 */
+#note{position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:10}
+#note .card{width:min(82vw,340px);aspect-ratio:3/4;background:#fffdf6;border-radius:6px;box-shadow:0 30px 60px rgba(90,30,10,.3);padding:28px 26px;display:flex;flex-direction:column;
+  background-image:repeating-linear-gradient(0deg,transparent 0 37px,#f0e2cf 37px 38px);transform:scale(.05) rotate(-30deg) translateY(200px);opacity:0}
+#note.on .card{animation:noteup .9s cubic-bezier(.2,1.3,.4,1) forwards}
+@keyframes noteup{0%{transform:scale(.05) rotate(-30deg) translateY(200px);opacity:0}60%{opacity:1}100%{transform:scale(1) rotate(-2deg);opacity:1}}
+#note .to{font-family:"Nanum Pen Script",cursive;font-size:30px;color:#6a4a3a}
+#note .msg{flex:1;display:grid;place-items:center;font-family:"Nanum Pen Script",cursive;font-size:clamp(56px,20vw,96px);line-height:1.05;text-align:center;color:#2a1a12}
+#note .fr{font-family:"Nanum Pen Script",cursive;font-size:30px;color:#6a4a3a;text-align:right}
+#after{position:fixed;left:0;right:0;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 118px);text-align:center;font-size:13px;color:#8a6a5a;font-weight:700;opacity:0;transition:opacity .6s;z-index:11}
+#after.on{opacity:1}
+.cf{position:fixed;top:-20px;left:62%;width:10px;height:16px;background:#FF4D6D;z-index:12;animation:cf 3.2s linear forwards}
+@keyframes cf{0%{transform:translate(0,0) rotate(0)}25%{transform:translate(-18px,25vh) rotate(160deg)}50%{transform:translate(14px,50vh) rotate(320deg)}75%{transform:translate(-10px,75vh) rotate(480deg)}100%{transform:translate(6px,105vh) rotate(640deg)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const MATS = ['gift','kraft','gift','news','bubble','gift','lux','kraft','egg','gift'];
+const GIFT = [['#FF4D6D','#FF6B85','#FFD23F'],['#3A86FF','#5C9BFF','#FFE066'],['#06D6A0','#3BE3B5','#EF476F'],['#8338EC','#9B5DFF','#FFBE0B'],['#FB5607','#FF7A33','#3A86FF'],['#111','#2a2a2a','#FF4D6D']];
+// 진행 비율(0~1)에 따른 자막
+const CAPS = [[0,'개봉 중…'],[.08,'거의 다 왔습니다'],[.15,'이번엔 진짜입니다'],[.22,'포장에 진심인 편입니다'],[.3,'개봉 숙련도가 올랐습니다 (Lv.2)'],[.38,'여기서 그만두면 아무것도 못 받습니다'],
+  [.46,'포장지 값이 선물 값을 넘었습니다'],[.54,'보낸 사람이 지금 웃고 있습니다'],[.62,'택배 기사님이 포기했습니다'],[.7,'환경부에서 연락이 왔습니다'],[.78,'개봉 숙련도 만렙'],[.86,'마지막 상자일 수도 있습니다'],[.93,'진짜 마지막입니다']];
+
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), fr: K.str(a[1], '나', 10), msg: K.str(a[2], '마음', 14), n: [15,30,50].includes(+a[3]) ? +a[3] : 30 }),
+  make: () => K.maker({
+    kicker: '선물 보내기', title: '끝없는 언박싱', sub: '포장이 좀 많습니다.',
+    fields: [
+      { k: 'to', label: '받는 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+      { k: 'msg', label: '맨 안쪽에 넣을 것', ph: '마음', max: 14, def: '마음' },
+      { k: 'n', label: '포장', type: 'select', val: '30', opts: [['15','15겹 (봐줌)'],['30','30겹 (기본)'],['50','50겹 (절교 각오)']] },
+    ],
+    toArr: v => [v.to, v.fr, v.msg, +v.n || 30],
+  }),
+  show,
+});
+
+function show(d){
+  document.getElementById('app').innerHTML =
+    '<div id="top"><p class="ft">From. <b>' + K.esc(d.fr) + '</b> → To. <b>' + K.esc(d.to) + '</b></p><div id="cnt">개봉한 상자 <span id="opened">0</span> · 남은 상자 <i>??</i></div></div>' +
+    '<div id="stage"><div id="head">' + K.esc(d.to) + '님,<br>선물이 도착했습니다</div><div id="slot"></div><div id="cap"></div><div id="hint">탭해서 열기</div></div>' +
+    '<div id="note"><div class="card"><p class="to">To. ' + K.esc(d.to) + '</p><p class="msg">' + K.esc(d.msg) + '</p><p class="fr">From. ' + K.esc(d.fr) + '</p></div></div><div id="after"></div>';
+  K.footer();
+  const slot = K.$('#slot'), cap = K.$('#cap'), head = K.$('#head'), hint = K.$('#hint');
+  let i = 0, busy = false, done = false, cur = makeBox(0, d.n);
+  cur.classList.add('st', 'idle'); slot.appendChild(cur);
+
+  K.$('#stage').addEventListener('pointerdown', () => {
+    if (done || busy) return;
+    if (i === 0) { K.unlock(); head.style.opacity = 0; hint.style.opacity = 0; }
+    busy = true; setTimeout(() => busy = false, 240);
+    i++;
+    K.$('#opened').textContent = i;
+    burst(); tear(i, d.n);
+    const old = cur; old.classList.remove('idle', 'in', 'st'); old.style.setProperty('--lx', (Math.random() < .5 ? -1 : 1) * K.rand(60, 140) + 'px'); old.style.setProperty('--lr', K.rand(-70, 70) + 'deg');
+    old.classList.add('st', 'out'); setTimeout(() => old.remove(), 600);
+    document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake');
+    if (i >= d.n) { finale(d); return; }
+    cur = makeBox(i, d.n); cur.classList.add('in'); slot.appendChild(cur);
+    setTimeout(() => { if (cur && !cur.classList.contains('out')) { cur.classList.remove('in'); cur.classList.add('st', 'idle'); } }, 400);
+    const p = i / d.n; let c = CAPS[0][1]; for (const [t, s] of CAPS) if (p >= t) c = s;
+    if (cap.textContent !== c) { cap.textContent = c; cap.classList.remove('pop'); void cap.offsetWidth; cap.classList.add('pop'); }
+  });
+
+  function finale(d){
+    done = true; cap.textContent = ''; K.$('#cnt').innerHTML = '개봉한 상자 <span>' + d.n + '</span> · 남은 상자 <i>0</i>';
+    setTimeout(() => {
+      K.$('#note').classList.add('on');
+      K.tone(523, .12, { type: 'triangle', vol: .3 }); K.tone(659, .12, { type: 'triangle', vol: .3, at: .12 }); K.tone(784, .4, { type: 'triangle', vol: .3, at: .24 });
+    }, 250);
+    // 한 장짜리 축하
+    setTimeout(() => { const c = document.createElement('div'); c.className = 'cf'; document.body.appendChild(c);
+      K.tone(392, .35, { type: 'sawtooth', vol: .12, slide: 370 }); K.tone(370, .35, { type: 'sawtooth', vol: .12, slide: 349, at: .38 }); K.tone(349, .9, { type: 'sawtooth', vol: .12, slide: 300, at: .76 }); }, 1500);
+    setTimeout(() => { K.$('#after').textContent = '포장재 ' + d.n + '겹은 분리수거해 주세요'; K.$('#after').classList.add('on'); }, 2600);
+    setTimeout(() => K.again({ makeText: '나도 포장하기' }), 3200);
+  }
+}
+
+function makeBox(i, n){
+  const b = document.createElement('div'); const m = i === 0 ? 'gift' : MATS[i % MATS.length]; b.className = 'box ' + m;
+  const g = GIFT[(i * 7 + 3) % GIFT.length]; b.style.setProperty('--c', g[0]); b.style.setProperty('--c2', g[1]); b.style.setProperty('--r', g[2]);
+  b.style.setProperty('--s', (1 - .62 * (i / n)).toFixed(3));
+  let lab = '';
+  if (m === 'kraft') lab = '<span class="lab">취급주의</span>';
+  if (m === 'news') lab = '<span class="lab">속보</span>';
+  if (m === 'lux') lab = '<span class="lab">PREMIUM</span>';
+  b.innerHTML = '<div class="bd"></div>' + lab + '<div class="ld"></div>' + (m === 'gift' ? '<div class="bow"></div>' : '');
+  return b;
+}
+function burst(){
+  const slot = K.$('#slot');
+  for (let k = 0; k < 14; k++) { const p = document.createElement('div'); p.className = 'pt'; const a = K.rand(-Math.PI, 0), r = K.rand(90, 190);
+    p.style.setProperty('--x', Math.cos(a) * r + 'px'); p.style.setProperty('--y', Math.sin(a) * r + K.rand(-10, 60) + 'px'); p.style.setProperty('--r', K.rand(-300, 300) + 'deg');
+    p.style.background = K.pick(['#fff6d8','#ffe7c2','#ffffff','#ffd6e0']); slot.appendChild(p); setTimeout(() => p.remove(), 750); }
+}
+function tear(i, n){
+  K.noise(.16, { hp: 1800, vol: .32 }); K.noise(.09, { bp: 900, q: 1.2, vol: .25, at: .03 });
+  K.tone(420 + i * (500 / n), .09, { type: 'triangle', vol: .22, slide: 900 + i * 20 });
+  K.vibe(12);
+}
+</script>
+</body>
+</html>

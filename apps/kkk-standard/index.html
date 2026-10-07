@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>ㅋ 국가표준원</title>
+<meta name="description" content="친구가 보낸 ㅋ의 개수를 국가표준으로 판정합니다.">
+<meta property="og:title" content="ㅋ 국가표준원 시험성적서 발급 통지">
+<meta property="og:description" content="귀하의 답장이 시료로 접수되어 측정을 마쳤습니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/kkk-standard/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#EEF1F4;--k-fg:#13294B;--k-sub:#5d6b7e;--k-card:#fff;--k-line:#cfd6df;--k-acc:#13294B;--k-acc-fg:#fff;--k-focus:#D7263D;
+  --navy:#13294B;--red:#D7263D;--lcd:#9EF01A;--paper:#fff;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:#E7EBF0;color:var(--navy);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;
+  background-image:linear-gradient(rgba(19,41,75,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(19,41,75,.05) 1px,transparent 1px);background-size:22px 22px}
+.emb{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff;color:var(--navy);font-weight:900;font-size:19px;box-shadow:inset 0 0 0 3px var(--navy),inset 0 0 0 5px #fff,inset 0 0 0 6px var(--navy)}
+/* 통지 */
+#gate{position:fixed;inset:0;display:grid;place-items:center;padding:22px;z-index:5}
+.note{background:#fff;border-radius:6px;box-shadow:0 24px 50px rgba(19,41,75,.25);width:min(100%,350px);overflow:hidden}
+.note .nh{background:var(--navy);color:#fff;padding:14px 18px;display:flex;align-items:center;gap:10px}
+.note .nh b{font-size:16px;font-weight:900;letter-spacing:.02em;display:block}
+.note .nh small{font-size:10.5px;letter-spacing:.14em;color:#a9bad3;font-weight:700}
+.note .nb{padding:18px 18px 20px}
+.note h3{font-size:20px;font-weight:900;letter-spacing:-.01em}
+.note .row{display:flex;font-size:14px;margin-top:9px;line-height:1.45}
+.note .row b{flex:none;width:70px;color:var(--k-sub);font-weight:700}
+.note .row span{font-weight:700}
+.note p.t{margin-top:14px;font-size:15px;line-height:1.6;color:#2b3a50}
+.note .gbtn{display:block;width:100%;margin-top:18px;border:0;border-radius:8px;padding:15px;font:inherit;font-weight:800;font-size:17px;background:var(--red);color:#fff;cursor:pointer}
+/* 측정실 */
+#lab{position:fixed;inset:0;display:none}
+#lab.on{display:block}
+#top{position:absolute;top:0;left:0;right:0;background:var(--navy);color:#fff;padding:calc(max(10px,env(safe-area-inset-top))) 16px 10px;display:flex;align-items:center;gap:10px}
+#top b{font-size:16px;font-weight:900;display:block}
+#top small{font-size:10.5px;color:#a9bad3;letter-spacing:.12em;font-weight:700}
+#top .rec{margin-left:auto;font-size:11px;font-weight:800;background:var(--red);padding:4px 7px;border-radius:3px;display:flex;align-items:center;gap:5px}
+#top .rec i{width:6px;height:6px;border-radius:50%;background:#fff;animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+#dev{position:absolute;left:14px;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 64px);background:linear-gradient(180deg,#262d36,#161b21);border-radius:16px;padding:12px 12px 14px;box-shadow:0 18px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.08)}
+#dev .lb{display:flex;justify-content:space-between;color:#8b97a6;font-size:10.5px;font-weight:800;letter-spacing:.14em;margin-bottom:8px}
+#dev .lb .led{display:inline-block;width:7px;height:7px;border-radius:50%;background:#3a3f45;margin-left:5px;vertical-align:1px}
+#dev .lb .led.on{background:#ff3b3b;box-shadow:0 0 8px #ff3b3b}
+#bed{position:relative;background:repeating-linear-gradient(90deg,#d9dee4 0 1px,transparent 1px 14px),#eef1f4;border-radius:10px;padding:18px 14px;min-height:118px;display:flex;align-items:center;overflow:hidden}
+#bed .who{position:absolute;top:6px;left:12px;font-size:11px;font-weight:800;color:#5d6b7e}
+#bub{position:relative;background:#fff;border-radius:4px 16px 16px 16px;padding:10px 14px;margin-top:10px;font-size:30px;font-weight:800;line-height:1.3;color:#111;box-shadow:0 3px 8px rgba(0,0,0,.1);max-width:100%;word-break:break-all;letter-spacing:.02em}
+#bub span{border-radius:4px;transition:background .15s,color .15s}
+#bub span.hit{background:var(--lcd);color:#0d1a0d}
+#bub span.hh{background:#ffb347;color:#3a2000}
+#laser{position:absolute;width:3px;background:#ff2d2d;box-shadow:0 0 10px 2px rgba(255,45,45,.8),0 0 30px rgba(255,45,45,.5);opacity:0;transition:left .09s linear,top .09s linear;z-index:2;border-radius:2px}
+#laser.on{opacity:1}
+#lcds{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:8px;margin-top:10px}
+.lcd{background:#0b150b;border-radius:8px;padding:8px 9px;box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+.lcd small{display:block;font-size:10px;color:#5f8a3a;font-weight:800;letter-spacing:.08em}
+.lcd b{display:block;font-family:Menlo,"Courier New",monospace;font-size:30px;color:var(--lcd);text-shadow:0 0 10px rgba(158,240,26,.55);font-variant-numeric:tabular-nums;line-height:1.15;letter-spacing:.02em}
+.lcd:not(:first-child) b{font-size:20px;padding-top:8px}
+.lcd.warn b{color:#ffb347;text-shadow:0 0 10px rgba(255,179,71,.55)}
+/* 등급표 */
+#tbl{position:absolute;left:14px;right:14px;background:#fff;border-radius:10px;box-shadow:0 12px 30px rgba(19,41,75,.18);padding:12px 12px 10px;opacity:0;transform:translateY(20px);transition:opacity .4s,transform .4s}
+#tbl.on{opacity:1;transform:none}
+#tbl h4{font-size:13px;font-weight:900;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+#tbl h4 small{font-size:10.5px;color:var(--k-sub);font-weight:700}
+#tbl table{width:100%;border-collapse:separate;border-spacing:0 3px;font-size:13.5px}
+#tbl th{font-size:11px;color:var(--k-sub);font-weight:800;text-align:left;padding:0 8px 2px}
+#tbl td{padding:5px 8px;background:#f3f5f8;font-weight:700;border-top:2px solid transparent;border-bottom:2px solid transparent;transition:background .12s}
+#tbl td:first-child{border-left:2px solid transparent;border-radius:5px 0 0 5px;width:84px;font-variant-numeric:tabular-nums}
+#tbl td:last-child{border-right:2px solid transparent;border-radius:0 5px 5px 0;color:var(--k-sub);font-weight:600;font-size:12.5px}
+#tbl td:nth-child(2){font-weight:900}
+#tbl tr.scan td{background:#dfe8f5}
+#tbl tr.hit td{background:#fff0f1;border-color:var(--red);color:var(--red)}
+#tbl tr.hit td:first-child{border-left-color:var(--red)}
+#tbl tr.hit td:last-child{border-right-color:var(--red);color:var(--red)}
+#tbl tr.hit{animation:pulse .5s ease-in-out 3}
+@keyframes pulse{50%{transform:scale(1.03)}}
+#tbl tr td:nth-child(2) em{font-style:normal;display:none;margin-left:6px;background:var(--red);color:#fff;font-size:10.5px;padding:1px 5px;border-radius:3px;vertical-align:2px}
+#tbl tr.hit td:nth-child(2) em{display:inline-block}
+/* 성적서 */
+#cert{position:fixed;inset:0;display:none;align-items:flex-start;justify-content:center;padding:calc(max(14px,env(safe-area-inset-top)) + 8px) 14px 0;background:rgba(19,41,75,.55);z-index:7}
+#cert.on{display:flex}
+.paper{background:#fff;width:min(100%,362px);border-radius:3px;box-shadow:0 30px 60px rgba(0,0,0,.4);padding:20px 18px 18px;position:relative;animation:up .5s cubic-bezier(.2,1.2,.4,1) both;
+  background-image:linear-gradient(rgba(19,41,75,.035) 1px,transparent 1px);background-size:100% 26px}
+@keyframes up{0%{transform:translateY(60px) rotate(2deg);opacity:0}100%{transform:none;opacity:1}}
+.paper .org{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--navy)}
+.paper .org .emb{width:26px;height:26px;font-size:14px}
+.paper .no{margin-left:auto;font-size:10.5px;color:var(--k-sub);font-weight:700}
+.paper h2{text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:25px;letter-spacing:.45em;margin:14px 0 12px;padding-bottom:10px;border-bottom:3px double var(--navy)}
+.paper dl{display:grid;grid-template-columns:72px 1fr;gap:6px 8px;font-size:13.5px;line-height:1.45}
+.paper dt{color:var(--k-sub);font-weight:700}
+.paper dd{font-weight:700;margin:0}
+.paper .res{margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);border:1.5px solid var(--navy);border-radius:4px;overflow:hidden;text-align:center}
+.paper .res div{padding:7px 4px;border-left:1px solid var(--k-line)}
+.paper .res div:first-child{border-left:0}
+.paper .res small{display:block;font-size:10.5px;color:var(--k-sub);font-weight:800}
+.paper .res b{font-size:17px;font-weight:900;font-variant-numeric:tabular-nums}
+.paper .verdict{margin-top:14px;text-align:center}
+.paper .verdict small{display:block;font-size:11px;letter-spacing:.3em;color:var(--k-sub);font-weight:800}
+.paper .verdict b{display:inline-block;margin-top:4px;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:40px;color:var(--red);line-height:1.2;transform:scale(0);opacity:0}
+.paper .verdict b.on{animation:vin .45s cubic-bezier(.2,1.8,.4,1) forwards}
+@keyframes vin{0%{transform:scale(2.4);opacity:0}100%{transform:none;opacity:1}}
+.paper .rmk{margin-top:10px;background:#f6f7f9;border-left:4px solid var(--red);padding:9px 11px;font-size:15px;font-weight:800;line-height:1.5;opacity:0;transition:opacity .4s}
+.paper .rmk.on{opacity:1}
+.paper .sign{margin-top:14px;text-align:right;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:15px;line-height:1.5;padding-right:84px;position:relative;min-height:66px}
+.paper .sign small{display:block;font-family:"Pretendard",sans-serif;font-size:11px;color:var(--k-sub);font-weight:700}
+#stamp{position:absolute;right:0;top:50%;width:74px;height:74px;margin-top:-37px;border:4px solid var(--red);border-radius:6px;color:var(--red);display:grid;place-items:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:13px;line-height:1.15;text-align:center;opacity:0;transform:scale(3) rotate(-14deg);mix-blend-mode:multiply}
+#stamp.on{animation:stamp .28s cubic-bezier(.5,0,.7,1) forwards}
+@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-14deg)}100%{opacity:.9;transform:scale(1) rotate(-8deg)}}
+body.shake .paper{animation:shk .2s linear}
+@keyframes shk{25%{transform:translate(-5px,3px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,-2px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const GRADES = [
+  { id:'0', range:'0개', name:'정색', act:'분위기 파악', note:'ㅋ이 검출되지 않았습니다. 국가표준상 정색으로 분류됩니다. 분위기 파악을 권고합니다.' },
+  { id:'1', range:'1개', name:'분노', act:'즉시 사과', note:'국가표준상 분노로 분류됩니다. 사과를 권고합니다.' },
+  { id:'2', range:'2개', name:'예의상', act:'농담 교체', note:'국가표준상 예의상 웃음으로 분류됩니다. 같은 농담의 재사용을 금지합니다.' },
+  { id:'3', range:'3~5개', name:'보통', act:'현행 유지', note:'국가표준상 보통 웃음으로 분류됩니다. 현재 수준의 유머를 유지하십시오.' },
+  { id:'6', range:'6~10개', name:'진심', act:'유머 자산 등록', note:'국가표준상 진심으로 분류됩니다. 해당 농담을 국가 유머 자산으로 등록할 것을 권고합니다.' },
+  { id:'11', range:'11개 이상', name:'바닥 구르는 중', act:'주변 가구 정리', note:'시료 제공자는 현재 바닥을 구르고 있는 것으로 판정됩니다. 주변 가구에 유의하십시오.' },
+  { id:'h', range:'ㅎ 혼입', name:'거리 두기', act:'친밀도 점검', note:'ㅎ이 섞인 웃음은 국가표준상 거리 두기로 분류됩니다. 친밀도 재점검을 권고합니다.' },
+];
+const KV = 'ㅡㅜㅠㅣ';
+function measure(s){
+  const cs = [...s], kinds = cs.map(c => {
+    if (c === 'ㅋ') return 'k';
+    if (c === 'ㅎ') return 'h';
+    if (c >= '가' && c <= '힣') { const n = c.charCodeAt(0) - 0xAC00, cho = Math.floor(n / 588), jung = Math.floor(n % 588 / 28), jong = n % 28;
+      if (cho === 15 && 'ㅡㅜㅠㅣ'.includes('ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ'[jung])) return 'k';
+      if (jong === 24) return 'k';
+      if (cho === 18 && (jong === 0 || jong === 27) && 'ㅏㅣㅡㅔㅗㅓ'.includes('ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ'[jung])) return 'h'; }
+    return ''; });
+  const k = kinds.filter(x => x === 'k').length, h = kinds.filter(x => x === 'h').length, n = cs.filter(c => !/\s/.test(c)).length;
+  const g = h ? 'h' : k === 0 ? '0' : k === 1 ? '1' : k === 2 ? '2' : k <= 5 ? '3' : k <= 10 ? '6' : '11';
+  return { cs, kinds, k, h, n, pur: n ? k / n * 100 : 0, g: GRADES.find(x => x.id === g) };
+}
+
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), rep: K.str(a[1], 'ㅋ', 40), fr: K.str(a[2], '나', 10) }),
+  make: () => K.maker({
+    kicker: '웃음계량과', title: 'ㅋ 국가표준원', sub: '친구가 보낸 ㅋ의 개수를 국가표준으로 판정합니다.',
+    fields: [
+      { k: 'to', label: '친구 이름', ph: '영집', max: 10, def: '친구' },
+      { k: 'rep', label: '친구가 보낸 답장', ph: 'ㅋ', max: 40, def: 'ㅋ', val: 'ㅋ', hint: '예: ㅋ / ㅋㅋㅋ / ㅎㅎ / ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+    ],
+    btn: '시험성적서 링크 만들기',
+    toArr: v => [v.to, v.rep, v.fr],
+  }),
+  show,
+});
+
+function show(d){
+  const M = measure(d.rep), no = 'ㅋ-' + new Date().getFullYear() + '-' + String(1000 + (d.rep.length * 7919 + d.to.length * 104729) % 9000).padStart(4, '0');
+  const S = K.josa(d.to, '이', '가');
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><div class="note"><div class="nh"><span class="emb">ㅋ</span><div><b>ㅋ 국가표준원</b><small>웃음계량과 · 시험성적서 발급 통지</small></div></div><div class="nb">' +
+    '<h3>시료 측정이 완료되었습니다</h3>' +
+    '<p class="row"><b>접수 번호</b><span>' + no + '</span></p><p class="row"><b>의뢰인</b><span>' + K.esc(d.fr) + '</span></p><p class="row"><b>시료</b><span>' + K.esc(d.to) + '님의 답장 1건</span></p><p class="row"><b>시험 항목</b><span>ㅋ 함량, ㅎ 혼입 여부, 감정 등급</span></p>' +
+    '<p class="t">' + K.esc(d.to) + '님' + '이 보낸 답장의 웃음 함량에 대하여 국가표준에 따른 정밀 측정을 실시하였습니다.</p>' +
+    '<button class="gbtn" id="enter">측정 과정 보기</button></div></div></div>' +
+    '<div id="lab"><div id="top"><span class="emb">ㅋ</span><div><b>ㅋ 국가표준원</b><small>웃음계량과 제1측정실</small></div><span class="rec"><i></i>측정 중</span></div>' +
+    '<div id="dev"><div class="lb"><span>ㅋ 계수기 KC-9000</span><span>POWER<i class="led" id="led"></i></span></div>' +
+    '<div id="bed"><span class="who" id="who">시료: ' + K.esc(d.to) + '님의 답장</span><div id="bub"' + (M.n <= 3 ? ' style="font-size:60px;padding:8px 22px"' : M.n <= 8 ? ' style="font-size:40px"' : '') + '>' + M.cs.map(c => /\s/.test(c) ? ' ' : '<span>' + K.esc(c) + '</span>').join('') + '</div><div id="laser"></div></div>' +
+    '<div id="lcds"><div class="lcd"><small>ㅋ 검출</small><b id="lk">00</b></div><div class="lcd" id="lhw"><small>ㅎ 혼입</small><b id="lh">0</b></div><div class="lcd"><small>ㅋ 순도</small><b id="lp">0.0%</b></div></div></div>' +
+    '<div id="tbl"><h4>웃음 표준 등급표<small>ㅋ표준 제0001호</small></h4><table><tr><th>ㅋ 개수</th><th>등급</th><th>권고 조치</th></tr>' +
+    GRADES.map(g => '<tr data-g="' + g.id + '"><td>' + g.range + '</td><td>' + g.name + '<em>해당</em></td><td>' + g.act + '</td></tr>').join('') + '</table></div></div>' +
+    '<div id="cert"></div>';
+  K.footer({ dark: false });
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#lab').classList.add('on'); run(d, M, no); };
+}
+
+async function run(d, M, no){
+  const S = K.sleep, bub = K.$('#bub'), las = K.$('#laser'), bed = K.$('#bed');
+  const dev = K.$('#dev'); K.$('#tbl').style.top = (dev.offsetTop + dev.offsetHeight + 12) + 'px';
+  await S(400);
+  K.$('#led').classList.add('on'); K.tone(880, .08, { type: 'square', vol: .1 }); K.tone(1320, .12, { type: 'square', vol: .1, at: .09 });
+  await S(500);
+  // 스캔
+  const spans = K.$$('#bub span'), br = bed.getBoundingClientRect();
+  const per = Math.max(70, Math.min(700, 2600 / Math.max(1, spans.length)));
+  las.classList.add('on'); K.tone(55, per * spans.length / 1000 + .4, { type: 'sawtooth', vol: .05 });
+  let k = 0, h = 0, idx = 0;
+  const kinds = M.kinds.filter((x, i) => !/\s/.test(M.cs[i]));
+  const passes = spans.length <= 3 ? 3 : 1;
+  for (let ps = 0; ps < passes; ps++) {
+  if (ps) { idx = 0; K.$('#who').textContent = '오차 확인을 위한 교차 측정 ' + (ps + 1) + '/' + passes; las.classList.add('on'); K.tone(55, .9, { type: 'sawtooth', vol: .05 }); }
+  for (const sp of spans) {
+    const r = sp.getBoundingClientRect();
+    las.style.left = (r.right - br.left + 1) + 'px'; las.style.top = (r.top - br.top - 4) + 'px'; las.style.height = (r.height + 8) + 'px';
+    await S(per * .55);
+    const kd = kinds[idx++];
+    if (kd === 'k' && ps) { sp.classList.add('hit'); K.tone(1240, .05, { type: 'square', vol: .1 }); }
+    else if (kd === 'k') { sp.classList.add('hit'); k++; K.$('#lk').textContent = String(k).padStart(2, '0'); K.tone(1200 + Math.min(k, 30) * 40, .05, { type: 'square', vol: .1 }); }
+    else if (kd === 'h') { sp.classList.add('hh'); h++; K.$('#lh').textContent = h; K.$('#lhw').classList.add('warn'); K.tone(330, .12, { type: 'square', vol: .12 }); }
+    else K.tick({ f: 900 });
+    K.$('#lp').textContent = (M.n ? k / M.n * 100 : 0).toFixed(1) + '%';
+    await S(per * .45);
+  }
+  if (passes > 1) { las.classList.remove('on'); spans.forEach(x => x.classList.remove('hit', 'hh')); await S(220); }
+  }
+  if (passes > 1) { K.$('#who').textContent = '교차 측정 3회 일치. 측정값 확정'; spans.forEach((x, i) => kinds[i] === 'k' ? x.classList.add('hit') : kinds[i] === 'h' && x.classList.add('hh')); }
+  las.classList.remove('on');
+  K.tone(1568, .25, { type: 'square', vol: .1 }); K.tone(1568, .25, { type: 'square', vol: .1, at: .3 });
+  await S(800);
+  // 등급표
+  K.$('#tbl').classList.add('on'); K.noise(.2, { hp: 2000, vol: .2 });
+  await S(600);
+  const rows = K.$$('#tbl tr[data-g]'), ti = rows.findIndex(r => r.dataset.g === M.g.id);
+  const laps = rows.length + ti;
+  for (let i = 0; i <= laps; i++) {
+    rows.forEach(r => r.classList.remove('scan')); rows[i % rows.length].classList.add('scan'); K.tick({ f: 1500, vol: .07 });
+    await S(70 + Math.pow(i / laps, 3) * 260);
+  }
+  rows.forEach(r => r.classList.remove('scan')); rows[ti].classList.add('hit');
+  if (M.g.id === '1' || M.g.id === '0') { K.tone(110, .7, { type: 'square', vol: .2 }); K.tone(116, .7, { type: 'square', vol: .2 }); K.vibe([60, 40, 60]); }
+  else if (M.g.id === '6' || M.g.id === '11') K.fanfare([[523, .12], [659, .12], [784, .12], [1046, .4]], { vol: .1 });
+  else { K.tone(440, .3, { type: 'triangle', vol: .25 }); K.tone(330, .4, { type: 'triangle', vol: .25, at: .2 }); }
+  await S(1900);
+  // 성적서
+  const c = K.$('#cert'), now = new Date(), dt = now.getFullYear() + '. ' + (now.getMonth() + 1) + '. ' + now.getDate() + '.';
+  c.innerHTML = '<div class="paper"><div class="org"><span class="emb">ㅋ</span>ㅋ 국가표준원<span class="no">성적서 번호 ' + no + '</span></div>' +
+    '<h2>시험성적서</h2><dl><dt>의뢰인</dt><dd>' + K.esc(d.fr) + '</dd><dt>시료</dt><dd>' + K.esc(d.to) + '님의 답장 「' + K.esc(d.rep.length > 16 ? d.rep.slice(0, 16) + '…' : d.rep) + '」</dd><dt>시험 방법</dt><dd>ㅋ표준 제0001호 (기계 계수)</dd><dt>시험 일자</dt><dd>' + dt + '</dd></dl>' +
+    '<div class="res"><div><small>ㅋ 함량</small><b>' + M.k + '개</b></div><div><small>ㅎ 혼입</small><b>' + M.h + '개</b></div><div><small>측정 불확도</small><b>±0개</b></div></div>' +
+    '<div class="verdict"><small>판 정</small><b id="vb">' + M.g.name + '</b></div><p class="rmk" id="rmk">' + M.g.note + '</p>' +
+    '<p class="sign"><small>위 시험 결과를 증명합니다.</small>ㅋ 국가표준원장<span id="stamp">ㅋ국가<br>표준원<br>장인</span></p></div>';
+  c.classList.add('on'); K.noise(.3, { hp: 1500, vol: .25 });
+  await S(900);
+  K.$('#vb').classList.add('on'); K.boom({ vol: .6, f: 140 });
+  await S(800);
+  K.$('#rmk').classList.add('on'); K.tone(660, .08, { type: 'square', vol: .08 });
+  await S(1300);
+  K.$('#stamp').classList.add('on'); setTimeout(() => { K.boom({ vol: .9, f: 90 }); K.vibe(40); document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }, 240);
+  await S(1500);
+  K.again({ replayText: '재측정 요청', makeText: '나도 측정 의뢰하기' });
+}
+</script>
+</body>
+</html>

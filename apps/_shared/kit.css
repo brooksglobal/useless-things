@@ -1,0 +1,34 @@
+/* 쓸데없는 앱 공통: 만들기 화면 + 바닥글. 색은 앱마다 :root 의 --k-* 로 바꿉니다. */
+:root{--k-bg:#f4f1e8;--k-fg:#111;--k-sub:#5c5a52;--k-card:#fff;--k-line:#d9d4c4;--k-acc:#111;--k-acc-fg:#fff;--k-focus:#111}
+.k-make{position:fixed;inset:0;overflow:auto;background:var(--k-bg);color:var(--k-fg);padding:max(28px,env(safe-area-inset-top)) 20px calc(110px + env(safe-area-inset-bottom));z-index:20;
+  font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
+.k-make *{box-sizing:border-box;margin:0}
+.k-wrap{max-width:440px;margin:0 auto}
+.k-kicker{font-size:12px;letter-spacing:.24em;color:var(--k-sub);font-weight:700}
+.k-make h1{font-size:36px;font-weight:900;letter-spacing:-.03em;line-height:1.15;margin:8px 0 8px}
+.k-sub{color:var(--k-sub);font-size:15px;line-height:1.5;margin-bottom:18px}
+.k-f{display:block;margin:16px 0 6px;font-size:13px;color:var(--k-sub);font-weight:700;letter-spacing:.04em}
+.k-make input[type=text],.k-make input[type=date],.k-make input[type=number],.k-make textarea,.k-make select{width:100%;background:var(--k-card);color:var(--k-fg);border:2px solid var(--k-line);border-radius:12px;padding:13px 14px;font:inherit;font-size:17px;outline:none;-webkit-appearance:none;appearance:none}
+.k-make textarea{min-height:84px;resize:vertical;line-height:1.45}
+.k-make input:focus,.k-make textarea:focus,.k-make select:focus{border-color:var(--k-focus)}
+.k-hint{font-size:12px;color:var(--k-sub);margin-top:6px}
+.k-btn{display:block;width:100%;margin-top:22px;border:0;border-radius:14px;padding:16px;font:inherit;font-size:17px;font-weight:800;background:var(--k-acc);color:var(--k-acc-fg);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.k-btn:active{transform:scale(.98)}
+.k-btn.ghost{background:transparent;border:2px solid var(--k-line);color:var(--k-fg);font-weight:700;margin-top:10px}
+.k-link{margin-top:14px;background:var(--k-card);border:2px dashed var(--k-line);border-radius:12px;padding:12px;font-family:Menlo,monospace;font-size:12px;color:var(--k-sub);word-break:break-all;user-select:all;-webkit-user-select:all}
+.k-out{display:none}.k-out.on{display:block}
+.hide{display:none!important}
+/* 바닥글 */
+.ig{display:inline-flex;align-items:center;gap:10px;text-decoration:none;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em;padding:7px 14px 7px 7px;border-radius:999px;
+  color:#111;background:rgba(255,255,255,.88);border:1.5px solid rgba(0,0,0,.12);-webkit-tap-highlight-color:transparent}
+.ig.dark{color:#fff;background:rgba(0,0,0,.5);border-color:rgba(255,255,255,.16);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.ig img{width:30px;height:30px;border-radius:50%;object-fit:cover;background:#ddd}
+.ig svg{width:18px;height:18px}
+.k-foot{display:flex;justify-content:center;margin-top:30px}
+#k-igfix{position:fixed;left:0;right:0;bottom:max(14px,env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none;z-index:50}
+#k-igfix .ig{pointer-events:auto}
+/* 받는 쪽 끝 버튼 */
+.k-again{position:fixed;left:0;right:0;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 58px);display:flex;gap:8px;justify-content:center;padding:0 16px;z-index:49;opacity:0;pointer-events:none;transition:opacity .5s}
+.k-again.on{opacity:1;pointer-events:auto}
+.k-again button{border:0;border-radius:999px;padding:11px 16px;font:inherit;font-family:"Pretendard",sans-serif;font-size:14px;font-weight:800;cursor:pointer;background:#111;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.k-again button.l{background:#fff;color:#111}

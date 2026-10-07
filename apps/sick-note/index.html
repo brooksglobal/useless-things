@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>아플 예정 진단서</title>
+<meta name="description" content="미리 아파 두는 진단서를 발급합니다.">
+<meta property="og:title" content="진단서가 발급되었습니다">
+<meta property="og:description" content="미리아파 의원에서 진단서를 보냈습니다. 열람해 주세요.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/sick-note/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&family=Nanum+Pen+Script&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#EEF6F3;--k-fg:#0E2A26;--k-sub:#5a716c;--k-card:#fff;--k-line:#cfe3dd;--k-acc:#0F766E;--k-acc-fg:#fff;--k-focus:#0F766E;
+  --teal:#0F766E;--teal2:#14B8A6;--ink:#1d2624;--red:#D7263D;--paper:#fff;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:linear-gradient(180deg,#E6F2EE 0%,#F5FAF8 100%);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+#hdr{position:fixed;top:0;left:0;right:0;padding:max(14px,env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px;background:var(--teal);color:#fff;z-index:4;box-shadow:0 4px 14px rgba(15,118,110,.25)}
+#hdr .lg{width:34px;height:34px;border-radius:9px;background:#fff;display:grid;place-items:center;font-size:20px}
+#hdr b{font-size:17px;font-weight:900;letter-spacing:.02em;display:block}
+#hdr small{font-size:11px;opacity:.8;letter-spacing:.06em}
+#hdr .st{margin-left:auto;font-size:11px;font-weight:800;background:rgba(255,255,255,.18);padding:4px 8px;border-radius:999px}
+/* 접수증 */
+#gate{position:fixed;inset:0;display:grid;place-items:center;padding:24px;z-index:5;background:linear-gradient(180deg,#E6F2EE,#F5FAF8)}
+.tk{width:min(100%,330px);background:#fff;border-radius:14px;box-shadow:0 20px 50px rgba(14,42,38,.18);overflow:hidden;position:relative}
+.tk .th{background:var(--teal);color:#fff;padding:18px 20px;display:flex;align-items:center;gap:10px}
+.tk .th span{font-size:28px}
+.tk .th b{font-size:18px;font-weight:900}
+.tk .th small{display:block;font-size:12px;opacity:.85;font-weight:600}
+.tk .no{text-align:center;padding:20px 0 6px;font-size:13px;color:#5a716c;font-weight:700;letter-spacing:.2em}
+.tk .nn{text-align:center;font-size:60px;font-weight:900;letter-spacing:-.02em;color:var(--teal);font-variant-numeric:tabular-nums;line-height:1}
+.tk .rw{display:flex;justify-content:space-between;padding:8px 22px;font-size:14px;border-top:1px dashed #d6e5e1}
+.tk .rw:first-of-type{margin-top:16px}
+.tk .rw span{color:#5a716c}
+.tk .rw b{font-weight:800}
+.tk button{display:block;width:calc(100% - 36px);margin:16px 18px 18px;border:0;border-radius:12px;padding:15px;font:inherit;font-weight:800;font-size:17px;background:var(--teal);color:#fff;cursor:pointer}
+/* 호출 */
+#call{position:fixed;left:16px;right:16px;top:26%;background:#0b1f1c;color:#7CF3DE;border-radius:12px;padding:18px 16px;text-align:center;font-weight:800;box-shadow:inset 0 0 0 3px #173d37;opacity:0;transform:translateY(-10px);transition:all .4s;z-index:3}
+#call.on{opacity:1;transform:none}
+#call .n{font-size:68px;font-family:Menlo,monospace;letter-spacing:.06em;line-height:1.1;text-shadow:0 0 14px rgba(124,243,222,.6)}
+#call p{font-size:16px;margin-top:6px;color:#e9fffa}
+#call.blink .n{animation:bl .5s steps(2) 3}
+@keyframes bl{50%{opacity:.15}}
+/* 문진 */
+#exam{position:fixed;left:16px;right:16px;top:calc(max(14px,env(safe-area-inset-top)) + 74px);background:#fff;border-radius:14px;padding:18px 16px 16px;box-shadow:0 14px 34px rgba(14,42,38,.12);display:none;z-index:3}
+#exam.on{display:block;animation:up .4s cubic-bezier(.2,1.2,.4,1)}
+@keyframes up{0%{transform:translateY(20px);opacity:0}100%{transform:none;opacity:1}}
+#exam h3{font-size:15px;font-weight:900;color:var(--teal);letter-spacing:.06em;display:flex;justify-content:space-between}
+#exam h3 span{font-variant-numeric:tabular-nums}
+.pb{height:12px;border-radius:99px;background:#e3efec;margin:10px 0 14px;overflow:hidden}
+.pb i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--teal2));border-radius:99px;transition:width .5s}
+#ecg{width:100%;height:60px;display:block;background:#0b1f1c;border-radius:8px}
+#ecg path{fill:none;stroke:#7CF3DE;stroke-width:2;stroke-dasharray:700;stroke-dashoffset:700;animation:ecg 1.4s linear infinite}
+@keyframes ecg{to{stroke-dashoffset:0}}
+.qa{margin-top:6px;min-height:170px}
+.q{display:flex;gap:8px;align-items:flex-start;margin-top:9px;font-size:15px;line-height:1.4;animation:up .3s both}
+.q b{flex:none;width:22px;height:22px;border-radius:6px;background:var(--teal);color:#fff;font-size:12px;display:grid;place-items:center;margin-top:1px}
+.q span{flex:1;font-weight:700}
+.q em{font-style:normal;flex:none;font-weight:900;color:var(--red);font-size:14px;opacity:0;transition:opacity .25s;margin-top:1px}
+.q.a em{opacity:1}
+/* 진단서 */
+#doc{position:fixed;left:14px;right:14px;top:calc(max(14px,env(safe-area-inset-top)) + 70px);background:var(--paper);border-radius:4px;padding:16px 16px 14px;box-shadow:0 20px 50px rgba(14,42,38,.2);display:none;z-index:3;border:1px solid #d6e5e1}
+#doc.on{display:block;animation:paper .55s cubic-bezier(.2,1.2,.4,1)}
+@keyframes paper{0%{transform:translateY(60px) rotate(2deg);opacity:0}100%{transform:none;opacity:1}}
+#doc h2{text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:25px;letter-spacing:.6em;padding-left:.6em}
+#doc .sn{text-align:center;font-size:11px;color:#7a8a86;margin:4px 0 10px;letter-spacing:.06em}
+#doc table{width:100%;border-collapse:collapse;font-size:13.5px}
+#doc td{border:1px solid #9fb5b0;padding:7px 8px;vertical-align:top;line-height:1.45}
+#doc td.l{width:76px;background:#f1f7f5;font-weight:800;color:#3f5752;font-size:12.5px;text-align:center;vertical-align:middle}
+#doc td.v{font-weight:700;min-height:20px}
+#doc td.v.hl{color:var(--red);font-weight:900}
+#doc td.v .c{display:inline-block;width:2px;height:15px;background:var(--ink);vertical-align:-2px;margin-left:1px;animation:bl .6s steps(2) infinite}
+#doc .ft{position:relative;margin-top:12px;font-size:13px;line-height:1.6;min-height:86px}
+#doc .ft .hosp{font-weight:900;font-size:15px}
+#sig{position:absolute;left:120px;top:24px;width:120px;height:46px}
+#sig path{fill:none;stroke:#1a2a6c;stroke-width:2.4;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:420}
+#sig.on path{transition:stroke-dashoffset 1s ease-in-out;stroke-dashoffset:0}
+#stamp{position:absolute;right:2px;top:-6px;width:84px;height:84px;border:4px solid var(--red);border-radius:6px;color:var(--red);display:grid;place-items:center;text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:14px;line-height:1.2;opacity:0;transform:scale(3) rotate(-16deg);mix-blend-mode:multiply}
+#stamp::before{content:"";position:absolute;inset:4px;border:1.5px solid var(--red);border-radius:3px}
+#stamp.on{animation:stamp .26s cubic-bezier(.5,0,.7,1) forwards}
+@keyframes stamp{0%{opacity:0;transform:scale(3) rotate(-16deg)}100%{opacity:.88;transform:scale(1) rotate(-9deg)}}
+body.shake #doc{animation:shk .18s linear}
+@keyframes shk{25%{transform:translate(-4px,2px)}50%{transform:translate(4px,-2px)}75%{transform:translate(-2px,-2px)}}
+#twist{position:fixed;left:16px;right:16px;bottom:calc(max(14px,env(safe-area-inset-bottom)) + 112px);background:var(--red);color:#fff;border-radius:10px;padding:12px 14px;text-align:center;font-weight:900;font-size:16px;line-height:1.4;box-shadow:0 12px 28px rgba(215,38,61,.35);opacity:0;transform:translateY(16px) scale(.96);transition:all .4s cubic-bezier(.2,1.4,.4,1);z-index:5}
+#twist small{display:block;font-size:12px;font-weight:700;opacity:.9;margin-top:2px}
+#twist.on{opacity:1;transform:none}
+#toast{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);background:#0b1f1c;color:#7CF3DE;font-weight:900;padding:16px 20px;border-radius:10px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.3);text-align:center;line-height:1.45;display:none;width:max-content;max-width:300px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const WD = ['일', '월', '화', '수', '목', '금', '토'];
+const ymd = t => t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+function nextSat(){ const t = new Date(); t.setHours(0, 0, 0, 0); const k = (6 - t.getDay() + 7) % 7 + 7; t.setDate(t.getDate() + k); return ymd(t); }
+const okDate = s => /^\d{4}-\d{2}-\d{2}$/.test(s) && !isNaN(new Date(s + 'T00:00:00'));
+const ONSET_H = 11, ONSET_M = 47;   // 발병 예정: 약속 당일 오전 11시 47분
+
+K.start({
+  parse: a => ({ fr: K.str(a[0], '환자', 10), to: K.str(a[1], '친구', 10), day: okDate(String(a[2] || '')) ? String(a[2]) : nextSat() }),
+  make: () => K.maker({
+    kicker: '진단서 발급', title: '아플 예정 진단서', sub: '미리 아파 둡니다.',
+    fields: [
+      { k: 'fr', label: '환자 (보내는 사람)', ph: '현우', max: 10, def: '환자' },
+      { k: 'to', label: '제출처 (약속 상대)', ph: '영집', max: 10, def: '친구' },
+      { k: 'day', label: '약속 날짜', type: 'date', val: nextSat(), def: nextSat(), hint: '그날 아플 예정입니다.' },
+    ],
+    toArr: v => [v.fr, v.to, okDate(v.day) ? v.day : nextSat()],
+  }),
+  show,
+});
+
+function show(d){
+  const E = K.esc, fr = E(d.fr), to = E(d.to), no = String(400 + (d.fr.length * 37 + d.to.length * 11) % 600).padStart(4, '0');
+  d.no = no;
+  document.getElementById('app').innerHTML =
+    '<div id="hdr"><span class="lg">🩺</span><div><b>미리아파 의원</b><small>미래의학과 · 예방적 진단 전문</small></div><span class="st" id="st">진료 대기</span></div>' +
+    '<div id="gate"><div class="tk"><div class="th"><span>🩺</span><div><b>진료 접수증</b><small>미리아파 의원</small></div></div>' +
+    '<p class="no">접수번호</p><p class="nn">' + no + '</p>' +
+    '<p class="rw"><span>환자</span><b>' + fr + ' 님</b></p><p class="rw"><span>진료과</span><b>미래의학과</b></p><p class="rw"><span>진단서 제출처</span><b>' + to + ' 님</b></p>' +
+    '<button id="enter">진단서 열람</button></div></div>' +
+    '<div id="call"><div class="n">' + no + '</div><p>' + fr + ' 님, 1진료실로 들어오세요</p><p style="font-size:12px;color:#7CF3DE;opacity:.7;margin-top:10px">대기 환자 0명 · 아직 아프지 않음</p></div>' +
+    '<div id="exam"><h3>문진 진행 중<span id="pct">0%</span></h3><div class="pb"><i id="pbi"></i></div>' +
+    '<svg id="ecg" viewBox="0 0 340 60" preserveAspectRatio="none"><path d="M0 34 L60 34 L70 30 L78 34 L96 34 L102 10 L110 52 L116 34 L150 34 L160 28 L170 34 L230 34 L240 30 L248 34 L266 34 L272 10 L280 52 L286 34 L320 34 L330 28 L340 34"/></svg><div class="qa" id="qa"></div></div>' +
+    '<div id="doc"></div><div id="twist"></div><div id="toast"></div>';
+  K.footer();
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); run(d); };
+}
+
+const beep = (at = 0) => K.tone(1046, .09, { type: 'sine', vol: .14, at });
+const key = () => { K.noise(.02, { bp: 3200, q: 1, vol: .18 }); };
+
+async function type(td, html, ms = 34){
+  td.innerHTML = '<span class="tx"></span><i class="c"></i>'; const tx = td.firstChild;
+  const parts = html.split(/(<[^>]+>)/); let out = '';
+  for (const p of parts) { if (p.startsWith('<')) { out += p; continue; } for (const ch of p) { out += ch; tx.innerHTML = out; if (ch !== ' ') key(); await K.sleep(ms); } }
+  td.querySelector('.c').remove();
+}
+
+function gap(day){
+  const on = new Date(day + 'T00:00:00'); on.setHours(ONSET_H, ONSET_M, 0, 0);
+  const m = Math.round((on - new Date()) / 60000);
+  if (m <= 0) { const a = -m; return { past: true, t: a >= 1440 ? Math.floor(a / 1440) + '일' : a >= 60 ? Math.floor(a / 60) + '시간' : a + '분' }; }
+  if (m >= 1440) return { t: Math.floor(m / 1440) + '일 ' + Math.floor((m % 1440) / 60) + '시간' };
+  if (m >= 60) return { t: Math.floor(m / 60) + '시간 ' + (m % 60) + '분' };
+  return { t: m + '분' };
+}
+
+async function run(d){
+  const S = K.sleep, E = K.esc, fr = E(d.fr), to = E(d.to), st = K.$('#st');
+  const day = new Date(d.day + 'T00:00:00'), dtxt = day.getFullYear() + '년 ' + (day.getMonth() + 1) + '월 ' + day.getDate() + '일(' + WD[day.getDay()] + ')';
+  // 호출
+  await S(300);
+  const call = K.$('#call'); call.classList.add('on', 'blink'); st.textContent = '호출';
+  K.tone(1318, .5, { type: 'sine', vol: .3 }); K.tone(1046, .8, { type: 'sine', vol: .3, at: .45 });
+  await S(2100); call.classList.remove('on'); await S(300);
+  // 문진
+  st.textContent = '문진 중';
+  const ex = K.$('#exam'), qa = K.$('#qa'), pbi = K.$('#pbi'), pct = K.$('#pct'); ex.classList.add('on');
+  const Q = [
+    ['약속 상대는 누구입니까?', to],
+    ['약속 날짜는 언제입니까?', (day.getMonth() + 1) + '/' + day.getDate()],
+    ['지금 그 약속에 나가고 싶습니까?', '아니요'],
+    ['그날은 나가고 싶어질 예정입니까?', '아니요'],
+    ['이불을 사랑합니까?', '네'],
+  ];
+  const hb = setInterval(() => beep(), 700); beep();
+  for (let i = 0; i < Q.length; i++) {
+    qa.insertAdjacentHTML('beforeend', '<p class="q"><b>' + (i + 1) + '</b><span>' + Q[i][0] + '</span><em>' + Q[i][1] + '</em></p>');
+    await S(520); qa.lastElementChild.classList.add('a'); K.tone(660, .05, { type: 'square', vol: .06 });
+    const p = Math.round((i + 1) / Q.length * 100); pbi.style.width = p + '%'; pct.textContent = p + '%';
+    await S(330);
+  }
+  clearInterval(hb); K.tone(1046, .9, { type: 'sine', vol: .16 });
+  await S(800); ex.classList.remove('on'); ex.style.display = 'none';
+  // 진단서
+  st.textContent = '진단서 발급';
+  const now = new Date(), issued = now.getFullYear() + '년 ' + (now.getMonth() + 1) + '월 ' + now.getDate() + '일';
+  const doc = K.$('#doc');
+  const R = [
+    ['환자 성명', fr],
+    ['제출처', to + ' 님 (약속 상대)'],
+    ['병명', '약속 당일 급성 귀찮음', 'hl'],
+    ['발병 예정', dtxt + '<br>오전 ' + ONSET_H + '시 ' + ONSET_M + '분 (오차 ±3분)', 'hl'],
+    ['증상', '이불 밖 공포, 씻기 거부, 「거의 다 왔어」 반복 발화'],
+    ['처방', '약속 연기. 집에서 누워 있을 것.'],
+    ['소견', '상기 환자는 위 일시에 위 증상이 발병할 것으로 판단됨. 전염성 없음.'],
+  ];
+  doc.innerHTML = '<h2>진단서</h2><p class="sn">발급번호 미리-' + d.no + ' · 질병분류기호 Z99.9</p><table>' + R.map(r => '<tr><td class="l">' + r[0] + '</td><td class="v ' + (r[2] || '') + '"></td></tr>').join('') + '</table>' +
+    '<div class="ft">발행일 ' + issued + '<br><span class="hosp">미리아파 의원</span><br>의사 김미리 (서명)' +
+    '<svg id="sig" viewBox="0 0 120 46"><path d="M4 30 C14 6,22 6,20 26 S30 40,38 18 S50 8,52 28 S60 36,70 16 C76 8,80 30,90 24 S108 12,116 20"/></svg>' +
+    '<span id="stamp">미리아파<br>의원<br>원장인</span></div>';
+  doc.classList.add('on'); K.noise(.25, { hp: 1500, vol: .2 });
+  await S(600);
+  const tds = K.$$('#doc td.v');
+  for (let i = 0; i < R.length; i++) { await type(tds[i], R[i][1], i >= 4 ? 22 : 40); await S(140); }
+  await S(250);
+  K.$('#sig').classList.add('on'); for (let i = 0; i < 9; i++) K.noise(.08, { bp: 2400, q: .7, vol: .15, at: i * .1 });
+  await S(1200);
+  K.$('#stamp').classList.add('on'); setTimeout(() => { K.boom({ vol: .9, f: 90 }); K.vibe(40); document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); }, 230);
+  st.textContent = '발급 완료';
+  await S(1300);
+  const g = gap(d.day), tw = K.$('#twist');
+  tw.innerHTML = g.past ? '이 진단서는 발병 ' + g.t + ' 뒤에 발급되었습니다<small>소급 적용됩니다</small>' : '이 진단서는 발병 ' + g.t + ' 전에 발급되었습니다<small>' + to + ' 님, 미리 알려 드립니다</small>';
+  tw.classList.add('on'); K.tone(880, .12, { type: 'square', vol: .08 }); K.tone(660, .3, { type: 'square', vol: .08, at: .14 });
+  await S(1600);
+  K.again({ replayText: '재진료', makeText: '나도 진단서 받기', onReplay: () => {
+    const t = K.$('#toast'); t.innerHTML = '재진료는 발병 이후에<br>가능합니다'; t.style.display = 'block'; beep(); beep(.15);
+    setTimeout(() => { t.style.display = 'none'; K.$('.k-again').classList.add('on'); }, 2200); } });
+}
+</script>
+</body>
+</html>

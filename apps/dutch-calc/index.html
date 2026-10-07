@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>자신만만 더치페이 계산기</title>
+<meta name="description" content="더치페이를 슈퍼컴퓨터로 계산합니다.">
+<meta property="og:title" content="정산 요청이 도착했습니다">
+<meta property="og:description" content="정밀도 99.99% 슈퍼컴퓨터가 계산했습니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/dutch-calc/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;800&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#EEF3F1;--k-fg:#0b1512;--k-sub:#5b6b66;--k-card:#fff;--k-line:#cddbd6;--k-acc:#0b1512;--k-acc-fg:#38F2A8;--k-focus:#0b1512;
+  --neo:#38F2A8;--cy:#4FD8FF;--mg:#FF4FA3;--bg:#05100c;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:#d8fff0;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+.mono{font-family:"JetBrains Mono",Menlo,monospace}
+#rain{position:fixed;inset:0;width:100%;height:100%;opacity:.45}
+/* 게이트 */
+#gate{position:fixed;inset:0;display:grid;place-items:center;padding:20px 20px 120px;z-index:5}
+.req{width:min(100%,340px);background:#fff;color:#0b1512;border-radius:14px;padding:22px 20px;box-shadow:0 0 0 1px rgba(56,242,168,.4),0 30px 60px rgba(0,0,0,.6)}
+.req small{font-size:12px;font-weight:800;letter-spacing:.2em;color:#1a9e6c}
+.req h2{font-size:22px;font-weight:900;margin-top:6px;letter-spacing:-.02em;line-height:1.35}
+.req .amt{margin-top:16px;font-size:36px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.req .amt span{font-size:18px}
+.req p{font-size:14px;color:#5b6b66;margin-top:4px}
+.req button{margin-top:20px;width:100%;border:0;border-radius:10px;padding:15px;font:inherit;font-weight:800;font-size:17px;background:#0b1512;color:var(--neo);cursor:pointer}
+/* 연산 */
+#calc{position:fixed;inset:0;display:none;flex-direction:column;padding:max(14px,env(safe-area-inset-top)) 16px calc(130px + env(safe-area-inset-bottom));z-index:3}
+#calc.on{display:flex}
+#calc .hd{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;color:var(--neo);letter-spacing:.08em}
+#calc .hd i{font-style:normal;display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--neo);margin-right:6px;box-shadow:0 0 10px var(--neo);animation:bl .4s steps(2) infinite}
+@keyframes bl{50%{opacity:.2}}
+#calc h1{margin-top:14px;font-size:22px;font-weight:900;color:#fff;letter-spacing:-.01em}
+#calc h1 small{display:block;font-size:12px;color:var(--cy);font-weight:800;letter-spacing:.2em;margin-bottom:4px}
+#cores{display:grid;grid-template-columns:repeat(16,1fr);gap:3px;margin-top:14px}
+#cores b{height:9px;border-radius:2px;background:rgba(56,242,168,.15)}
+#cores b.on{background:var(--neo);box-shadow:0 0 6px var(--neo)}
+#big{margin-top:16px;text-align:center;font-size:52px;font-weight:800;color:#fff;letter-spacing:-.02em;text-shadow:0 0 18px rgba(79,216,255,.7);font-variant-numeric:tabular-nums}
+#log{margin-top:10px;flex:1;overflow:hidden;font-size:13px;line-height:1.75;color:var(--cy);display:flex;flex-direction:column;justify-content:flex-end;-webkit-mask-image:linear-gradient(transparent,#000 40%)}
+#log p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:ln .2s both}
+#log p.ok{color:var(--neo)}
+#log p.mg{color:#fff;background:var(--mg);padding:0 6px;border-radius:3px;font-weight:800;white-space:normal}
+#log p s{color:#7aa;text-decoration-color:var(--mg);text-decoration-thickness:2px}
+@keyframes ln{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+#prog{margin-top:12px}
+#prog .r{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:var(--neo)}
+#prog .tr{margin-top:6px;height:10px;border:1px solid var(--neo);border-radius:3px;padding:1px}
+#prog .fl{height:100%;width:0;background:var(--neo);box-shadow:0 0 10px var(--neo)}
+#flash{position:fixed;inset:0;background:#fff;z-index:9;opacity:0;pointer-events:none}
+#flash.on{animation:fl .5s ease-out}
+@keyframes fl{0%{opacity:1}100%{opacity:0}}
+/* 결과 */
+#res{position:fixed;inset:0;z-index:4;display:none;overflow-y:auto;background:#EEF3F1;color:#0b1512;padding:calc(max(18px,env(safe-area-inset-top)) + 24px) 16px calc(150px + env(safe-area-inset-bottom));scrollbar-width:none}
+#res::-webkit-scrollbar{display:none}
+#res.on{display:block}
+.rc{position:relative;background:#fff;border-radius:6px;padding:18px 18px 20px;box-shadow:0 10px 26px rgba(0,0,0,.08);animation:up .45s cubic-bezier(.2,1.3,.4,1) both}
+@keyframes up{0%{transform:translateY(30px);opacity:0}100%{transform:none;opacity:1}}
+.rc .t{font-size:12px;font-weight:800;letter-spacing:.2em;color:#1a9e6c}
+.rc h2{font-size:27px;font-weight:900;margin-top:4px;letter-spacing:-.02em}
+.rc .meta{font-size:12px;color:#7a8a85;margin-top:4px}
+.rc table{width:100%;border-collapse:collapse;margin-top:12px}
+.rc td{padding:9px 2px;border-top:1px dashed #cddbd6;font-size:16px;font-weight:700}
+.rc td.n{text-align:right;font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.rc tr.me td{background:#FFF6C2;font-weight:900}
+.rc tr.me td:first-child{padding-left:8px;border-radius:6px 0 0 6px}.rc tr.me td.n{padding-right:8px;border-radius:0 6px 6px 0;color:#d1006a;font-size:26px}
+.rc tr.me .tg{display:inline-block;font-size:11px;font-weight:900;background:#0b1512;color:var(--neo);padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:2px}
+.rc tr.sum td{border-top:2px solid #0b1512;font-weight:900}
+.rc tr.hide{opacity:0}
+.rc tr{transition:opacity .25s}
+#stamp{position:absolute;right:14px;top:16px;border:3px solid #d1006a;color:#d1006a;border-radius:8px;padding:6px 10px;font-weight:900;font-size:16px;text-align:center;line-height:1.2;opacity:0;transform:scale(3) rotate(-14deg);mix-blend-mode:multiply}
+#stamp small{display:block;font-size:12px}
+#stamp.on{animation:stamp .28s cubic-bezier(.5,0,.7,1) forwards}
+@keyframes stamp{to{opacity:.9;transform:scale(1) rotate(-10deg)}}
+.perf{margin-top:20px;text-align:center;font-size:23px;font-weight:900;letter-spacing:-.02em;line-height:1.4;opacity:0;transform:scale(.8);transition:all .4s cubic-bezier(.2,1.6,.4,1)}
+.perf.on{opacity:1;transform:none}
+.perf small{display:block;font-size:13px;color:#5b6b66;font-weight:700;margin-top:2px}
+.why{margin-top:16px;background:#0b1512;color:#d8fff0;border-radius:10px;padding:14px 16px}
+.why h3{font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--neo)}
+.why li{list-style:none;display:flex;gap:10px;font-size:14px;line-height:1.5;margin-top:9px;animation:up .35s both}
+.why li b{flex:none;color:var(--neo);font-family:"JetBrains Mono",monospace;font-size:13px;padding-top:1px}
+.why ol{padding:0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+function parse(a){
+  let total = Math.round(+String(a[0] == null ? '' : a[0]).replace(/[^0-9.]/g, ''));
+  if (!(total >= 100 && total <= 100000000)) total = 87000;
+  const fr = K.str(a[2], '나', 10);
+  let ppl = K.str(a[1], '영집, 민수, 지훈', 100).split(/[,，、\/\s]+/).map(s => s.trim().slice(0, 8)).filter(Boolean);
+  ppl = [...new Set(ppl)].filter(p => p !== fr).slice(0, 8);
+  if (!ppl.length) ppl = ['친구'];
+  return { total, ppl, fr };
+}
+const won = n => n.toLocaleString('ko-KR');
+
+function show(d){
+  const E = K.esc, n = d.ppl.length;
+  document.getElementById('app').innerHTML = '<canvas id="rain"></canvas>' +
+    '<div id="gate"><div class="req"><small>정산 요청</small><h2>' + E(d.fr) + '님이<br>더치페이를 요청했습니다</h2><p class="amt mono">' + won(d.total) + '<span>원</span></p><p>같이 먹은 사람 ' + (n + 1) + '명 · ' + E(d.ppl.join(', ')) + ', ' + E(d.fr) + '</p><button id="go">슈퍼컴퓨터로 계산하기</button></div></div>' +
+    '<div id="calc"><div class="hd mono"><span><i></i>DUTCH-9000 ONLINE</span><span>CORE 128</span></div>' +
+    '<h1><small class="mono">QUANTUM SETTLEMENT</small>정산 슈퍼컴퓨터 연산 중</h1><div id="cores">' + '<b></b>'.repeat(64) + '</div>' +
+    '<div id="big" class="mono">0</div><div id="log" class="mono"></div>' +
+    '<div id="prog" class="mono"><div class="r"><span id="pl">연산 0%</span><span id="pp">정밀도 0.00%</span></div><div class="tr"><div class="fl" id="pf"></div></div></div></div>' +
+    '<div id="res"></div><div id="flash"></div>';
+  K.footer({ dark: true });
+  rain();
+  K.$('#go').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#calc').classList.add('on'); run(d); };
+}
+
+let RAIN_SPEED = 1;
+function rain(){
+  const c = K.$('#rain'), x = c.getContext('2d'), dpr = Math.min(2, devicePixelRatio || 1);
+  const W = c.width = innerWidth * dpr, H = c.height = innerHeight * dpr, fs = 14 * dpr, cols = Math.ceil(W / fs), y = Array.from({ length: cols }, () => Math.random() * -50);
+  x.font = '700 ' + fs + 'px "JetBrains Mono",monospace';
+  const f = () => { x.fillStyle = 'rgba(5,16,12,.18)'; x.fillRect(0, 0, W, H);
+    for (let i = 0; i < cols; i++) { x.fillStyle = Math.random() < .08 ? '#d8fff0' : '#38F2A8'; x.fillText(K.pick('0123456789+−×÷=∑∫%'.split('')), i * fs, y[i] * fs);
+      y[i] += RAIN_SPEED * (.4 + (i % 3) * .2); if (y[i] * fs > H && Math.random() > .96) y[i] = 0; }
+    if (c.isConnected) requestAnimationFrame(f); };
+  f();
+}
+
+async function run(d){
+  const S = K.sleep, E = K.esc, n = d.ppl.length, all = n + 1, log = K.$('#log'), big = K.$('#big');
+  RAIN_SPEED = 2.2;
+  const per = Math.floor(d.total / all), per2 = Math.floor(d.total / n / 10) * 10;
+  const L = (t, c) => { log.insertAdjacentHTML('beforeend', '<p class="' + (c || '') + '">' + t + '</p>'); while (log.children.length > 14) log.firstChild.remove(); };
+  const lines = [
+    ['&gt; LOAD 총액 = ' + won(d.total) + '원'],
+    ['&gt; LOAD 인원 = ' + all + '명'],
+    ['&gt; ' + E(d.ppl.concat(d.fr).join(' · '))],
+    ['∫ 배부름 d(시간) = 3.14159…'],
+    ['Σ 추가 주문(공깃밥) = 2'],
+    ['√(삼겹살 3인분) ≈ 1.7320508'],
+    ['e^(iπ) + 1 = 0  … 확인'],
+    ['FFT(영수증) 변환 완료', 'ok'],
+    [won(d.total) + ' ÷ ' + all + ' = ' + won(per)],
+    ['교차 검증 1,024회 …'],
+    ['<s>' + won(d.total) + ' ÷ ' + all + ' = ' + won(per) + '</s>'],
+    ['인원 보정: ' + all + ' → ' + n + ' (계산한 사람 제외)', 'mg'],
+    [won(d.total) + ' ÷ ' + n + ' = ' + won(Math.round(d.total / n)), 'ok'],
+    ['정밀도 99.99% 수렴', 'ok'],
+  ];
+  const cores = K.$$('#cores b'), DUR = 5200, t0 = performance.now();
+  let li = 0, lastT = 0;
+  await new Promise(res => { const f = () => { const now = performance.now(), p = Math.min(1, (now - t0) / DUR);
+      big.textContent = p < .98 ? won(Math.floor(Math.random() * d.total * 1.3)) : won(d.total);
+      cores.forEach(b => b.classList.toggle('on', Math.random() < .25 + p * .7));
+      K.$('#pf').style.width = (p * 100) + '%'; K.$('#pl').textContent = '연산 ' + Math.floor(p * 100) + '%'; K.$('#pp').textContent = '정밀도 ' + (p * 99.99).toFixed(2) + '%';
+      const want = Math.floor(p * lines.length * 1.02);
+      while (li < Math.min(want, lines.length)) { const [t, c] = lines[li++]; L(t, c); if (c === 'mg') { K.tone(220, .25, { type: 'square', vol: .12 }); K.tone(330, .25, { type: 'square', vol: .1, at: .12 }); } else K.tone(K.rand(1200, 2400), .04, { type: 'square', vol: .05 }); }
+      if (now - lastT > 60) { K.tick({ f: K.rand(2000, 4000), vol: .025 }); lastT = now; }
+      p < 1 ? requestAnimationFrame(f) : res(); }; f(); });
+  big.textContent = won(d.total) + '원'; cores.forEach(b => b.classList.add('on'));
+  K.$('#pp').textContent = '정밀도 99.99%';
+  K.tone(80, .8, { type: 'sawtooth', vol: .12, slide: 600 });
+  await S(800);
+  K.$('#flash').classList.add('on'); K.boom({ vol: .7 });
+  // 결과
+  const amt = d.ppl.map(() => per2); amt[0] += d.total - per2 * n;
+  K.$('#calc').remove(); RAIN_SPEED = .5;
+  const res = K.$('#res'); res.classList.add('on');
+  res.innerHTML = '<div class="rc"><p class="t mono">DUTCH-9000 RESULT</p><h2>정산 결과서</h2><p class="meta">총액 ' + won(d.total) + '원 · ' + all + '명 · 정밀도 99.99%</p>' +
+    '<table>' + d.ppl.map((p, i) => '<tr class="hide"><td>' + E(p) + '</td><td class="n mono" data-v="' + amt[i] + '">0원</td></tr>').join('') +
+    '<tr class="me hide"><td>' + E(d.fr) + '<span class="tg">계산기 주인</span></td><td class="n mono" data-v="0">0원</td></tr>' +
+    '<tr class="sum hide"><td>합계</td><td class="n mono">' + won(d.total) + '원 ✓</td></tr></table>' +
+    '<span id="stamp">검산 완료<small>(안 함)</small></span></div>' +
+    '<p class="perf" id="perf">이 계산은 수학적으로 완벽합니다.<small>' + E(d.ppl.join(', ')) + '님은 ' + E(d.fr) + '님에게 송금해 주세요.</small></p>' +
+    '<div class="why" id="why"><h3 class="mono">산출 근거</h3><ol id="wl"></ol></div>';
+  K.$('#why').style.display = 'none';
+  await S(500);
+  const rows = K.$$('.rc tr'), gap = n > 5 ? 260 : 420;
+  for (const r of rows) { r.classList.remove('hide'); const td = r.querySelector('td[data-v]');
+    if (td) { const v = +td.dataset.v; if (v) { const tt = performance.now(); await new Promise(ok => { const f = () => { const p = Math.min(1, (performance.now() - tt) / 280); td.textContent = won(Math.round(v * p / 10) * 10) + '원'; p < 1 ? requestAnimationFrame(f) : ok(); }; f(); }); td.textContent = won(v) + '원'; K.tone(1400, .05, { type: 'square', vol: .07 }); K.tone(2100, .08, { type: 'square', vol: .06, at: .05 }); }
+      else { await S(500); td.textContent = '0원'; K.boom({ vol: .5, f: 160 }); K.vibe(30); } }
+    else K.ding({ f: 1046, vol: .2 });
+    await S(gap);
+  }
+  await S(200);
+  K.$('#stamp').classList.add('on'); setTimeout(() => { K.boom({ vol: .9, f: 90 }); K.vibe(40); }, 240);
+  await S(900);
+  K.$('#perf').classList.add('on'); K.fanfare([[784, .12], [988, .12], [1175, .35]], { vol: .1 });
+  await S(1300);
+  K.$('#why').style.display = ''; res.scrollTo({ top: res.scrollHeight, behavior: 'smooth' });
+  const W = [
+    '링크를 만든 사람은 계산 노동을 했으므로 면제',
+    '슈퍼컴퓨터 전기 요금과 상계',
+    '「내가 낼게」라고 말할 뻔한 마음 1회 차감',
+    '원 단위 오차는 전부 ' + E(d.fr) + '님에게 유리하게 처리',
+  ];
+  for (let i = 0; i < W.length; i++) { K.$('#wl').insertAdjacentHTML('beforeend', '<li><b>' + String(i + 1).padStart(2, '0') + '</b><span>' + W[i] + '</span></li>'); K.tone(900 + i * 120, .06, { type: 'square', vol: .06 }); res.scrollTo({ top: res.scrollHeight, behavior: 'smooth' }); await S(650); }
+  await S(600);
+  K.again({ replayText: '재계산 요청', makeText: '나도 계산기 주인 되기', onReplay: () => { const p = K.$('#perf small'); p.textContent = '재계산 결과: 동일합니다.'; K.ding({ f: 880 }); setTimeout(() => K.$('.k-again').classList.add('on'), 1200); } });
+}
+
+K.start({
+  parse,
+  make: () => K.maker({
+    kicker: '정밀 정산', title: '자신만만 더치페이 계산기', sub: '정밀도 99.99% 슈퍼컴퓨터가 나눕니다.',
+    fields: [
+      { k: 'total', label: '총액(원)', type: 'number', ph: '87000', val: '87000', max: 9, def: '87000' },
+      { k: 'ppl', label: '같이 먹은 사람들 (쉼표로 구분)', ph: '영집, 민수, 지훈', max: 60, def: '영집, 민수, 지훈', hint: '나는 빼고 적습니다. 최대 8명.' },
+      { k: 'fr', label: '보내는 사람 (계산기 주인)', ph: '현우', max: 10, def: '나' },
+    ],
+    toArr: v => [+String(v.total).replace(/[^0-9]/g, '') || 87000, v.ppl, v.fr],
+  }),
+  show,
+});
+</script>
+</body>
+</html>

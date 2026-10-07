@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>할 말 있는데</title>
+<meta name="description" content="할 말이 좀 깁니다.">
+<meta property="og:title" content="할 말 있는데…">
+<meta property="og:description" content="진지하게 들어 줘. 끝까지 내려야 보입니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/talk-scroll/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#F7F1EA;--k-fg:#2b1d22;--k-sub:#8a7479;--k-card:#fff;--k-line:#e6d6cf;--k-acc:#5a1630;--k-acc-fg:#fff;--k-focus:#5a1630;--fg:#2b1d22;--sub:#9a858a;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:auto}
+body{background:#FBF8F3;color:var(--fg);font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;transition:color .8s}
+body.lock{overflow:hidden;height:100%}
+.serif{font-family:"Nanum Myeongjo",serif}
+/* 첫 화면 */
+#intro{height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;padding:0 30px 120px;position:relative}
+#intro .fr{font-size:13px;letter-spacing:.2em;color:var(--sub);font-weight:700}
+#intro h1{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:34px;line-height:1.4;margin-top:14px;letter-spacing:-.02em}
+#intro h1 .dot{display:inline-block;animation:dots 1.6s steps(4) infinite;width:1.2em;overflow:hidden;vertical-align:bottom;white-space:nowrap}
+@keyframes dots{0%{width:0}100%{width:1.2em}}
+#intro p.s{margin-top:16px;font-size:15px;color:var(--sub);line-height:1.6}
+#go{margin-top:30px;align-self:flex-start;border:0;border-radius:999px;padding:15px 26px;font:inherit;font-size:16px;font-weight:800;background:#2b1d22;color:#fff;cursor:pointer;box-shadow:0 10px 24px rgba(43,29,34,.25)}
+#down{position:absolute;left:0;right:0;bottom:120px;text-align:center;font-size:13px;font-weight:700;color:var(--sub);letter-spacing:.12em;opacity:0;transition:opacity .6s}
+#down.on{opacity:1}
+#down i{display:block;font-style:normal;font-size:24px;margin-top:6px;animation:bob 1.1s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(8px)}}
+/* 긴 길 */
+#road{position:relative}
+#road::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;background:repeating-linear-gradient(180deg,currentColor 0 3px,transparent 3px 26px);opacity:.14}
+.ln{position:absolute;left:0;right:0;text-align:center;padding:0 34px;transform:translateY(-50%)}
+.ln p{display:inline-block;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:27px;line-height:1.45;letter-spacing:-.01em;padding:10px 6px;background:var(--bgc,#FBF8F3);opacity:.15;transform:translateY(16px);transition:opacity .5s,transform .5s}
+.ln.seen p{opacity:1;transform:none}
+.ln small{display:block;margin-top:4px;font-size:12px;color:var(--sub);font-family:"Pretendard",sans-serif;font-weight:700;letter-spacing:.1em;opacity:0;transition:opacity .5s .2s}
+.ln.seen small{opacity:1}
+.mk{position:absolute;left:0;right:0;text-align:center;font-size:11px;font-weight:800;letter-spacing:.3em;color:var(--sub);opacity:.6}
+.mk span{background:var(--bgc,#FBF8F3);padding:4px 8px}
+/* 끝 */
+#end{height:100vh;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 24px 150px;text-align:center}
+#end .big{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:clamp(56px,19vw,92px);line-height:1.15;letter-spacing:-.03em;opacity:0;transform:scale(.6)}
+#end.on .big{animation:pop .5s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:none}}
+#end .sig{margin-top:18px;font-size:15px;font-weight:700;color:var(--sub);opacity:0;transition:opacity .6s}
+#end .sig.on{opacity:1}
+#end .km{margin-top:8px;font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--sub);opacity:0;transition:opacity .6s}
+#end .km.on{opacity:1}
+/* 오른쪽 거리계 */
+#meter{position:fixed;right:10px;top:calc(max(16px,env(safe-area-inset-top)) + 52px);bottom:150px;width:58px;z-index:30;pointer-events:none;opacity:0;transition:opacity .5s}
+#meter.on{opacity:1}
+#meter .tr{position:absolute;right:8px;top:0;bottom:0;width:4px;border-radius:4px;background:currentColor;opacity:.15}
+#meter .fl{position:absolute;right:8px;top:0;width:4px;border-radius:4px;background:#d6336c;height:0}
+#meter .kn{position:absolute;right:0;top:0;transform:translateY(-50%);display:flex;align-items:center;gap:6px}
+#meter .kn b{font-size:12px;font-weight:900;font-variant-numeric:tabular-nums;background:#2b1d22;color:#fff;padding:4px 6px;border-radius:6px;white-space:nowrap}
+#meter .kn i{width:14px;height:14px;border-radius:50%;background:#d6336c;box-shadow:0 0 0 3px rgba(214,51,108,.25)}
+/* 자동 스크롤 */
+#auto{position:fixed;left:14px;top:max(14px,env(safe-area-inset-top));z-index:40;border:0;border-radius:999px;padding:9px 14px;font:inherit;font-size:13px;font-weight:800;background:rgba(43,29,34,.85);color:#fff;cursor:pointer;display:none}
+#auto.on{display:block}
+#top{position:fixed;left:0;right:0;top:max(14px,env(safe-area-inset-top));text-align:right;padding-right:14px;font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.06em;z-index:29;pointer-events:none;opacity:0;transition:opacity .5s}
+#top.on{opacity:1}
+</style>
+</head>
+<body class="lock">
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+const KM = 42.195;   // 맨 끝까지 내려오면 마라톤 한 번
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), fr: K.str(a[1], '나', 10), last: K.str(a[2], '아니야', 14) }),
+  make: () => { document.body.classList.remove('lock'); K.maker({
+    kicker: '진지한 이야기', title: '할 말 있는데', sub: '할 말이 좀 깁니다.',
+    fields: [
+      { k: 'to', label: '받는 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+      { k: 'last', label: '맨 끝에 할 말', ph: '아니야', max: 14, def: '아니야' },
+    ],
+    toArr: v => [v.to, v.fr, v.last],
+  }); },
+  show,
+});
+
+function show(d){
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; scrollTo(0, 0);
+  const ya = d.to + K.josa(d.to, '아', '야');
+  const LINES = [
+    ['진지하게 들어 줘', ''],
+    ['사실 오래 생각했어', ''],
+    ['이걸 말해도 될까 싶었어', ''],
+    ['놀라지 말고', ''],
+    [K.esc(ya) + ', 끝까지 읽어 줘', ''],
+    ['아직이야', '계속 내려 주세요'],
+    ['너한테만 하는 말이야', ''],
+    ['생각보다 길지?', ''],
+    ['나도 쓰면서 놀랐어', ''],
+    ['거의 다 왔어', ''],
+    ['진짜 거의 다 왔어', ''],
+    ['숨 한번 쉬고', ''],
+    ['말할게', ''],
+  ];
+  const GAP = 1500, H0 = 700;
+  const roadH = H0 + LINES.length * GAP;
+  let road = '';
+  LINES.forEach(([t, s], i) => { road += '<div class="ln" style="top:' + (H0 + i * GAP) + 'px"><p>' + t + '</p>' + (s ? '<small>' + s + '</small>' : '') + '</div>'; });
+  // 5km 마다 이정표
+  const vh = innerHeight, total0 = roadH + vh;   // 스크롤 가능 길이
+  [10, 21.0975, 30, 40].forEach(k => { const y = Math.round(k / KM * total0 - vh / 2); if (y < roadH - 300) road += '<div class="mk" style="top:' + y + 'px"><span>' + (k === 21.0975 ? '하프 지점' : k + 'KM') + '</span></div>'; });
+
+  document.getElementById('app').innerHTML =
+    '<section id="intro"><p class="fr">FROM. ' + K.esc(d.fr) + '</p><h1>' + K.esc(ya) + ',<br>할 말 있는데<span class="dot">…</span></h1>' +
+    '<p class="s">조금 길어. 천천히 내려 줘.</p><button id="go">들을게</button><p id="down">아래로 내려 주세요<i>↓</i></p></section>' +
+    '<section id="road" style="height:' + roadH + 'px">' + road + '</section>' +
+    '<section id="end"><p class="big">' + K.esc(d.last) + '</p><p class="sig">— ' + K.esc(d.fr) + '</p><p class="km" id="kmEnd"></p></section>' +
+    '<div id="meter"><div class="tr"></div><div class="fl"></div><div class="kn"><b id="kmv">0.0km</b><i></i></div></div>' +
+    '<p id="top">' + K.esc(d.fr) + ' → ' + K.esc(d.to) + '</p>' +
+    '<button id="auto" class="on">자동 스크롤</button>';
+  K.footer();
+
+  const meter = K.$('#meter'), fl = K.$('#meter .fl'), kn = K.$('#meter .kn'), kmv = K.$('#kmv'), autoB = K.$('#auto');
+  const C = [[0, [251, 248, 243]], [.3, [246, 228, 220]], [.55, [196, 120, 140]], [.75, [96, 26, 52]], [1, [18, 6, 12]]];
+  const mix = p => { let i = 0; while (i < C.length - 2 && p > C[i + 1][0]) i++; const [a, ca] = C[i], [b, cb] = C[i + 1], t = Math.min(1, Math.max(0, (p - a) / (b - a))); return ca.map((v, k) => Math.round(v + (cb[k] - v) * t)); };
+  let started = false, ended = false, dark = false;
+  const maxY = () => document.documentElement.scrollHeight - innerHeight;
+  function onScroll(){
+    const p = Math.min(1, Math.max(0, scrollY / maxY()));
+    const c = mix(p), css = 'rgb(' + c.join(',') + ')';
+    document.body.style.background = css; document.documentElement.style.setProperty('--bgc', css);
+    const nd = p > .56; if (nd !== dark) { dark = nd; document.body.style.setProperty('--fg', dark ? '#fff' : '#2b1d22'); document.body.style.setProperty('--sub', dark ? 'rgba(255,255,255,.62)' : '#9a858a'); document.body.style.color = dark ? '#fff' : '#2b1d22'; }
+    const h = meter.clientHeight; fl.style.height = (p * h) + 'px'; kn.style.top = (p * h) + 'px';
+    kmv.textContent = (p * KM).toFixed(p > .97 ? 3 : 1) + 'km';
+    if (p > .02) K.$('#top').classList.add('on');
+  }
+  addEventListener('scroll', onScroll, { passive: true });
+
+  // 문장이 화면 가운데에 오면 심장 소리
+  let beat = 0;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && !e.target.classList.contains('seen')) { e.target.classList.add('seen'); heart(++beat); } }), { rootMargin: '-38% 0px -38% 0px' });
+  K.$$('.ln').forEach(el => io.observe(el));
+  const endIO = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting && e.intersectionRatio > .7) finale(); }), { threshold: [.7, .9] });
+  endIO.observe(K.$('#end'));
+
+  K.$('#go').onclick = () => {
+    K.unlock(); started = true; document.body.classList.remove('lock');
+    K.$('#go').style.visibility = 'hidden'; K.$('#down').classList.add('on'); meter.classList.add('on'); autoB.classList.add('on');
+    K.tone(220, .5, { type: 'sine', vol: .25 }); K.tone(330, .6, { type: 'sine', vol: .15, at: .08 });
+    onScroll();
+  };
+  // 자동 스크롤 (영상용): 문장마다 잠깐 멈춤, 가운데는 빠르게
+  let autoOn = false, stopAuto = false;
+  autoB.onclick = async () => {
+    if (!started) K.$('#go').onclick();
+    if (autoOn) { stopAuto = true; return; }
+    autoOn = true; stopAuto = false; autoB.textContent = '멈춤';
+    const stops = K.$$('.ln').map(el => el.offsetTop + K.$('#road').offsetTop - innerHeight / 2);
+    stops.push(maxY());
+    const n = stops.length;
+    for (let i = 0; i < n && !stopAuto; i++) {
+      if (stops[i] <= scrollY + 2) continue;
+      const mid = Math.abs(i - n * .5) / (n * .5);           // 가운데일수록 0
+      const dur = i >= n - 4 ? 1000 : 520 + 560 * mid;     // 끝 네 문장은 다시 느리게
+      await glide(stops[i], dur);
+      if (i < n - 1) await K.sleep(i >= n - 4 ? 420 : 240);
+    }
+    autoOn = false; autoB.textContent = '자동 스크롤';
+  };
+  function glide(to, dur){ return new Promise(res => { const from = scrollY, t0 = performance.now();
+    const f = () => { if (stopAuto) return res(); const p = Math.min(1, (performance.now() - t0) / dur), e = p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      scrollTo(0, from + (to - from) * e); p < 1 ? requestAnimationFrame(f) : res(); }; f(); }); }
+  ['wheel', 'touchstart'].forEach(ev => addEventListener(ev, () => { if (autoOn) stopAuto = true; }, { passive: true }));
+
+  function heart(n){
+    if (!started) return;
+    const v = Math.min(.9, .35 + n * .04);
+    K.tone(62, .14, { type: 'sine', vol: v, slide: 40 }); K.tone(58, .16, { type: 'sine', vol: v * .8, slide: 38, at: .2 });
+    K.vibe(15);
+  }
+  async function finale(){
+    if (ended || !started) return; ended = true;
+    autoB.classList.remove('on'); io.disconnect();
+    await K.sleep(900);                      // 정적
+    K.$('#end').classList.add('on');
+    K.tone(1200, .06, { type: 'triangle', vol: .25 }); K.tone(900, .1, { type: 'triangle', vol: .18, at: .07 });
+    await K.sleep(1100); K.$('#end .sig').classList.add('on');
+    await K.sleep(700); K.$('#kmEnd').textContent = '이 말을 듣기 위해 ' + KM + 'km 내려왔습니다'; K.$('#kmEnd').classList.add('on');
+    K.tone(392, .3, { type: 'sawtooth', vol: .08, slide: 370 }); K.tone(330, .6, { type: 'sawtooth', vol: .08, slide: 290, at: .32 });
+    await K.sleep(900);
+    K.again({ replayText: '다시 듣기', makeText: '나도 할 말 있음', onReplay: () => { scrollTo(0, 0); location.reload(); } });
+  }
+}
+</script>
+</body>
+</html>

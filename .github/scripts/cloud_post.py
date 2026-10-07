@@ -117,7 +117,13 @@ def main():
     for at, r, meta in queue:
         left = (at - now).total_seconds()
         print('%s  #%s %s  게시 %s  (%s분 남음)' % (r['tag_name'], meta['n'], meta['name'], at.astimezone(KST).strftime('%m/%d %H:%M'), int(left // 60)))
-    if DRY: return
+    if DRY:
+        uid, token = os.environ.get('IG_USER_ID', ''), os.environ.get('IG_ACCESS_TOKEN', '')
+        if uid and token:
+            me = ig('GET', '/%s' % uid, {'fields': 'username,media_count'}, token)
+            print('인스타 연결 확인: @%s (게시물 %s개)' % (me.get('username'), me.get('media_count')))
+        else: print('Secrets 없음')
+        return
     for at, r, meta in queue:
         left = (at - dt.datetime.now(dt.timezone.utc)).total_seconds()
         if left > LOOKAHEAD: continue

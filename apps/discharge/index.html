@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>전역 축하 군악대</title>
+<meta name="description" content="전역은 군악대로 축하합니다.">
+<meta property="og:title" content="전역 축하 전보가 도착했습니다">
+<meta property="og:description" content="귀하의 전역을 맞아 군악대가 출동했습니다.">
+<meta property="og:image" content="https://brooksglobal.github.io/useless-things/apps/discharge/og.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap">
+<link rel="stylesheet" href="../_shared/kit.css">
+<style>
+:root{--k-bg:#EEE8D5;--k-fg:#26301B;--k-sub:#5f6650;--k-card:#fff;--k-line:#cfc7a8;--k-acc:#3D4A2A;--k-acc-fg:#F3E3A0;--k-focus:#3D4A2A;
+  --olive:#3D4A2A;--olive2:#2A3320;--khaki:#C9B98A;--gold:#E9C46A;--paper:#F6F0DC;--red:#C0262D;color-scheme:light}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(110% 60% at 50% 0%,#4f5e36 0%,#2A3320 58%,#151a10 100%);color:#fff;font-family:"Pretendard","Apple SD Gothic Neo",sans-serif;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none}
+/* 전보 */
+#gate{position:fixed;inset:0;display:grid;place-items:center;padding:24px;z-index:5}
+.tel{background:var(--paper);color:#22281a;width:min(100%,350px);padding:26px 22px 22px;border-radius:3px;box-shadow:0 30px 60px rgba(0,0,0,.5);position:relative;
+  background-image:repeating-linear-gradient(0deg,transparent 0 27px,rgba(61,74,42,.12) 27px 28px)}
+.tel .k{display:flex;justify-content:space-between;font-size:11px;font-weight:800;letter-spacing:.3em;color:#7a6a3a;border-bottom:2px solid #22281a;padding-bottom:8px}
+.tel h1{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:28px;letter-spacing:.3em;text-align:center;margin:14px 0 12px}
+.tel .row{display:flex;font-size:14px;margin-top:6px;line-height:1.5}
+.tel .row b{flex:none;width:52px;color:#7a6a3a}
+.tel .body{margin-top:14px;font-family:"Nanum Myeongjo",serif;font-size:16px;line-height:1.75}
+.tel button{display:block;width:100%;margin-top:20px;border:0;border-radius:3px;padding:15px;font:inherit;font-weight:800;font-size:17px;background:var(--olive);color:var(--gold);cursor:pointer;letter-spacing:.2em}
+/* 무대 */
+#stage{position:fixed;inset:0;display:none;overflow:hidden}
+#stage.on{display:block}
+#bar{position:absolute;top:max(14px,env(safe-area-inset-top));left:14px;right:14px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.04em;z-index:3}
+#bar .lv{background:#d1262d;padding:4px 8px;border-radius:3px;display:flex;align-items:center;gap:6px}
+#bar .lv i{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+#bar .tt{background:rgba(255,255,255,.12);padding:4px 8px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#hd{position:absolute;top:calc(max(14px,env(safe-area-inset-top)) + 40px);left:0;right:0;text-align:center;z-index:3}
+#hd h2{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:22px;color:var(--gold)}
+#hd p{font-size:12px;color:#c5c9a8;margin-top:3px;letter-spacing:.12em}
+#order{position:absolute;top:calc(max(14px,env(safe-area-inset-top)) + 100px);left:14px;right:14px;display:flex;gap:4px;z-index:3}
+#order span{flex:1;text-align:center;font-size:12px;font-weight:800;padding:7px 0;border-radius:3px;background:rgba(255,255,255,.08);color:#b7bd98;border:1px solid rgba(233,196,106,.2);transition:all .3s;white-space:nowrap}
+#order span.on{background:var(--gold);color:var(--olive2);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.35)}
+#order span.done{color:#7d8466;text-decoration:line-through;text-decoration-color:rgba(233,196,106,.5)}
+#scene{position:absolute;left:16px;right:16px;top:calc(max(14px,env(safe-area-inset-top)) + 148px);bottom:calc(max(14px,env(safe-area-inset-bottom)) + 120px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;z-index:2}
+.lab{font-size:13px;letter-spacing:.4em;font-weight:900;color:var(--gold)}
+/* 전역일 */
+.dd{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:112px;line-height:1;color:#fff;font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(233,196,106,.5),0 8px 0 rgba(0,0,0,.3);margin:10px 0}
+.dd.hit{animation:gh .16s ease-out}
+@keyframes gh{0%{transform:scale(1.2)}100%{transform:scale(1)}}
+.dd.day{color:var(--gold);font-size:96px}
+.gsub{font-size:15px;font-weight:700;color:#dfe2c6}
+#flash{position:fixed;inset:0;background:#fff8dc;opacity:0;pointer-events:none;z-index:9}
+#flash.on{animation:fl .22s ease-out}
+@keyframes fl{0%{opacity:.55}100%{opacity:0}}
+body.shake #stage{animation:shk .16s linear}
+@keyframes shk{25%{transform:translate(-5px,3px)}50%{transform:translate(5px,-2px)}75%{transform:translate(-3px,-3px)}}
+/* 경례 */
+.cry{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:92px;color:#fff;line-height:1.1;text-shadow:0 8px 0 rgba(0,0,0,.35)}
+.cry.hit{animation:cry .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes cry{0%{transform:scale(1.6);opacity:0}100%{transform:none;opacity:1}}
+.cnt{font-size:14px;color:var(--gold);font-weight:800;letter-spacing:.3em;margin-top:6px}
+/* 군악대 */
+.band{display:flex;gap:6px;font-size:46px;margin:16px 0 8px;overflow:hidden;width:100%;justify-content:center}
+.band span{display:inline-block;opacity:0;animation:march .5s cubic-bezier(.2,1.4,.4,1) forwards,bob .4s ease-in-out .5s infinite alternate}
+@keyframes march{0%{transform:translateX(200px);opacity:0}100%{transform:none;opacity:1}}
+@keyframes bob{to{transform:translateY(-8px)}}
+.note{position:fixed;font-size:30px;color:var(--gold);pointer-events:none;z-index:4;animation:nt 1.6s ease-out forwards}
+@keyframes nt{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--x),-220px) rotate(var(--r));opacity:0}}
+.big{font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:30px;color:#fff;line-height:1.35;margin-top:8px}
+/* 서류 */
+.doc{position:relative;background:var(--paper);color:#1f2418;border-radius:3px;width:100%;max-width:340px;padding:20px 20px 18px;box-shadow:0 24px 50px rgba(0,0,0,.5);text-align:left;animation:drop .5s cubic-bezier(.2,1.3,.4,1) both}
+.doc .no{font-size:10px;color:#7a6a3a;letter-spacing:.1em}
+.doc h3{text-align:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:24px;letter-spacing:.3em;border-bottom:3px double #1f2418;padding:6px 0 10px;margin-bottom:10px}
+.doc .r{display:flex;font-size:14px;line-height:1.5;padding:5px 0;border-bottom:1px dashed rgba(31,36,24,.25);opacity:0;transform:translateY(5px);transition:all .35s}
+.doc .r.on{opacity:1;transform:none}
+.doc .r b{flex:none;width:76px;color:#6a6248;font-weight:700}
+.doc .r em{font-style:normal;font-weight:800}
+.doc .txt{font-family:"Nanum Myeongjo",serif;font-size:15px;line-height:1.65;margin-top:12px;padding-right:96px;opacity:0;transition:opacity .4s}
+.doc .txt.on{opacity:1}
+.doc .sg{text-align:left;font-size:13px;color:#5d5640;margin-top:10px;font-family:"Nanum Myeongjo",serif}
+.stamp{position:absolute;right:14px;bottom:14px;width:92px;height:92px;border:4px solid var(--red);border-radius:50%;color:var(--red);display:grid;place-items:center;font-family:"Nanum Myeongjo",serif;font-weight:800;font-size:24px;letter-spacing:.1em;transform:rotate(-14deg) scale(2.4);opacity:0;mix-blend-mode:multiply}
+.stamp.on{animation:stp .28s cubic-bezier(.3,1.5,.5,1) forwards}
+@keyframes stp{to{transform:rotate(-14deg) scale(1);opacity:.9}}
+@keyframes drop{0%{transform:translateY(-30px) rotate(-2deg);opacity:0}100%{transform:none;opacity:1}}
+/* 동봉 서류 */
+#wrap{position:relative;width:100%;max-width:340px}
+#wrap .doc.under{transform:rotate(-3deg) translate(-8px,10px);filter:brightness(.8);animation:none}
+#wrap .doc.rsv{position:absolute;left:0;right:0;top:-6px}
+.doc.rsv{animation:slide .6s cubic-bezier(.2,1.2,.4,1) both;box-shadow:0 30px 60px rgba(0,0,0,.6)}
+@keyframes slide{0%{transform:translateY(120%) rotate(6deg)}100%{transform:none}}
+.doc.rsv h3{font-size:21px;letter-spacing:.12em}
+.doc .r.hot em{color:var(--red);font-size:17px}
+.fine{font-size:16px;font-weight:800;color:#FFE08A;background:rgba(0,0,0,.55);padding:7px 14px;border-radius:999px;margin-top:12px;opacity:0;transition:opacity .4s}
+.fine.on{opacity:1}
+.encl{font-size:13px;color:var(--gold);font-weight:800;letter-spacing:.2em;margin-bottom:8px;opacity:0;transition:opacity .3s}
+.encl.on{opacity:1}
+.cf{position:fixed;top:-20px;width:9px;height:14px;z-index:6;pointer-events:none;animation:cf var(--d) linear forwards}
+@keyframes cf{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--x),110vh) rotate(720deg)}}
+#toast{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);background:var(--paper);color:var(--olive2);font-weight:900;padding:16px 20px;border-radius:8px;z-index:60;box-shadow:0 20px 40px rgba(0,0,0,.4);text-align:center;line-height:1.4;display:none;width:max-content;max-width:300px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="../_shared/kit.js"></script>
+<script>
+K.start({
+  parse: a => ({ to: K.str(a[0], '친구', 10), fr: K.str(a[1], '나', 10) }),
+  make: () => K.maker({
+    kicker: '전역 축하', title: '전역 축하 군악대', sub: '전역은 군악대로 축하합니다.',
+    fields: [
+      { k: 'to', label: '전역하는 사람', ph: '영집', max: 10, def: '친구' },
+      { k: 'fr', label: '보내는 사람', ph: '현우', max: 10, def: '나' },
+    ],
+    toArr: v => [v.to, v.fr],
+  }),
+  show,
+});
+
+function show(d){
+  const E = K.esc, to = E(d.to), fr = E(d.fr);
+  document.getElementById('app').innerHTML =
+    '<div id="gate"><div class="tel"><p class="k"><span>전 보</span><span>긴급</span></p><h1>전역 축하</h1>' +
+    '<p class="row"><b>수신</b>' + to + ' 병장</p><p class="row"><b>발신</b>' + fr + '</p>' +
+    '<p class="body">' + to + ' 병장의 전역을 맞아 군악대가 출동하였습니다. 개봉하시면 행사가 바로 시작됩니다.</p>' +
+    '<button id="enter">개봉</button></div></div>' +
+    '<div id="stage">' +
+    '<div id="bar"><span class="lv"><i></i>LIVE</span><span class="tt">' + to + ' 병장 전역 축하 행사 생중계</span></div>' +
+    '<div id="hd"><h2>' + to + ' 병장 전역 축하 행사</h2><p>주관 전역 축하 군악대</p></div>' +
+    '<div id="order"><span>전역일</span><span>경례</span><span>군악대</span><span>전역증</span><span>동봉 서류</span></div>' +
+    '<div id="scene"></div></div><div id="flash"></div><div id="toast"></div>';
+  K.footer({ dark: true });
+  K.$('#enter').onclick = () => { K.unlock(); K.$('#gate').remove(); K.$('#stage').classList.add('on'); run(d); };
+}
+
+function step(i){ K.$$('#order span').forEach((s, j) => { s.classList.toggle('on', j === i); s.classList.toggle('done', j < i); }); K.tone(988, .08, { type: 'sine', vol: .14 }); K.tone(1480, .12, { type: 'sine', vol: .1, at: .07 }); }
+function shake(){ document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake'); const f = K.$('#flash'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); }
+function drum(n, gap, at = 0, v = .5){ for (let i = 0; i < n; i++) K.noise(.06, { bp: 2200, q: .8, vol: v * (.6 + .4 * i / n), at: at + i * gap }); }
+function confetti(n){ for (let i = 0; i < n; i++) { const c = document.createElement('div'); c.className = 'cf'; c.style.left = K.rand(0, 100) + '%'; c.style.background = K.pick(['#E9C46A', '#fff', '#8FA35F', '#C0262D']); c.style.setProperty('--x', K.rand(-60, 60) + 'px'); c.style.setProperty('--d', K.rand(2.2, 3.6) + 's'); c.style.animationDelay = K.rand(0, .6) + 's'; document.body.appendChild(c); setTimeout(() => c.remove(), 4500); } }
+function ymd(t){ return t.getFullYear() + '. ' + (t.getMonth() + 1) + '. ' + t.getDate() + '.'; }
+
+async function run(d){
+  const S = K.sleep, sc = K.$('#scene'), E = K.esc, to = E(d.to), fr = E(d.fr);
+  await S(500);
+  // 1) 전역일 카운트다운
+  step(0);
+  sc.innerHTML = '<p class="lab">전역까지</p><p class="dd" id="dd">D-30</p><p class="gsub">' + to + ' 병장 전역일 계산 중</p>';
+  await S(400);
+  let gap = 140;
+  for (let n = 29; n >= 1; n--) { const g = K.$('#dd'); g.textContent = 'D-' + n; K.tick({ f: 1400 + (30 - n) * 20 }); await S(gap); gap = Math.max(45, gap * .92); }
+  const g = K.$('#dd'); g.textContent = 'D-DAY'; g.classList.add('day', 'hit'); K.boom({ vol: 1, f: 80, d: 1 }); shake(); K.vibe(40);
+  K.$('.gsub').textContent = '오늘부로 ' + d.to + ' 병장 전역';
+  await S(1200);
+  // 2) 경례
+  step(1);
+  sc.innerHTML = '<p class="lab">전원 경례</p><p class="cry" id="cry">충성!</p><p class="cnt" id="cnt">1 / 3</p><p class="gsub" style="margin-top:10px">' + to + ' 병장님께 경례</p>';
+  for (let i = 1; i <= 3; i++) {
+    const c = K.$('#cry'); c.classList.remove('hit'); void c.offsetWidth; c.classList.add('hit'); K.$('#cnt').textContent = i + ' / 3';
+    K.noise(.12, { lp: 600, vol: .9 }); K.tone(110, .12, { type: 'sine', vol: .6 }); K.noise(.08, { bp: 3200, vol: .4, at: .02 }); shake(); K.vibe(25);
+    await S(620);
+  }
+  await S(300);
+  // 3) 군악대
+  step(2);
+  const band = ['🥁', '🎺', '🎷', '🎺', '🥁'];
+  sc.innerHTML = '<p class="lab">군악대 입장</p><div class="band">' + band.map((b, i) => '<span style="animation-delay:' + (i * .14) + 's,' + (.5 + i * .14) + 's">' + b + '</span>').join('') + '</div><p class="big">' + to + ' 병장<br>전역을 축하합니다</p>';
+  const G4 = 392, C5 = 523, E5 = 659, G5 = 784, A5 = 880, C6 = 1047, q = .15;
+  const end = K.fanfare([[G4, q], [C5, q], [E5, q], [G5, q * 2], [0, q * .5], [E5, q], [G5, q * 3], [0, q * .5], [A5, q], [G5, q], [E5, q], [C6, q * 5]], { vol: .11 });
+  drum(16, .12, 0, .4); K.boom({ vol: .5, at: end - q * 5 });
+  for (let i = 0; i < 10; i++) setTimeout(() => { const n = document.createElement('div'); n.className = 'note'; n.textContent = K.pick(['♪', '♫', '♬']); n.style.left = K.rand(15, 80) + '%'; n.style.top = K.rand(42, 55) + '%'; n.style.setProperty('--x', K.rand(-60, 60) + 'px'); n.style.setProperty('--r', K.rand(-40, 40) + 'deg'); document.body.appendChild(n); setTimeout(() => n.remove(), 1650); }, i * 220);
+  setTimeout(() => confetti(36), (end - q * 5) * 1000);
+  await S(end * 1000 + 600);
+  // 4) 전역증
+  step(3);
+  const t = new Date(), t0 = new Date(t); t0.setMonth(t0.getMonth() - 18);
+  const R1 = [['성명', to], ['계급', '병장'], ['복무 기간', ymd(t0) + ' ~ ' + ymd(t)], ['사유', '만기 전역']];
+  sc.innerHTML = '<div class="doc" id="d1"><p class="no">제 2026-1013 호</p><h3>전 역 증</h3>' + R1.map(r => '<p class="r"><b>' + r[0] + '</b><em>' + r[1] + '</em></p>').join('') +
+    '<p class="txt">위 사람은 병역 의무를 성실히 마쳤으므로 이 증을 줍니다.</p><p class="sg">' + ymd(t) + '<br>전역 축하 군악대장 ' + fr + '</p><div class="stamp" id="st1">전역</div></div>';
+  await S(500);
+  for (const r of K.$$('#d1 .r')) { r.classList.add('on'); K.tick({ f: 900 }); await S(330); }
+  K.$('#d1 .txt').classList.add('on'); await S(700);
+  K.$('#st1').classList.add('on'); K.noise(.12, { lp: 400, vol: 1 }); K.tone(70, .2, { type: 'sine', vol: .7 }); shake(); K.vibe(30);
+  K.ding({ f: 1318, vol: .2, at: .15 });
+  await S(1300);
+  // 5) 동봉 서류 — 예비군 편성 통지서
+  step(4);
+  const doc1 = K.$('#d1').outerHTML.replace('class="doc"', 'class="doc under"');
+  const R2 = [['성명', to], ['편성', '예비군 1년 차'], ['복무 기간', '8년 (2,920일)'], ['첫 훈련', '동원훈련 2박 3일']];
+  sc.innerHTML = '<p class="encl" id="encl">봉투에 한 장 더 들어 있습니다</p><div id="wrap">' + doc1 + '</div><p class="fine" id="fine">※ 8년 뒤 민방위로 자동 연결됩니다</p>';
+  K.$$('#wrap .r, #wrap .txt').forEach(e => e.classList.add('on')); K.$('#wrap .stamp').style.cssText = 'transform:rotate(-14deg);opacity:.9';
+  await S(200); K.$('#encl').classList.add('on'); K.noise(.35, { hp: 2500, vol: .25 });
+  await S(900);
+  const rsv = document.createElement('div'); rsv.className = 'doc rsv'; rsv.id = 'res';
+  rsv.innerHTML = '<p class="no">제 2026-1013-2 호</p><h3>예비군 편성 통지서</h3>' + R2.map((r, i) => '<p class="r' + (i === 2 ? ' hot' : '') + '"><b>' + r[0] + '</b><em>' + r[1] + '</em></p>').join('') +
+    '<p class="txt">귀하는 전역과 동시에 예비군에 편성되었음을 알려 드립니다.</p><div class="stamp" id="st2">편성</div>';
+  K.$('#wrap').appendChild(rsv); K.noise(.3, { hp: 1800, vol: .3 });
+  await S(700);
+  for (const r of K.$$('#res .r')) { r.classList.add('on'); K.tick({ f: 700 }); if (r.classList.contains('hot')) { K.boom({ vol: .6, f: 70, d: .5 }); shake(); await S(500); } await S(380); }
+  K.$('#res .txt').classList.add('on'); await S(600);
+  K.$('#st2').classList.add('on'); K.noise(.12, { lp: 400, vol: 1 }); K.tone(60, .3, { type: 'sine', vol: .8 }); shake(); K.vibe(40);
+  K.tone(220, .6, { type: 'triangle', vol: .12, at: .3 }); K.tone(196, .9, { type: 'triangle', vol: .12, at: .7 });
+  await S(1200); K.$('#fine').classList.add('on'); K.tone(1200, .05, { type: 'square', vol: .05 });
+  await S(1500);
+  K.$$('#order span').forEach(s => { s.classList.remove('on'); s.classList.add('done'); });
+  K.again({ replayText: '한 번 더 축하', makeText: '나도 전역 축하하기', onReplay: () => {
+    const t = K.$('#toast'); t.innerHTML = '군악대가 복귀했습니다.<br>다음 행사는 예비군 8년 차 수료식입니다.'; t.style.display = 'block'; K.tone(196, .5, { type: 'triangle', vol: .12 });
+    setTimeout(() => { t.style.display = 'none'; K.$('.k-again').classList.add('on'); }, 2600); } });
+}
+</script>
+</body>
+</html>
